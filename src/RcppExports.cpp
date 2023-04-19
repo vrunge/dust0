@@ -10,19 +10,32 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// rcpp_hello
-List rcpp_hello();
-RcppExport SEXP _dust_rcpp_hello() {
+// dust_gauss
+bool dust_gauss();
+RcppExport SEXP _dust_dust_gauss() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello());
+    rcpp_result_gen = Rcpp::wrap(dust_gauss());
+    return rcpp_result_gen;
+END_RCPP
+}
+// dust
+NumericVector dust(NumericVector data, double penalty);
+RcppExport SEXP _dust_dust(SEXP dataSEXP, SEXP penaltySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
+    rcpp_result_gen = Rcpp::wrap(dust(data, penalty));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dust_rcpp_hello", (DL_FUNC) &_dust_rcpp_hello, 0},
+    {"_dust_dust_gauss", (DL_FUNC) &_dust_dust_gauss, 0},
+    {"_dust_dust", (DL_FUNC) &_dust_dust, 2},
     {NULL, NULL, 0}
 };
 
