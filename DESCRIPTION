@@ -1,0 +1,15 @@
+Package: dust
+Type: Package
+Title: Optimal partitioning algorithm for univarite data using duality simple tests
+Version: 0.1.0
+Authors@R: c(person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre")))
+Maintainer: Vincent Runge <vincent.runge@univ-evry.fr>
+Description: Algorithms for detecting changes within univariate time-series. The detection is based on the minimization of a penalized likelihood. We use a dynamic programming algorithm called optimal partitioning with a new pruning method (dust): DUality Simple Test.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 1.0.10)
+Suggests: devtools, testthat, rmarkdown, ggplot2, knitr
+VignetteBuilder: knitr
+LinkingTo: Rcpp
+RoxygenNote: 7.2.3
