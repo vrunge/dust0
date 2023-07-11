@@ -11,12 +11,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // dust_gauss
-bool dust_gauss();
-RcppExport SEXP _dust_dust_gauss() {
+bool dust_gauss(int j, int k);
+RcppExport SEXP _dust_dust_gauss(SEXP jSEXP, SEXP kSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(dust_gauss());
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(dust_gauss(j, k));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -34,7 +36,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dust_dust_gauss", (DL_FUNC) &_dust_dust_gauss, 0},
+    {"_dust_dust_gauss", (DL_FUNC) &_dust_dust_gauss, 2},
     {"_dust_dust", (DL_FUNC) &_dust_dust, 2},
     {NULL, NULL, 0}
 };

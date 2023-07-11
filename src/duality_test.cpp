@@ -2,9 +2,9 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-bool dust_gauss()
+bool dust_gauss(int j, int k)
 {
-  return(true);
+  return(false);
 }
 
 
