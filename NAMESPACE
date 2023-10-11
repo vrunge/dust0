@@ -1,3 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 useDynLib(dust, .registration = TRUE)
+
+importFrom("stats", "rnorm")
+importFrom("stats", "rpois")
