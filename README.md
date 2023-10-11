@@ -12,6 +12,9 @@
 
 > [DuST Algorithms](#dust)
 
+___ 
+
+<a id="intro"></a>
 
 ## Introduction
 
