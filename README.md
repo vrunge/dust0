@@ -64,14 +64,35 @@ ___
 
 `Dual_1D` returns the value of the dual at a point `mu` when comparing index `s1` with the constraint from index `s2`. with option `OP = TRUE` the optimal partitioning algorithm is used to have the true constants in the cost functions.
 
+`dual_1D <- function(mu, x, s1, s2, t, type = "gauss", OP = FALSE, penalty = 2*length(x))`
+
+- `x` is raw data
+
+- If `OP` is `true`, we run the OP algorithm to have the optimal cost vector to use in cost functions. See the function `OP_R`.
+
+- at time `t`, we evaluate the dual function at point `mu` when trying to remove index `s1` using function linked to index `s2` (we have a unique constraint, which means that the dual is a one-parametric function)
+
+- Depending on the `type`, different functions `A`, `B` and `mu_max` are used (see the code in file `functions_by_type.R`)
+
 
 ### dust_R
 
-...
+The function `dust_R` has the following parameters:
+
+`dust_R <- function(data, penalty, type = "gauss")`
+
+and returns a list of two elements
+
+- the change-points found by the algo
+
+- the number of indices to consider in the minimiztion at each time step
+
+the function uses values obtained by `dual_1D` (with `OP = FALSE`) to discard indices with DuST rule. 
 
 
+**... ADD OPTIONS to change the sampling?**
 
-
+**TO BE DONE**
 
 
 [Back to Top](#top)
