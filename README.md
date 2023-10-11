@@ -8,13 +8,12 @@
 
 > [Introduction](#intro)
 
-> [Quick Start](#qs)
+> [Functions in R code](#Rcode)
 
-> [Some examples](#se)
+> [DuST Algorithms](#dust)
 
 
 ## Introduction
-
 
 The `dust` package contains methods for detecting multiple change-points within time-series based on the optimal partitioning algorithm. A few models from the exponential family are considered (Gauss, Poisson, Exponential...).
 
@@ -23,16 +22,27 @@ The proposed algorithm is a pruned dynamic programming algorithm optimizing a pe
 Indeed, indices for potential last change-point are discarded by considering some constrained optimization problems. For each potential last change-point index, evaluating its associated dual function at a random testing point enables a fast and efficient test.
 
 A
+
+A
+
 A
 A
+
+
 A
+
 A
+
 A
+
 A
+
 A
+
 A
+
 A
-A
+
 A
 A
 A
@@ -40,9 +50,37 @@ A
 A
 A
 
-<a id="qs"></a>
+<a id="Rcode"></a>
 
-## Quick Start
+## Functions in R code
+
+A
+A
+A
+A
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+a
+
+A
+
+A
+
+
+<a id="dust"></a>
+
+## DuST Algorithms
+
 
 
 [Back to Top](#top)
