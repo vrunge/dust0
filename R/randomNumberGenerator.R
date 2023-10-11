@@ -1,0 +1,13 @@
+
+
+rlaplace <- function()
+{
+
+}
+
+
+
+rpareto <- function()
+{
+
+}

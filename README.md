@@ -37,7 +37,7 @@ ___
 
 ## Functions in R code
 
-**dataGenerator** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`), a shared variance for all data (usually `sdNoise = 1`) and a type of probability distribution in `type`. We have the following choices for type:
+**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`), a shared variance for all data (usually `sdNoise = 1`) and a type of probability distribution in `type`. We have the following choices for type:
 
 - `type = "gauss"`
 
@@ -46,6 +46,16 @@ ___
 - `type = "exp"`
 
 - `type = "bern"`
+
+- ...
+
+**dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+
+**dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
+
+
+**dataGenerator_Reg** generates 2-dimensional data (x,y) following a simple linear regression link (y = Ax + B + noise) with A and B changing over time (after each change-point)
+
 
 
 

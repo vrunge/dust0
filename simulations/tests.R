@@ -2,7 +2,12 @@
 
 #dataGenerator
 
-plot(dataGenerator(chpts = c(30,100,120), parameter = c(1,10,1), type = "gauss"))
+dataGenerator(chpts = c(50,100), parameter = c(0,1), type = "gauss")
+
+plot(dataGenerator(chpts = c(50,100), parameter = c(0,1), type = "gauss"))
+
+
+
 plot(dataGenerator(chpts = c(30,100,120), parameter = c(1,10,1), type = "poisson"))
 
 
