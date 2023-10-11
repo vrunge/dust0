@@ -8,7 +8,7 @@
 #' @param type type of cost to use: gauss, poisson, exp
 #' @return a list with the change-point elements (each last index of each segment) and a vector `nb` saving the number of non-pruned elements at each iteration
 #' @examples
-#' dust_R(dataGenerator(chpts = c(30,100,120), means = c(0,1,0), type = "gauss"))
+#' dust_R(dataGenerator_1D(chpts = c(50,200,400), parameters = c(0,1,0), type = "gauss"), 2*log(400))
 dust_R <- function(data, penalty, type = "gauss")
 {
   ##########  ##########  ##########  ##########  ##########

@@ -37,6 +37,8 @@ ___
 
 ## Functions in R code
 
+### Data Generators
+
 **dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`), a shared variance for all data (usually `sdNoise = 1`) and a type of probability distribution in `type`. We have the following choices for type:
 
 - `type = "gauss"`
@@ -55,6 +57,17 @@ ___
 
 
 **dataGenerator_Reg** generates 2-dimensional data (x,y) following a simple linear regression link (y = Ax + B + noise) with A and B changing over time (after each change-point)
+
+
+
+### Dual Functions
+
+`Dual_1D` returns the value of the dual at a point `mu` when comparing index `s1` with the constraint from index `s2`. with option `OP = TRUE` the optimal partitioning algorithm is used to have the true constants in the cost functions.
+
+
+### dust_R
+
+...
 
 
 
