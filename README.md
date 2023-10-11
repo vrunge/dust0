@@ -50,6 +50,9 @@ A
 A
 A
 
+
+[Back to Top](#top)
+
 <a id="Rcode"></a>
 
 ## Functions in R code
@@ -76,12 +79,131 @@ A
 
 A
 
+[Back to Top](#top)
 
 <a id="dust"></a>
 
 ## DuST Algorithms
 
 
+A
+
+A
+
+A
+A
+
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+A
+A
+A
+A
+A
+
+
+A
+
+A
+
+A
+A
+
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+A
+A
+A
+A
+A
+
+
+A
+
+A
+
+A
+A
+
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+A
+A
+A
+A
+A
+
+
+A
+
+A
+
+A
+A
+
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+
+A
+A
+A
+A
+A
+A
 
 [Back to Top](#top)
 
