@@ -94,7 +94,7 @@ dust_R_gauss <- function(data, penalty)
     changepoints <- c(pointval, changepoints) # update vector
     current <- pointval
   }
-  return(list(changepoints = changepoints[-1],  nb = nb))
+  return(list(changepoints = changepoints[-1],  nb = nb, costQ = costQ))
 }
 
 

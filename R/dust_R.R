@@ -22,8 +22,8 @@ dust_R <- function(data, penalty, type = "gauss")
   ##########  ##########  ##########  ##########  ##########
 
   if(type == "gauss"){res <- dust_R_gauss(data, penalty)}
-  if(type == "poisson"){res <- dust_R_poisson(data, penalty)}
-  if(type == "exp"){res <- dust_R_exp(data, penalty)}
+  #if(type == "poisson"){res <- dust_R_poisson(data, penalty)}
+  #if(type == "exp"){res <- dust_R_exp(data, penalty)}
 
   return(res)
 }

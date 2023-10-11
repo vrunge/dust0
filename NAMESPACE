@@ -1,11 +1,7 @@
 exportPattern("^[[:alpha:]]+")
+
+
 importFrom(Rcpp, evalCpp)
 useDynLib(dust, .registration = TRUE)
 
-importFrom("stats", "rnorm")
-importFrom("stats", "rpois")
-importFrom("stats", "rbinom")
-importFrom("stats", "rchisq")
-importFrom("stats", "rexp")
-importFrom("stats", "rgeom")
-importFrom("stats", "rnbinom")
+import("stats")
