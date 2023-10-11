@@ -85,7 +85,7 @@ and returns a list of two elements
 
 - the change-points found by the algo
 
-- the number of indices to consider in the minimiztion at each time step
+- the number of indices to consider in the minimization at each time step
 
 the function uses values obtained by `dual_1D` (with `OP = FALSE`) to discard indices with DuST rule. 
 
