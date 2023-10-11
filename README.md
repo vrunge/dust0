@@ -1,3 +1,4 @@
+<a id="top"></a>
 
 # dust Vignette
 
@@ -5,13 +6,16 @@
 #### LaMME, Evry University
 ### October 11, 2023
 
-<a id="top"></a>
+___ 
 
 > [Introduction](#intro)
 
 > [Functions in R code](#Rcode)
 
 > [DuST Algorithms](#dust)
+
+> [Pruning Capacity](#pruning)
+
 
 ___ 
 
@@ -25,189 +29,35 @@ The proposed algorithm is a pruned dynamic programming algorithm optimizing a pe
 
 Indeed, indices for potential last change-point are discarded by considering some constrained optimization problems. For each potential last change-point index, evaluating its associated dual function at a random testing point enables a fast and efficient test.
 
-A
-
-A
-
-A
-A
-
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-A
-A
-A
-A
-A
-
-
 [Back to Top](#top)
+
+___ 
 
 <a id="Rcode"></a>
 
 ## Functions in R code
 
-A
-A
-A
-A
-A
 
-A
-
-A
-
-A
-
-A
-
-A
-
-a
-
-A
-
-A
 
 [Back to Top](#top)
+
+___ 
 
 <a id="dust"></a>
 
 ## DuST Algorithms
 
 
-A
 
-A
-
-A
-A
+[Back to Top](#top)
 
 
-A
+<a id="pruning"></a>
 
-A
+___ 
 
-A
+## Pruning Capacity
 
-A
-
-A
-
-A
-
-A
-
-A
-A
-A
-A
-A
-A
-
-
-A
-
-A
-
-A
-A
-
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-A
-A
-A
-A
-A
-
-
-A
-
-A
-
-A
-A
-
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-A
-A
-A
-A
-A
-
-
-A
-
-A
-
-A
-A
-
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-
-A
-A
-A
-A
-A
-A
 
 [Back to Top](#top)
 
