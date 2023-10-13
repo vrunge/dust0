@@ -17,17 +17,17 @@ dataGenerator_1D(
 \arguments{
 \item{chpts}{a vector of increasing change-point indices (the last value is data length)}
 
-\item{parameters}{vector of successive segment parameters (as many parameters as values in chpts vector)}
+\item{parameters}{vector of successive segment parameters (as many parameters as values in \code{chpts} vector)}
 
-\item{sdNoise}{standard deviation for the noise parameter (type gauss)}
+\item{sdNoise}{standard deviation for the noise parameter (type \code{"gauss"})}
 
-\item{gamma}{vector of numbers between 0 and 1 : the coefficient of the exponential decay (type gauss). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in chpts vector.}
+\item{gamma}{vector of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
 
-\item{nbTrials}{number of trials (type binom)}
+\item{nbTrials}{number of trials (type \code{"binom"})}
 
-\item{nbSuccess}{number of successes (type negbin)}
+\item{nbSuccess}{number of successes (type \code{"negbin"})}
 
-\item{type}{the model: "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin"}
+\item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
 a time series following the chosen model type and parameters

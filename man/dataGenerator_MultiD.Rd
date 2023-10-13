@@ -19,15 +19,15 @@ dataGenerator_MultiD(
 
 \item{parameters}{dataframe of successive segment parameters (each column = parameters for one time-series)}
 
-\item{sdNoise}{standard deviation for the noise parameter (type gauss)}
+\item{sdNoise}{standard deviation for the noise parameter (type \code{"gauss"})}
 
-\item{gamma}{vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay (type gauss). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in chpts vector.}
+\item{gamma}{vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
 
-\item{nbTrials}{number of trials (type binom). If a vector, value at position i for i-th time series.}
+\item{nbTrials}{number of trials (type \code{"binom"}). If a vector, value at position i for i-th time series.}
 
-\item{nbSuccess}{number of successes (type negbin). If a vector, value at position i for i-th time series.}
+\item{nbSuccess}{number of successes (type  \code{"negbin"}). If a vector, value at position i for i-th time series.}
 
-\item{type}{the model: "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin"}
+\item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
 a multivariate time series (independent) following the chosen model type and parameters
