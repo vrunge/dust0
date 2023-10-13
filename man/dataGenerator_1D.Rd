@@ -8,30 +8,41 @@ dataGenerator_1D(
   chpts = 100,
   parameters = 0,
   sdNoise = 1,
+  gamma = 1,
   nbTrials = 10,
-  nbFailures = 10,
+  nbSuccess = 10,
   type = "gauss"
 )
 }
 \arguments{
-\item{chpts}{a vector of increasing change-point indices}
+\item{chpts}{a vector of increasing change-point indices (the last value is data length)}
 
-\item{parameters}{vector of successive segment parameters}
+\item{parameters}{vector of successive segment parameters (as many parameters as values in chpts vector)}
 
 \item{sdNoise}{standard deviation for the noise parameter (type gauss)}
 
+\item{gamma}{vector of numbers between 0 and 1 : the coefficient of the exponential decay (type gauss). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in chpts vector.}
+
 \item{nbTrials}{number of trials (type binom)}
 
-\item{nbFailures}{number of failures (type negbin)}
+\item{nbSuccess}{number of successes (type negbin)}
 
-\item{type}{the model: gauss, poisson}
+\item{type}{the model: "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin"}
 }
 \value{
-a vector of simulated time series
+a time series following the chosen model type and parameters
 }
 \description{
-Generating data for multiple change-point detection in univariate (uni-parametric) time series
+Generating univariate (uni-parametric) time series for multiple change-point detection
 }
 \examples{
-myData <- dataGenerator_1D(chpts = c(50,100), parameter = c(0,1), type = "gauss")
+dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
+dataGenerator_1D(chpts = c(50,100), parameters = c(10,20), gamma = c(0.9,0.95), type = "gauss")
+dataGenerator_1D(chpts = c(50,100), parameters = c(2,7), type = "exp")
+dataGenerator_1D(chpts = c(50,100), parameters = c(3,5), type = "poisson")
+dataGenerator_1D(chpts = c(50,100), parameters = c(0.6,0.3), type = "geom")
+dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.2), type = "bern")
+dataGenerator_1D(chpts = c(50,100), parameters = c(0.7, 0.3), nbTrials = 5, type = "binom")
+dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, type = "negbin")
+dataGenerator_1D(chpts = c(50,70, 120, 200), parameter = c(0,3,-1,1), type = "gauss")
 }

@@ -6,32 +6,47 @@
 \usage{
 dataGenerator_MultiD(
   chpts = 100,
-  parameters = 0,
+  parameters = data.frame(ts1 = 0, ts2 = 0),
   sdNoise = 1,
+  gamma = 1,
   nbTrials = 10,
-  nbFailures = 10,
+  nbSuccess = 10,
   type = "gauss"
 )
 }
 \arguments{
-\item{chpts}{a vector of increasing change-point indices}
+\item{chpts}{a vector of increasing change-point indices (the last value is data length)}
 
-\item{parameters}{matrix of successive segment parameters}
+\item{parameters}{dataframe of successive segment parameters (each column = parameters for one time-series)}
 
 \item{sdNoise}{standard deviation for the noise parameter (type gauss)}
 
-\item{nbTrials}{number of trials (type binom)}
+\item{gamma}{vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay (type gauss). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in chpts vector.}
 
-\item{nbFailures}{number of failures (type negbin)}
+\item{nbTrials}{number of trials (type binom). If a vector, value at position i for i-th time series.}
 
-\item{type}{the model: gauss, poisson}
+\item{nbSuccess}{number of successes (type negbin). If a vector, value at position i for i-th time series.}
+
+\item{type}{the model: "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin"}
 }
 \value{
-a vector of simulated time series
+a multivariate time series (independent) following the chosen model type and parameters
 }
 \description{
-Generating data for multiple change-point detection in multivariate time series binding together 1D time-series from dataGenerator1D
+Generating copies of univariate (uni-parametric) time series for multiple change-point detection in multivariate independent setting
 }
 \examples{
-myData <- dataGenerator_MultiD(chpts = c(50,100), parameter = c(0,1), type = "gauss")
+dataGenerator_MultiD(chpts = c(50,100),
+                     parameters = data.frame(ts1 = c(10,10), ts2 = c(5,20)),
+                     gamma = data.frame(ts1 = c(0.9,0.8), ts2 = c(0.8,0.9)),
+                     sdNoise = 0.2, type = "gauss")
+dataGenerator_MultiD(chpts = c(50,100,150),
+                     parameters = data.frame(ts1 = c(4,0,2), ts2 = c(5,2,-2),ts3 = c(0,1,0)),
+                     sdNoise = 0.4, type = "gauss")
+dataGenerator_MultiD(chpts = c(50,100,150),
+                     parameters = data.frame(ts1 = c(4,10,2), ts2 = c(5,2,2),ts3 = c(10,4,3)),
+                     type = "poisson")
+dataGenerator_MultiD(chpts = c(50,100,150),
+     parameters = data.frame(ts1 = c(0.4,0.3,0.5), ts2 = c(0.5,0.6,0.2),ts3 = c(0.1,0.4,0.6)),
+     nbTrials = c(30,10,100), type = "binom")
 }
