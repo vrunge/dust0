@@ -94,7 +94,7 @@ dataGenerator_1D <- function(chpts = 100,
 
   if(type == "exp"){y <- rexp(n = n, rate = mu)}
   if(type == "poisson"){y <- rpois(n = n, lambda = mu)}
-  if(type == "geom"){y <- rgeom(n = n, prob = mu)}
+  if(type == "geom"){y <- rgeom(n = n, prob = mu) + 1} ### number of Bernoulli trials needed to get one success
 
   if(type == "bern"){y <- rbinom(n = n, size = 1, prob = mu)}
   if(type == "binom"){y <- rbinom(n = n, size = nbTrials, prob = mu)}
@@ -185,7 +185,7 @@ dataGenerator_MultiD <- function(chpts = 100,
 #' @param sds vector of successive segment standard deviation
 #' @return a vector of (univariate) simulated data with changes in mean and variance
 #' @examples
-#' myData <- dataGenerator_MV(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
+#' dataGenerator_MV(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
 dataGenerator_MV <- function(chpts = 100,
                              means = 0,
                              sds = 1)
@@ -270,8 +270,8 @@ dataGenerator_Reg <- function(chpts = 100,
   if(type == "logistic")
   {
     z <- A_rep*x + B_rep + rnorm(n, mean = 0, sd = sdNoise)
-    pr <- 1/(1 + exp(-z))
-    y <- rbinom(n, 1, pr)
+    proba <- 1/(1 + exp(-z))
+    y <- rbinom(n, 1, proba)
   }
 
   return(data.frame(x = x, y = y))

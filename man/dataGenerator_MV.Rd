@@ -20,5 +20,5 @@ a vector of (univariate) simulated data with changes in mean and variance
 Generating data for detecting changes in mean and variance with Gaussian model
 }
 \examples{
-myData <- dataGenerator_MV(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
+dataGenerator_MV(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
 }
