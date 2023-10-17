@@ -7,18 +7,24 @@
 OP_R(data, penalty, type = "gauss")
 }
 \arguments{
-\item{data}{a vector of data}
+\item{data}{a vector of data (univariate)}
 
 \item{penalty}{penalty value (non-negative)}
 
-\item{type}{type of cost to use: gauss, poisson, exp}
+\item{type}{type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
-a list with the change-point elements (each last index of each segment) and a vector `nb` saving the number of non-pruned elements at each iteration
+a list with the change-point elements (each last index of each segment) and a vector \code{costQ} saving the optimal cost at each time step
 }
 \description{
 OP algorithm for univariate time-series (with different possible data models)
 }
 \examples{
-OP_R(dataGenerator_1D(chpts = c(50,200,400), parameters = c(0,1,0), type = "gauss"), 2*log(400))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(0,1), sdNoise = 1, type = "gauss"), log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(1,7), type = "exp"), log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(3,10), type = "poisson"), 10*log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.3), type = "geom"), 5*log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.2), type = "bern"), log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7, 0.3), nbTrials = 5, type = "binom"), 5*log(100))
+ OP_R(dataGenerator_1D(chpts = c(50,100), c(0.4,0.7), nbSuccess = 10, type = "negbin"), 50*log(100))
 }

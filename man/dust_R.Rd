@@ -7,14 +7,14 @@
 dust_R(data, penalty, type = "gauss")
 }
 \arguments{
-\item{data}{a vector of data}
+\item{data}{a vector of data (univariate)}
 
 \item{penalty}{penalty value (non-negative)}
 
-\item{type}{type of cost to use: gauss, poisson, exp}
+\item{type}{type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
-a list with the change-point elements (each last index of each segment) and a vector `nb` saving the number of non-pruned elements at each iteration
+a list with the change-point elements (each last index of each segment) and a vector `\code{nb} saving the number of non-pruned elements at each iteration
 }
 \description{
 DUST algorithm for univariate time-series (with different possible data models)

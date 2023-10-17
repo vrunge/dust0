@@ -2,12 +2,18 @@
 #' OP_R
 #'
 #' @description OP algorithm for univariate time-series (with different possible data models)
-#' @param data a vector of data
+#' @param data a vector of data (univariate)
 #' @param penalty penalty value (non-negative)
-#' @param type type of cost to use: gauss, poisson, exp
-#' @return a list with the change-point elements (each last index of each segment) and a vector `nb` saving the number of non-pruned elements at each iteration
+#' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
+#' @return a list with the change-point elements (each last index of each segment) and a vector \code{costQ} saving the optimal cost at each time step
 #' @examples
-#' OP_R(dataGenerator_1D(chpts = c(50,200,400), parameters = c(0,1,0), type = "gauss"), 2*log(400))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0,1), sdNoise = 1, type = "gauss"), log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(1,7), type = "exp"), log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(3,10), type = "poisson"), 10*log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.3), type = "geom"), 5*log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.2), type = "bern"), log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7, 0.3), nbTrials = 5, type = "binom"), 5*log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.4,0.7), nbSuccess = 10, type = "negbin"), 50*log(100))
 OP_R <- function(data, penalty, type = "gauss")
 {
   ##########  ##########  ##########  ##########  ##########
@@ -15,34 +21,20 @@ OP_R <- function(data, penalty, type = "gauss")
   if(!is.vector(data)){stop('data is not a vector')}
   if(length(data) <= 1){stop('no data to segment')}
   if(penalty < 0){stop('penalty must be non negative')}
-  allowed.types <- c("gauss", "poisson", "exp")
-  if(!type %in% allowed.types){stop('type must be one of the list: ', paste(allowed.types, collapse=", "))}
+
+  allowed.types <- c("gauss", "exp", "poisson", "geom", "bern", "binom", "negbin")
+  if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   ##########  ##########  ##########  ##########  ##########
 
-  if(type == "gauss"){res <- OP_R_gauss(data, penalty)}
-  #if(type == "poisson"){res <- dust_R_poisson(data, penalty)}
-  #if(type == "exp"){res <- dust_R_exp(data, penalty)}
-
-  return(res)
-}
-
-
-##################################################
-##################################################
-##################################################
-
-
-
-OP_R_gauss <- function(data, penalty)
-{
-  #########
-  ###
-  ### DATA preprocessing
-  ###
+  ### preprocessing
   n <- length(data)
-  cumData <- cumsum(c(0, data))
-  cumData2 <- cumsum(c(0, data^2))
+  stat <- statistic(type = type)
+  S <- c(0, cumsum(stat(data)))
+
+  # loading the type specific functions
+  A <- A(type = type)
+  B <- B(type = type)
 
   #########
   ###
@@ -67,12 +59,11 @@ OP_R_gauss <- function(data, penalty)
 
     for(k in indexSet)
     {
-      eval <- costQ[shift(k-1)] + (t-k+1)*eval_var(cumData, cumData2, k, t) + penalty
+      eval <- min_cost(A, B, S, k, t+1, costQ[k] + penalty)
       if(eval < min_temp){min_temp <- eval; index <- k}
     }
-    costQ[shift(t)] <- min_temp
-    cp[shift(t)] <- index - 1
-
+    costQ[t+1] <- min_temp
+    cp[t+1] <- index-1
   }
 
   #########
@@ -88,10 +79,8 @@ OP_R_gauss <- function(data, penalty)
     changepoints <- c(pointval, changepoints) # update vector
     current <- pointval
   }
-  return(list(changepoints = changepoints[-1], costQ = costQ))
+  return(list(changepoints = changepoints[-1], costQ = costQ[-1]))
 }
-
-
 
 
 

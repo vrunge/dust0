@@ -12,13 +12,21 @@
 #' data_normalization(rnorm(100), type = "gauss")
 data_normalization <- function(y, type = "gauss")
 {
-  ### TO DO
+  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
   #negbin y <- y / estimate nbSuccess
   #binom <- estimate nbTrials
   #gauss <- estimate sdNoise
 
   return(y)
 }
+
+#######################################
+#############  sdDiff  ################
+#######################################
 
 
 #' sdDiff
@@ -44,12 +52,12 @@ sdDiff <- function(x, method = "HALL")
   if(is.numeric(x) == FALSE || length(x) < 5){stop('x is not a numeric vector or length < 5 (the HALL method cannot be used)')}
   if(method == "HALL")
   {
-    n = length(x)
+    n <- length(x)
     wei <- c(0.1942, 0.2809, 0.3832, -0.8582)
     mat <- wei %*% t(x)
-    mat[2, -n] = mat[2, -1]
-    mat[3, -c(n-1, n)] = mat[3, -c(1, 2)]
-    mat[4, -c(n-2, n-1, n)] = mat[4, -c(1, 2, 3)]
+    mat[2, -n] <- mat[2, -1]
+    mat[3, -c(n-1, n)] <- mat[3, -c(1, 2)]
+    mat[4, -c(n-2, n-1, n)] <- mat[4, -c(1, 2, 3)]
     return(sqrt(sum(apply(mat[, -c(n-2, n-1, n)], 2, sum)^2) / (n-3)))
   }
   if(method == "MAD")

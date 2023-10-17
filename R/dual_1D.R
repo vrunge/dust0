@@ -6,11 +6,10 @@ dual_1D <- function(mu, x, s1, s2, t, type = "gauss", OP = FALSE, penalty = 2*le
 {
   ### preprocessing
   n <- length(x)
-  x <- statistic(x)
-  S <- cumsum(x)
+  stat <- statistic(type = type)
+  S <- cumsum(stat(x))
 
   # GOAL : comparing q_t^s1 against q_t^s2 for pruning s1 with dust method
-
   # loading the type specific functions
   A <- A(type = type)
   B <- B(type = type)
@@ -20,7 +19,7 @@ dual_1D <- function(mu, x, s1, s2, t, type = "gauss", OP = FALSE, penalty = 2*le
 
   if(OP == FALSE)
   {
-    res <- evalDual(mu, A, B, S, s1, s2, 0, 0) #TO DO should work for mu = vector!!!
+    res <- evalDual(mu, A, B, S, s1, s2, t, 0, 0)
   }
 
   if(OP == TRUE)
