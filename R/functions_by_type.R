@@ -86,7 +86,11 @@ R <- function(mu, S, s1, s2, t){return(((S[t] - S[s1]) - mu * (S[s1] - S[s2])) /
 
 evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
 {
-  res1 <- D(mu, s1, s2, t) * (A(B(R(mu, S, s1, s2, t))) - R(mu, S, s1, s2, t) * B(R(mu, S, s1, s2, t)))
+  Ratio <- R(mu, S, s1, s2, t)
+  Bratio <- B(Ratio)
+  Bratio2 <- Bratio
+  Bratio2[is.infinite(Bratio2)] <- 0
+  res1 <- (t - s1)*D(mu, s1, s2, t) * (A(Bratio) - Ratio* Bratio2)
   res2 <- const1 + mu*(const1 - const2)
   return(res1 + res2)
 }
@@ -99,8 +103,9 @@ min_cost <- function(A, B, S, s, t, const)
 {
   data <- S[t] - S[s]
   point <- data/(t-s)
-  value <- B(point)
-  return((t-s)*A(value) - data*value + const)
+  value1 <- B(point)
+  if(data == 0){value2 <- 0}else{value2 <- value1} #to avoid data*value = 0 * Inf
+  return((t-s)*A(value1) - data*value2 + const)
 }
 
 

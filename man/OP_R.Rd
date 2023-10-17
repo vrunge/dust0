@@ -20,7 +20,7 @@ a list with the change-point elements (each last index of each segment) and a ve
 OP algorithm for univariate time-series (with different possible data models)
 }
 \examples{
- OP_R(dataGenerator_1D(chpts = c(50,100), c(0,1), sdNoise = 1, type = "gauss"), log(100))
+ OP_R(dataGenerator_1D(chpts = c(200,400), c(0,1), sdNoise = 1, type = "gauss"), log(400))
  OP_R(dataGenerator_1D(chpts = c(50,100), c(1,7), type = "exp"), log(100))
  OP_R(dataGenerator_1D(chpts = c(50,100), c(3,10), type = "poisson"), 10*log(100))
  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.3), type = "geom"), 5*log(100))

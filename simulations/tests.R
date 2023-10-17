@@ -11,16 +11,17 @@ data <- dataGenerator(chpts = c(300,1000,1200), parameter = c(1,1.4,1), type = "
 
 \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
 
-type <- "negbin"
-s1 <- 12
-s2 <- 8
-t <- 15
-x <- dataGenerator_1D(chpts = 30, parameters = 0.4, type = type)
-x <- x/max(x)
-mu = seq(0,1,length.out = 1000)
+type <- "poisson"
+s1 <- 4
+s2 <- 1
+t <- 10
+x <- dataGenerator_1D(chpts = c(15,30), parameters = c(1,10), type = type)
+
+mu = seq(0,1,length.out = 100)
 res <- dual_1D(mu = mu, x = x, s1 = s1, s2 = s2, t = t, type = type)
 plot(mu, res, type = 'l')
 
-res
+res <- dual_1D(mu = mu, x = x, s1 = s1, s2 = s2, t = t, type = type, penalty = 2*log(30), OP = TRUE)
+plot(mu, res, type = 'l')
 
-(t-s1)/(s1-s2)
+OP_R(x, penalty = 2*log(30), type = type)

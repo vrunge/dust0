@@ -7,7 +7,7 @@
 #' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
 #' @return a list with the change-point elements (each last index of each segment) and a vector \code{costQ} saving the optimal cost at each time step
 #' @examples
-#'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0,1), sdNoise = 1, type = "gauss"), log(100))
+#'  OP_R(dataGenerator_1D(chpts = c(200,400), c(0,1), sdNoise = 1, type = "gauss"), log(400))
 #'  OP_R(dataGenerator_1D(chpts = c(50,100), c(1,7), type = "exp"), log(100))
 #'  OP_R(dataGenerator_1D(chpts = c(50,100), c(3,10), type = "poisson"), 10*log(100))
 #'  OP_R(dataGenerator_1D(chpts = c(50,100), c(0.7,0.3), type = "geom"), 5*log(100))
@@ -46,7 +46,6 @@ OP_R <- function(data, penalty, type = "gauss")
 
   indexSet <- NULL
 
-
   #########
   ###
   ### update rule Dynamic Programming
@@ -54,16 +53,14 @@ OP_R <- function(data, penalty, type = "gauss")
   for(t in 1:n) # at t, transform Q_{t-1} into Q_{t}
   {
     indexSet <- c(indexSet, t) #add new test point
-
     min_temp <- Inf
-
     for(k in indexSet)
     {
-      eval <- min_cost(A, B, S, k, t+1, costQ[k] + penalty)
+      eval <- min_cost(A, B, S, k, t + 1, costQ[k] + penalty)
       if(eval < min_temp){min_temp <- eval; index <- k}
     }
     costQ[t+1] <- min_temp
-    cp[t+1] <- index-1
+    cp[t+1] <- index - 1
   }
 
   #########
@@ -75,7 +72,7 @@ OP_R <- function(data, penalty, type = "gauss")
 
   while(changepoints[1] > 0)
   {
-    pointval <- cp[shift(current)] #new last change
+    pointval <- cp[current + 1] #new last change
     changepoints <- c(pointval, changepoints) # update vector
     current <- pointval
   }
@@ -84,4 +81,21 @@ OP_R <- function(data, penalty, type = "gauss")
 
 
 
+
+#' OP_R_quadratics
+#'
+#' @description OP algorithm for bivariate time-series (with different possible links)
+#' @param data a data frame of data of dimension n x 2
+#' @param penalty penalty value (non-negative)
+#' @param type type of cost to use: \code{"meanVar"}, \code{"regression"}
+#' @return a list with the change-point elements (each last index of each segment) and a vector \code{costQ} saving the optimal cost at each time step
+#' @examples
+#'  OP_R_quadratics(dataGenerator_MV(c(50,100), c(0,1), c(0.5,0.6)), 4*log(100))
+#'  OP_R_quadratics(dataGenerator_Reg(c(40,90), c(2,-1),  c(-1,2), c(1,2)), log(100))
+OP_R_quadratics <- function(data, penalty, type = "gauss")
+{
+
+
+  return(NULL)
+}
 
