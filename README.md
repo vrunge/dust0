@@ -16,7 +16,6 @@ ___
 
 > [Pruning Capacity](#pruning)
 
-
 ___ 
 
 <a id="intro"></a>
@@ -40,33 +39,44 @@ ___
 ### Data Generators
 
 **dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`), a shared variance for all data (usually `sdNoise = 1`) and a type of probability distribution in `type`. We have the following choices for type:
-
+  
 - `type = "gauss"`
-
-- `type = "poisson"`
 
 - `type = "exp"`
 
+- `type = "poisson"`
+
+- `type = "geom"`
+
 - `type = "bern"`
 
-- ...
+- `type = "binom"`
+
+- `type = "negbin"`
+
 
 **dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
 
 **dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
 
+**dataGenerator_Reg** generates 2-dimensional data `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
 
-**dataGenerator_Reg** generates 2-dimensional data (x,y) following a simple linear regression link (y = Ax + B + noise) with A and B changing over time (after each change-point)
 
+
+### OP in R
+
+The base function `OP_R` is used to compute the change-point vector with the simplest dynamic programming algorithm with no pruning. This method is of quadratic time complexity. We propose 3 such functions:`OP_R_1D`, `OP_R_MultiD`, `OP_R_2Dquad`.
+
+`OP_R_1D <- function(data, penalty, type = "gauss")`
 
 
 ### Dual Functions
 
-`Dual_1D` returns the value of the dual at a point `mu` when comparing index `s1` with the constraint from index `s2`. with option `OP = TRUE` the optimal partitioning algorithm is used to have the true constants in the cost functions.
+`dual_1D` returns the value of the dual at a point `mu` when comparing index `s1` with the constraint from index `s2`. with option `OP = TRUE` the optimal partitioning algorithm is used to have the true constants in the cost functions.
 
-`dual_1D <- function(mu, x, s1, s2, t, type = "gauss", OP = FALSE, penalty = 2*length(x))`
+`dual_1D <- function(mu, data, s1, s2, t, type = "gauss", OP = FALSE, penalty = 2*length(data))`
 
-- `x` is raw data
+- `data` is raw data
 
 - If `OP` is `true`, we run the OP algorithm to have the optimal cost vector to use in cost functions. See the function `OP_R`.
 
@@ -75,24 +85,26 @@ ___
 - Depending on the `type`, different functions `A`, `B` and `mu_max` are used (see the code in file `functions_by_type.R`)
 
 
-### dust_R
+### dust_R 
 
-The function `dust_R` has the following parameters:
+We propose a few R functions computing the change-point location with dust method: `dust_R_1D`, `dust_R_MultiD`, `dust_R_2Dquad`.
 
-`dust_R <- function(data, penalty, type = "gauss")`
+The function `dust_R_1D` has the following parameters:
 
-and returns a list of two elements
+`dust_R_1D <- function(data, penalty, type = "gauss", pruningOpt = 1)`
 
-- the change-points found by the algo
+**... explain `pruningOpt` to change the sampling of the pruning method used**
 
-- the number of indices to consider in the minimization at each time step
+and returns a list of two elements:
 
-the function uses values obtained by `dual_1D` (with `OP = FALSE`) to discard indices with DuST rule. 
+- `changepoints`: the change-points found by the algo
 
+- `nb`: the number of indices to consider in the minimization at each time step
 
-**... ADD OPTIONS to change the sampling?**
+- `lastIndexSet`: the vecotr of indices saved by the algo in the dynamic programming algorithm at the last iteration
 
-**TO BE DONE**
+- `costQ`: the vector of optimal cost (of size `length(data)`)
+
 
 
 [Back to Top](#top)
