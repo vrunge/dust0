@@ -11,15 +11,18 @@
 #' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
 #' @param OP FALSE or TRUE, using the OP algorithm or not to get the costQ vector, otherwise all cost set to zero
 #' @param penalty penalty value (non-negative)
+#' @param pruningOpt pruning option for \code{dust_R_1D}
 #' @return Value on the dual function
 #' @examples
 #' data <- dataGenerator_1D(chpts = c(15,30), parameters = c(1,10), type = "gauss")
-#' dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 2, t = 10, type = "gauss")
+#' dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 1, t = 10, type = "gauss", OP = TRUE)
+#' dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 1, t = 10, type = "gauss")
 dual_1D <- function(mu, data, s1, s2, t,
                     type = "gauss",
-                    OP = FALSE,
-                    penalty = 2*length(data))
+                    OP = FALSE, penalty = 2*length(data), pruningOpt = 3)
 {
+  ##########  ##########  ##########  ##########  ##########
+
   if(!is.vector(data)){stop('data is not a vector or a matrix')}
   if(length(data) <= 1){stop('no data to segment')}
   if(penalty < 0){stop('penalty must be non negative')}
@@ -28,9 +31,10 @@ dual_1D <- function(mu, data, s1, s2, t,
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   ##########  ##########  ##########  ##########  ##########
-
   ###
   ### preprocessing
+  ###
+  ### S used with the shift operator
   ###
   n <- length(data)
   stat <- statistic(type = type)
@@ -45,19 +49,29 @@ dual_1D <- function(mu, data, s1, s2, t,
   ###
   ### mu-rescaling (to be between the right bounds, with respect to the type)
   ###
-  mu <- mu * mu_max(S, s1, s2, t, type)  #mu was between 0 and 1
+  MAX <- mu_max(S, shift(s1), shift(s2), shift(t), type)
+  mu <- mu * MAX  #mu was between 0 and 1
 
   if(OP == FALSE)
   {
-    res <- evalDual(mu, A, B, S, s1, s2, t, 0, 0)
+    cost <- rep(NA, n)
+    lastIndexSet <- NA
+    res <- evalDual(mu, A, B, S, shift(s1), shift(s2), shift(t), 0, 0)
   }
 
   if(OP == TRUE)
   {
-    OPres <- OP_R_1D(data, penalty = penalty, type = type)
+    OPres <- dust_R_1D(data, penalty = penalty, type = type, pruningOpt = pruningOpt)
     cost <- OPres$costQ
-    res <- evalDual(mu, A, B, S, s1, s2, t, cost[s1] + penalty, cost[s2] + penalty)
+    lastIndexSet <- OPres$lastIndexSet
+    res <- evalDual(mu, A, B, S,
+                    shift(s1), shift(s2), shift(t),
+                    cost[shift(s1)] + penalty, cost[shift(s2)] + penalty)
   }
 
-  return(res)
+  return(list(dualValues = res,
+              costQ = cost,
+              lastIndexSet = lastIndexSet,
+              pruningBound = cost[t] + penalty,
+              mu_max = MAX))
 }

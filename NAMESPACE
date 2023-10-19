@@ -5,3 +5,5 @@ importFrom(Rcpp, evalCpp)
 useDynLib(dust, .registration = TRUE)
 
 import("stats")
+
+ importFrom("graphics", "abline", "barplot")

@@ -12,7 +12,8 @@ dual_1D(
   t,
   type = "gauss",
   OP = FALSE,
-  penalty = 2 * length(data)
+  penalty = 2 * length(data),
+  pruningOpt = 3
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ dual_1D(
 \item{OP}{FALSE or TRUE, using the OP algorithm or not to get the costQ vector, otherwise all cost set to zero}
 
 \item{penalty}{penalty value (non-negative)}
+
+\item{pruningOpt}{pruning option for \code{dust_R_1D}}
 }
 \value{
 Value on the dual function
@@ -40,5 +43,6 @@ Computing the value of the dual at relative position mu (mu btw 0 and 1 is then 
 }
 \examples{
 data <- dataGenerator_1D(chpts = c(15,30), parameters = c(1,10), type = "gauss")
-dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 2, t = 10, type = "gauss")
+dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 1, t = 10, type = "gauss", OP = TRUE)
+dual_1D(mu =  1:99/100, data = data, s1 = 4, s2 = 1, t = 10, type = "gauss")
 }

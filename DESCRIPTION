@@ -9,7 +9,13 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.10)
-Suggests: devtools, testthat, rmarkdown, ggplot2, knitr
+Suggests: 
+    devtools,
+    testthat (>= 3.0.0),
+    rmarkdown,
+    ggplot2,
+    knitr
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 RoxygenNote: 7.2.3
+Config/testthat/edition: 3

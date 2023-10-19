@@ -37,8 +37,9 @@ dataGenerator_1D <- function(chpts = 100,
   ############
 
   if(!is.numeric(chpts)){stop('chpts values are not all numeric')}
-  if(is.unsorted(chpts)){stop('chpts should be an increasing vector of change-point positions (indices)')}
-  if(length(unique(chpts)) < length(chpts)){stop('chpts is not a strictly increasing sequence')}
+  if(!all(chpts > 0)){stop('chpts values are not all positives')}
+  if(is.unsorted(chpts, strictly = TRUE)){stop('chpts should be a strictly increasing vector of change-point positions (indices)')}
+
   if(!is.numeric(parameters)){stop('parameters values are not all numeric')}
   if(length(chpts) != length(parameters)){stop('chpts and parameters vectors are of different size')}
 
@@ -194,8 +195,9 @@ dataGenerator_MV <- function(chpts = 100,
   ### STOP ###
   ############
   if(!is.numeric(chpts)){stop('chpts values are not all numeric')}
-  if(is.unsorted(chpts)){stop('chpts should be an increasing vector of change-point positions (indices)')}
-  if(length(unique(chpts)) < length(chpts)){stop('chpts is not a strictly increasing sequence')}
+  if(!all(chpts > 0)){stop('chpts values are not all positives')}
+  if(is.unsorted(chpts, strictly = TRUE)){stop('chpts should be a strictly increasing vector of change-point positions (indices)')}
+
   if(!is.numeric(means)){stop('means values are not all numeric')}
   if(length(chpts) != length(means)){stop('chpts and means vectors are of different size')}
   if(length(chpts) != length(sds)){stop('chpts and sds vectors are of different size')}

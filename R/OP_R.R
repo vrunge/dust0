@@ -15,7 +15,7 @@
 #'  OP_R_1D(dataGenerator_1D(chpts = c(50,100), c(0.7, 0.3), nbTrials = 5, type = "binom"), 5*log(100))
 #'  OP_R_1D(dataGenerator_1D(chpts = c(50,100), c(0.4,0.7),
 #'          nbSuccess = 10, type = "negbin"), 50*log(100))
-OP_R_1D <- function(data, penalty, type = "gauss")
+OP_R_1D <- function(data, penalty = 2*log(length(data)), type = "gauss")
 {
   ##########  ##########  ##########  ##########  ##########
 

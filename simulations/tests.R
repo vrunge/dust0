@@ -78,13 +78,6 @@ res2$changepoints
 
 res$costQ == res2$costQ
 
-0  497  499  500  976  979  980  985  986  987  988  989  990  992  993  994  995  996  997  998  999 1000
-497  499  500  986  987  988  990  993  994  996  997  999 1000
-497  499  500  986  987  988  990  993  994  996  997  999 1000
-497  499  500  978  985  986  988  989  990  993  994  995  997  998  999 1000
-0  497  499  500  976  979  980  985  986  987  988  989  990  992  993  994  995  996  997  998  999 1000
-### pb with 0 if parameter small + 0 always present?
-
 #########################################################################################################
 
 
@@ -116,5 +109,42 @@ plot(data, type = 'l')
 diff(res$lastIndexSet[-1])
 res$lastIndexSet
 
+#### VERY BIG TEST
+
+n <- 10^5
+type <- "poisson"
+data <- dataGenerator_1D(chpts = n, parameter = 5, type = type)
+a <- Sys.time()
+res <- dust_R_1D(data, 4*log(n), type = type, pruningOpt = 2)
+b <- Sys.time()
+b-a
+res$changepoint
+res$lastIndexSet
+length(res$lastIndexSet)/n*100
+
+
+
+nb <- 10^4
+s1 <- 18
+s2 <- 15
+j <- 1
+bar <- rep(0,99)
+for(i in 1:nb)
+{
+    data <- dataGenerator_1D(chpts = 20, parameters = 0, type = "gauss")
+    res <- dual_1D(mu =  1:99/100, data = data, s1 = s1, s2 = s2, t = 20,
+                   type = "gauss", OP = TRUE, penalty = 1)
+    vertical <- which(res$dualValues > res$pruningBound)
+
+
+    if(!(s1 %in% res$lastIndexSet)){j<-j+1}
+    if(s1 %in% res$lastIndexSet)
+    {
+    u <- rep(1,99)
+    bar[vertical] <- bar[vertical] + u[vertical]
+    }
+}
+print(j)
+barplot(bar)
 
 

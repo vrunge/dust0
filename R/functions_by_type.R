@@ -39,7 +39,7 @@ B <- function(type)
   if(type == "exp"){B <- function(theta) -1/theta}
   if(type == "poisson"){B <- function(theta) log(theta)}
   if(type == "geom"){B <- function(theta) theta <- log((theta-1)/theta)}
-  if(type == "bern"){B <- function(theta){theta <- pmax(pmin(theta,1),0);log(theta/(1-theta))}}
+  if(type == "bern"){B <- function(theta){theta <- pmax(pmin(theta,1),0); log(theta/(1-theta))}}
   if(type == "binom"){B <- function(theta){theta <- pmax(pmin(theta,1),0); log(theta/(1-theta))}}
   if(type == "negbin"){B <- function(theta){theta <- pmax(theta,0); log(theta/(1+theta))}}
   return(B)

@@ -23,6 +23,11 @@
 #' dust_R_1D(data/10, 2*log(n), type = type, pruningOpt = 2)
 dust_R_1D <- function(data, penalty, type = "gauss", pruningOpt = 1)
 {
+  ## pruningOpt == 0:  nothing
+  ## pruningOpt == 1: dust
+  ## pruningOpt == 2: dust + PELT
+  ## pruningOpt == 3:  PELT
+
   ##########  ##########  ##########  ##########  ##########
 
   if(!is.vector(data)){stop('data is not a vector')}
@@ -85,15 +90,19 @@ dust_R_1D <- function(data, penalty, type = "gauss", pruningOpt = 1)
       for(i in 1:length(indexSet))
       {
         s1 <- indexSet[i]
-        if(i >= 2)  ### DUST
+
+        if((pruningOpt == 1) || (pruningOpt == 2))  ### PELT preselection  ### PELT preselection
         {
-            if(i == 2){s2 <- indexSet[1]}else{s2 <- sample(indexSet[1:(i-1)], 1)} # the index of the constraint (s2 < s1) and s1,s2 < t
-            mu <- runif(1) * mu_max(S, shift(s1), shift(s2), shift(t), type)# the mu value to test
-            val <- evalDual(mu, A, B, S, shift(s1), shift(s2), shift(t), costQ[shift(s1)] + penalty, costQ[shift(s2)] + penalty)
-            if(val > costQ[shift(t)] + penalty){PrunedIndexSet <- c(PrunedIndexSet, s1)}
+            if(i >= 2)  ### DUST
+            {
+                if(i == 2){s2 <- indexSet[1]}else{s2 <- sample(indexSet[1:(i-1)], 1)} # the index of the constraint (s2 < s1) and s1,s2 < t
+                mu <- runif(1) * mu_max(S, shift(s1), shift(s2), shift(t), type)# the mu value to test
+                val <- evalDual(mu, A, B, S, shift(s1), shift(s2), shift(t), costQ[shift(s1)] + penalty, costQ[shift(s2)] + penalty)
+                if(val > costQ[shift(t)] + penalty){PrunedIndexSet <- c(PrunedIndexSet, s1)}
+            }
         }
 
-        if(pruningOpt == 2)  ### PELT preselection  ### PELT preselection
+        if(pruningOpt >= 2)  ### PELT preselection  ### PELT preselection
         {
             val <- min_cost(A, B, S, shift(s1), shift(t), costQ[shift(s1)] + penalty)
             if(val > costQ[shift(t)] + penalty){PrunedIndexSet <- c(PrunedIndexSet, s1)}
