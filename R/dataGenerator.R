@@ -5,15 +5,15 @@
 
 #' dataGenerator_1D
 #'
-#' @description Generating univariate (uni-parametric) time series for multiple change-point detection
+#' @description Generating univariate time series for multiple change-point detection based on uni-parametric models of the exponential family
 #' @param chpts a vector of increasing change-point indices (the last value is data length)
 #' @param parameters vector of successive segment parameters (as many parameters as values in \code{chpts} vector)
-#' @param sdNoise standard deviation for the noise parameter (type \code{"gauss"})
-#' @param gamma vector of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
-#' @param nbTrials number of trials (type \code{"binom"})
-#' @param nbSuccess number of successes (type \code{"negbin"})
+#' @param sdNoise  (type \code{"gauss"}) standard deviation for the noise parameter
+#' @param gamma (type \code{"gauss"}) vector of numbers between 0 and 1 : the coefficient of the exponential decay. By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
+#' @param nbTrials (type \code{"binom"}) number of trials
+#' @param nbSuccess (type \code{"negbin"}) number of successes
 #' @param type the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
-#' @return a time series following the chosen model type and parameters
+#' @return a univariate time series following the chosen model type and parameters
 #' @examples
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(10,20), gamma = c(0.9,0.95), type = "gauss")
@@ -57,20 +57,21 @@ dataGenerator_1D <- function(chpts = 100,
     if(sdNoise < 0){stop('sdNoise cannot be negative')}
     if(!is.numeric(gamma)){stop('gamma values are not all numeric')}
     if(any(gamma > 1 | gamma <= 0)){stop('gamma is not between 0 and 1 (0 excluded)')}
+    if((length(gamma) != length(chpts)) && (length(gamma) != 1)){stop('vector gamma can be of length 1 or of the length of chpts')}
   }
 
   if(type == "binom")
   {
     if(length(nbTrials) > 1){stop('nbTrials should be length-1 vector')}
     if(!is.numeric(nbTrials)){stop('nbTrials value is not numeric')}
-    if((nbTrials%%1 != 0) || (nbTrials <= 0)){stop('nbTrials cannot be non positive')}
+    if((nbTrials%%1 != 0) || (nbTrials <= 0)){stop('nbTrials cannot be non-positive or non-integer')}
   }
 
   if(type == "negbin")
   {
     if(length(nbSuccess) > 1){stop('nbSuccess should be length-1 vector')}
     if(!is.numeric(nbSuccess)){stop('nbSuccess value is not numeric')}
-    if((nbSuccess%%1 != 0) || (nbSuccess <= 0)){stop('nbSuccess cannot be non positive')}
+    if((nbSuccess%%1 != 0) || (nbSuccess <= 0)){stop('nbSuccess cannot be non-positive or non-integer')}
   }
 
   #############################
@@ -80,12 +81,13 @@ dataGenerator_1D <- function(chpts = 100,
   if(type == "exp"){if(min(parameters) <= 0){stop('no negative mean allowed for Poisson model')}}
   if(type == "poisson"){if(min(parameters) <= 0){stop('no negative mean allowed for Poisson model')}}
 
-  if(type == "geom" || type == "bern" || type == "binom" || type == "negbin")
-    {if(any(parameters > 1) || any(parameters <= 0)){stop('parameters should be positive probabilities')}}
+  if(type == "bern" || type == "binom")
+    {if(any(parameters > 1) || any(parameters < 0)){stop('parameters should be probabilities between 0 and 1 (included)')}}
 
-  #############  ##########1##  #############
-  ############ data generation   ############
-  #############  #############  #############
+  if(type == "geom" || type == "negbin")
+  {if(any(parameters > 1) || any(parameters <= 0)){stop('parameters should be probabilities between 0 and 1 (0 excluded)')}}
+
+  ############  data generation   ############
 
   n <- chpts[length(chpts)]
   repetition <- c(chpts[1], diff(chpts))
@@ -105,12 +107,12 @@ dataGenerator_1D <- function(chpts = 100,
   {
     if(all(gamma < 1))
     {
+      if(length(gamma) == 1){gamma <- rep(gamma, length(chpts))} #if gamma = 1 value, repeat it for each segment
       decay <- NULL
       for(i in 1:length(repetition)){decay <- c(decay, cumprod(rep(gamma[i], repetition[i]))/gamma[i])}
       y <- rnorm(n, mean = mu*decay, sd = sdNoise)
     }
   }
-
   return(y)
 }
 
@@ -122,15 +124,15 @@ dataGenerator_1D <- function(chpts = 100,
 
 #' dataGenerator_MultiD
 #'
-#' @description Generating copies of univariate (uni-parametric) time series for multiple change-point detection in multivariate independent setting
+#' @description Generating copies of univariate time series for multiple change-point detection based on uni-parametric models of the exponential family
 #' @param chpts a vector of increasing change-point indices (the last value is data length)
-#' @param parameters dataframe of successive segment parameters (each column = parameters for one time-series)
-#' @param sdNoise standard deviation for the noise parameter (type \code{"gauss"})
-#' @param gamma vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
-#' @param nbTrials number of trials (type \code{"binom"}). If a vector, value at position i for i-th time series.
-#' @param nbSuccess number of successes (type  \code{"negbin"}). If a vector, value at position i for i-th time series.
+#' @param parameters dataframe of successive segment parameters (each column = parameters for one time-series) (as many rows as values in \code{chpts} vector)
+#' @param sdNoise (type \code{"gauss"}) standard deviation for the noise parameter. If a vector, value at position i for i-th time series.
+#' @param gamma (type \code{"gauss"}) vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay. By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
+#' @param nbTrials  (type \code{"binom"}) number of trials. If a vector, value at position i for i-th time series.
+#' @param nbSuccess (type \code{"negbin"}) number of successes. If a vector, value at position i for i-th time series.
 #' @param type the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
-#' @return a multivariate time series (independent) following the chosen model type and parameters
+#' @return a multivariate time series (copies of univariate time-series with the same model type) following the chosen model type and parameters
 #' @examples
 #' dataGenerator_MultiD(chpts = c(50,100),
 #'                      parameters = data.frame(ts1 = c(10,10), ts2 = c(5,20)),
@@ -155,16 +157,23 @@ dataGenerator_MultiD <- function(chpts = 100,
 {
   p <- ncol(parameters)
 
+  ##################################################
+  ### replicate parameters for multivariate case ###
+  ##################################################
+
+  if(length(sdNoise) == 1){sdNoise <- rep(sdNoise, p)}
   if(!is.data.frame(gamma)){gamma <- data.frame(matrix(gamma, nrow = length(gamma), ncol = p))}
   if(length(nbTrials) == 1){nbTrials <- rep(nbTrials, p)}
   if(length(nbSuccess) == 1){nbSuccess <- rep(nbSuccess, p)}
+
+  ############  data generation   ############
 
   res <- matrix(NA, nrow = p, ncol = chpts[length(chpts)])
   for(i in 1:p)
   {
     res[i,] <- dataGenerator_1D(chpts = chpts,
                                 parameters = parameters[,i],
-                                sdNoise = sdNoise,
+                                sdNoise = sdNoise[i],
                                 gamma = gamma[,i],
                                 nbTrials = nbTrials[i],
                                 nbSuccess = nbSuccess[i],
@@ -201,14 +210,16 @@ dataGenerator_MV <- function(chpts = 100,
   if(!is.numeric(means)){stop('means values are not all numeric')}
   if(length(chpts) != length(means)){stop('chpts and means vectors are of different size')}
   if(length(chpts) != length(sds)){stop('chpts and sds vectors are of different size')}
-  if(!all(sds >= 0)){stop('sds not all non-negative')}
+  if(min(sds) < 0){stop('sds not all non-negative')}
+
+
+  ############  data generation  ############
 
   n <- chpts[length(chpts)]
   repetition <- c(chpts[1], diff(chpts))
 
   mu <- rep(means, repetition)
   sds <- rep(sds, repetition)
-
   y <- rnorm(n, mean = mu, sd = sds)
   return(y)
 }
@@ -221,18 +232,18 @@ dataGenerator_MV <- function(chpts = 100,
 
 #' dataGenerator_Reg
 #'
-#' @description Generating data for changes in simple regression model and simple logistic
+#' @description Generating data for changes in simple regression model and simple logistic regression model
 #' @param chpts a vector of increasing change-point indices
 #' @param A vector of regression coefficients A in Ax+B simple regression model
 #' @param B vector of regression coefficients B in Ax+B simple regression model
-#' @param meansX vector of mean values for x values generated by a Gaussian model
-#' @param sdX vector of standard deviation values for x values generated by a Gaussian model
+#' @param meansX vector of mean values for x values generated by a Gaussian model (if one value, we copy the value to match chpts length)
+#' @param sdX vector of standard deviation values for x values generated by a Gaussian model  (if one value, we copy the value to match chpts length)
 #' @param sdNoise standard deviation of the Gaussian noise
 #' @param type \code{"simple"} for the simple regression, \code{"logistic"} for the logistic regression
-#' @return a dataframe with time series x and y for change-points in regression of type \code{y = Ax + B + noise} or\code{P(Y = 1) = 1/(1+exp(-(Ax+B+noise)))} . x and noise are generated by a random Gaussian model.
+#' @return a dataframe with time series x and y for change-points in regression of type \code{y = Ax + B + noise} or\code{P(Y = 1) = 1/(1+exp(-(Ax+B+noise)))}.  \code{x} and \code{noise} are generated by a random Gaussian model.
 #' @examples
 #' dataGenerator_Reg(chpts = c(40,90), A = c(2,-1),  B = c(-1,2), meansX = c(1,2), type = "simple")
-#' dataGenerator_Reg(chpts = c(50,100), A = c(-1,1),  B = c(1,-1), meansX = c(1,2), type = "logistic")
+#' dataGenerator_Reg(chpts = c(50,100), A = c(-1,1),  B = c(1,-1), type = "logistic")
 dataGenerator_Reg <- function(chpts = 100,
                               A = 2,
                               B = -1,
@@ -244,9 +255,10 @@ dataGenerator_Reg <- function(chpts = 100,
   ############
   ### STOP ###
   ############
-  if(!is.numeric(chpts)){stop('data values are not all numeric')}
-  if(is.unsorted(chpts)){stop('chpts should be an increasing vector of change-point positions (indices)')}
-  if(length(unique(chpts)) < length(chpts)){stop('chpts is not a strictly increasing sequence')}
+  if(!is.numeric(chpts)){stop('chpts values are not all numeric')}
+  if(!all(chpts > 0)){stop('chpts values are not all positives')}
+  if(is.unsorted(chpts, strictly = TRUE)){stop('chpts should be a strictly increasing vector of change-point positions (indices)')}
+
   if(length(chpts) != length(A)){stop('chpts and A vectors are of different size')}
   if(length(chpts) != length(B)){stop('chpts and B vectors are of different size')}
   if(min(sdX) < 0){stop('sdX cannot be negative')}
@@ -255,6 +267,8 @@ dataGenerator_Reg <- function(chpts = 100,
   if(length(sdX) == 1){sdX <- rep(sdX, length(chpts))}
   if(length(chpts) != length(meansX)){stop('chpts and meansX vectors are of different size')}
   if(length(chpts) != length(sdX)){stop('chpts and sdX vectors are of different size')}
+
+  ############  data generation  ############
 
   n <- chpts[length(chpts)]
   repetition <- c(chpts[1], diff(chpts))
@@ -279,6 +293,12 @@ dataGenerator_Reg <- function(chpts = 100,
   return(data.frame(x = x, y = y))
 }
 
+###################################################################################################
+### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
 
 
 ##################################################
@@ -287,29 +307,28 @@ dataGenerator_Reg <- function(chpts = 100,
 
 #' dataGenerator_AR1
 #'
-#' @description Generating univariate (uni-parametric) time series for multiple change-point detection
+#' @description Generating time series for multiple change-point detection with AR1 model
 #' @param chpts a vector of increasing change-point indices (the last value is data length)
-#' @param parameters vector of successive segment parameters (as many parameters as values in \code{chpts} vector)
+#' @param means vector of successive segment parameters (as many parameters as values in \code{chpts} vector)
 #' @param sdNoise standard deviation for the noise parameter (type \code{"gauss"})
 #' @param rho vector of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
 #' @return a time series following the AR(1) model type
 #' @examples
-#' dataGenerator_AR1(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, rho = c(0.9,0.7))
+#' dataGenerator_AR1(chpts = c(50,100), means = c(0,1), sdNoise = 0.2, rho = c(0.9,0.7))
 dataGenerator_AR1 <- function(chpts = 100,
-                              parameters = 0,
+                              means = 0,
                               sdNoise = 1,
                               rho = 0.7)
 {
   ############
   ### STOP ###
   ############
-
   if(!is.numeric(chpts)){stop('chpts values are not all numeric')}
-  if(is.unsorted(chpts)){stop('chpts should be an increasing vector of change-point positions (indices)')}
-  if(length(unique(chpts)) < length(chpts)){stop('chpts is not a strictly increasing sequence')}
+  if(!all(chpts > 0)){stop('chpts values are not all positives')}
+  if(is.unsorted(chpts, strictly = TRUE)){stop('chpts should be a strictly increasing vector of change-point positions (indices)')}
 
-    if(!is.numeric(parameters)){stop('parameters values are not all numeric')}
-  if(length(chpts) != length(parameters)){stop('chpts and parameters vectors are of different size')}
+  if(!is.numeric(means)){stop('means values are not all numeric')}
+  if(length(chpts) != length(means)){stop('chpts and means vectors are of different size')}
 
   if(!is.numeric(rho)){stop('rho values are not all numeric')}
   {if(any(rho > 1) || any(rho < 0)){stop('The vector rho should contain values between 0 and 1')}}
@@ -321,7 +340,7 @@ dataGenerator_AR1 <- function(chpts = 100,
 
   n <- chpts[length(chpts)]
   repetition <- c(chpts[1], diff(chpts))
-  mu <- rep(parameters, repetition)
+  mu <- rep(means, repetition)
 
   ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
   ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO

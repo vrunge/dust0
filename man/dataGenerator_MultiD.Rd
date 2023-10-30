@@ -17,23 +17,23 @@ dataGenerator_MultiD(
 \arguments{
 \item{chpts}{a vector of increasing change-point indices (the last value is data length)}
 
-\item{parameters}{dataframe of successive segment parameters (each column = parameters for one time-series)}
+\item{parameters}{dataframe of successive segment parameters (each column = parameters for one time-series) (as many rows as values in \code{chpts} vector)}
 
-\item{sdNoise}{standard deviation for the noise parameter (type \code{"gauss"})}
+\item{sdNoise}{(type \code{"gauss"}) standard deviation for the noise parameter. If a vector, value at position i for i-th time series.}
 
-\item{gamma}{vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
+\item{gamma}{(type \code{"gauss"}) vector or dataframe (each column = parameters for one time-series) of numbers between 0 and 1 : the coefficient of the exponential decay. By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
 
-\item{nbTrials}{number of trials (type \code{"binom"}). If a vector, value at position i for i-th time series.}
+\item{nbTrials}{(type \code{"binom"}) number of trials. If a vector, value at position i for i-th time series.}
 
-\item{nbSuccess}{number of successes (type  \code{"negbin"}). If a vector, value at position i for i-th time series.}
+\item{nbSuccess}{(type \code{"negbin"}) number of successes. If a vector, value at position i for i-th time series.}
 
 \item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
-a multivariate time series (independent) following the chosen model type and parameters
+a multivariate time series (copies of univariate time-series with the same model type) following the chosen model type and parameters
 }
 \description{
-Generating copies of univariate (uni-parametric) time series for multiple change-point detection in multivariate independent setting
+Generating copies of univariate time series for multiple change-point detection based on uni-parametric models of the exponential family
 }
 \examples{
 dataGenerator_MultiD(chpts = c(50,100),

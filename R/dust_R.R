@@ -23,10 +23,10 @@
 #' dust_R_1D(data/10, 2*log(n), type = type, pruningOpt = 2)
 dust_R_1D <- function(data, penalty, type = "gauss", pruningOpt = 1)
 {
-  ## pruningOpt == 0:  nothing
+  ## pruningOpt == 0: nothing
   ## pruningOpt == 1: dust
   ## pruningOpt == 2: dust + PELT
-  ## pruningOpt == 3:  PELT
+  ## pruningOpt == 3: PELT
 
   ##########  ##########  ##########  ##########  ##########
 

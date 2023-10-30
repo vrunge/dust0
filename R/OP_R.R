@@ -158,6 +158,14 @@ OP_R_MultiD <- function(data, penalty, type = "gauss")
 #'  OP_R_2Dquad(dataGenerator_Reg(c(40,90), c(2,-1),  c(-1,2), c(1,2)), log(100))
 OP_R_2Dquad <- function(data, penalty, type = "meanVar")
 {
+  if(type == "meanVar")
+  {
+
+  }
+  if(type == "regression")
+  {
+
+  }
 
 
   return(NULL)

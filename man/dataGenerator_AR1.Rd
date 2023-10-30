@@ -4,12 +4,12 @@
 \alias{dataGenerator_AR1}
 \title{dataGenerator_AR1}
 \usage{
-dataGenerator_AR1(chpts = 100, parameters = 0, sdNoise = 1, rho = 0.7)
+dataGenerator_AR1(chpts = 100, means = 0, sdNoise = 1, rho = 0.7)
 }
 \arguments{
 \item{chpts}{a vector of increasing change-point indices (the last value is data length)}
 
-\item{parameters}{vector of successive segment parameters (as many parameters as values in \code{chpts} vector)}
+\item{means}{vector of successive segment parameters (as many parameters as values in \code{chpts} vector)}
 
 \item{sdNoise}{standard deviation for the noise parameter (type \code{"gauss"})}
 
@@ -19,8 +19,8 @@ dataGenerator_AR1(chpts = 100, parameters = 0, sdNoise = 1, rho = 0.7)
 a time series following the AR(1) model type
 }
 \description{
-Generating univariate (uni-parametric) time series for multiple change-point detection
+Generating time series for multiple change-point detection with AR1 model
 }
 \examples{
-dataGenerator_AR1(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, rho = c(0.9,0.7))
+dataGenerator_AR1(chpts = c(50,100), means = c(0,1), sdNoise = 0.2, rho = c(0.9,0.7))
 }

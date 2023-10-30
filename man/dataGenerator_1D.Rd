@@ -19,21 +19,21 @@ dataGenerator_1D(
 
 \item{parameters}{vector of successive segment parameters (as many parameters as values in \code{chpts} vector)}
 
-\item{sdNoise}{standard deviation for the noise parameter (type \code{"gauss"})}
+\item{sdNoise}{(type \code{"gauss"}) standard deviation for the noise parameter}
 
-\item{gamma}{vector of numbers between 0 and 1 : the coefficient of the exponential decay (type \code{"gauss"}). By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
+\item{gamma}{(type \code{"gauss"}) vector of numbers between 0 and 1 : the coefficient of the exponential decay. By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.}
 
-\item{nbTrials}{number of trials (type \code{"binom"})}
+\item{nbTrials}{(type \code{"binom"}) number of trials}
 
-\item{nbSuccess}{number of successes (type \code{"negbin"})}
+\item{nbSuccess}{(type \code{"negbin"}) number of successes}
 
 \item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 }
 \value{
-a time series following the chosen model type and parameters
+a univariate time series following the chosen model type and parameters
 }
 \description{
-Generating univariate (uni-parametric) time series for multiple change-point detection
+Generating univariate time series for multiple change-point detection based on uni-parametric models of the exponential family
 }
 \examples{
 dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
