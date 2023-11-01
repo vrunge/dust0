@@ -1,9 +1,27 @@
 library(testthat)
 library(dust)
 
+
+### RETURNS ###
+
+test_that("return is a vector",
+          {expect_equal(is.vector(dataGenerator_1D()), TRUE)
+          })
+test_that("return is a matrix",
+          {expect_equal(is.matrix(dataGenerator_MultiD()), TRUE)
+          })
 test_that("returns is a vector",
-  {expect_equal(is.vector(dataGenerator_1D()), TRUE)
-  })
+          {expect_equal(is.vector(dataGenerator_MV()), TRUE)
+          })
+test_that("returns is a dataframe",
+          {expect_equal(is.data.frame(dataGenerator_Reg()), TRUE)
+          })
+test_that("returns is a vector",
+          {expect_equal(is.vector(dataGenerator_AR1()), TRUE)
+          })
+
+
+### ERRORS CHECK ###
 
 test_that("chpts non strictly increasing",
   {expect_error(dataGenerator_1D(chpts = c(10,20,20,30)))

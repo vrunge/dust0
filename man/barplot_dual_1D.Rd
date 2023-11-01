@@ -9,6 +9,7 @@ barplot_dual_1D(
   s1 = 18,
   s2 = 15,
   n = 20,
+  oneParam = 0,
   type = "gauss",
   penalty = 2 * log(n),
   pruningOpt = 3
@@ -23,6 +24,8 @@ barplot_dual_1D(
 
 \item{n}{data length}
 
+\item{oneParam}{value of the unique parameter of the unique segment}
+
 \item{type}{type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 
 \item{penalty}{penalty value (non-negative)}
@@ -30,7 +33,7 @@ barplot_dual_1D(
 \item{pruningOpt}{pruningOpt pruning option for \code{dust_R_1D}.}
 }
 \value{
-A barplot counting the number of time at each mu fixed, the dual value evaluated at mu exceeds the pruning threshold
+A barplot counting the number of time at each mu fixed, the dual value evaluated at mu exceeds the pruning threshold. The value returned by the function is the number of time s1 has not been pruned by s2. In case of pruning, we don't consider the assiciated simulation in the barplot.
 }
 \description{
 identifying the mu values for which we prune with nb repetitions of the simulation

@@ -12,96 +12,86 @@ statistic <- function(type)
   return(statistic)
 }
 
-
+##########################################################################################
 ###
 ### A
 ###
 
 A <- function(type)
 {
-  if(type == "gauss"){A <- function(theta) theta^2/2}
-  if(type == "exp"){A <- function(theta) -log(-theta)}
-  if(type == "poisson"){A <- function(theta) exp(theta)}
-  if(type == "geom"){A <- function(theta) -log(exp(-theta)-1)}
-  if(type == "bern"){A <- function(theta) log(1 + exp(theta))}
-  if(type == "binom"){A <- function(theta) log(1 + exp(theta))}
-  if(type == "negbin"){A <- function(theta) -log(1 - exp(theta))}
+  if(type == "gauss"){A <- function(nat_theta) nat_theta^2/2}
+  if(type == "exp"){A <- function(nat_theta){u <- pmin(nat_theta,0); -log(-u)}} #Inf in nat_theta = 0 (nat_theta <= 0)
+  if(type == "poisson"){A <- function(nat_theta) exp(nat_theta)}
+  if(type == "geom"){A <- function(nat_theta){u <- pmin(nat_theta,0); -log(exp(-u)-1)}} #Inf in nat_theta = 0 (nat_theta <= 0)
+  if(type == "bern"){A <- function(nat_theta) log(1 + exp(nat_theta))}
+  if(type == "binom"){A <- function(nat_theta) log(1 + exp(nat_theta))}
+  if(type == "negbin"){A <- function(nat_theta){u <- pmin(nat_theta,0); -log(1-exp(u))}} #Inf in nat_theta = 0 (nat_theta <= 0)
   return(A)
 }
 
+##########################################################################################
 ###
 ### B = (grad A)^(-1)
 ###
 
 B <- function(type)
 {
+  ###
+  ### here range theta = range of the data
+  ###
   if(type == "gauss"){B <- function(theta) theta}
-  if(type == "exp"){B <- function(theta) -1/theta}
-  if(type == "poisson"){B <- function(theta) log(theta)}
-  if(type == "geom"){B <- function(theta) theta <- log((theta-1)/theta)}
-  if(type == "bern"){B <- function(theta){theta <- pmax(pmin(theta,1),0); log(theta/(1-theta))}}
-  if(type == "binom"){B <- function(theta){theta <- pmax(pmin(theta,1),0); log(theta/(1-theta))}}
-  if(type == "negbin"){B <- function(theta){theta <- pmax(theta,0); log(theta/(1+theta))}}
+  if(type == "exp"){B <- function(theta){u <- pmax(theta,0); -1/u}} #-Inf in theta = 0 (theta >= 0)
+  if(type == "poisson"){B <- function(theta){u <- pmax(theta,0); log(u)}} #-Inf in theta = 0 (theta >= 0)
+  if(type == "geom"){B <- function(theta){u <- pmax(theta,1); theta <- log((u-1)/u)}} #-Inf in theta = 1 (theta >= 1)
+  if(type == "bern"){B <- function(theta){u <- pmax(pmin(theta,1),0); log(u/(1-u))}}
+                                        #-Inf in theta = 0, +Inf in theta = 1 (0 <= theta <= 1)
+  if(type == "binom"){B <- function(theta){u <- pmax(pmin(theta,1),0); log(u/(1-u))}}
+                                        #-Inf in theta = 0, +Inf in theta = 1 (0 <= theta <= 1)
+  if(type == "negbin"){B <- function(theta){u <- pmax(theta,0); log(u/(1+u))}} #-Inf in theta = 0 (theta >= 0)
   return(B)
 }
 
+##########################################################################################
 ###
-### mu_max (work for 1D and MultiD cases)
+### mu_max (work for 1D case only)
 ###
 
 mu_max <- function(S, s1, s2, t, type)
 {
-  if(is.vector(S)){St <- S[t]; Ss1 <- S[s1]; Ss2 <- S[s2]}
-  if(is.matrix(S)){St <- S[,t]; Ss1 <- S[,s1]; Ss2 <- S[,s2]}
+
+  if(s2 > s1){return(Inf)}
+
+  Mt <- (S[t] - S[s1])/(t - s1)
+  Ms <- (S[s1] - S[s2])/(s1 - s2)
 
   if(type == "gauss"){res <- 1}
-  if(type == "exp"){res <- min(1, (s1-s2)/(t-s1)*(St - Ss1) / (Ss1 - Ss2), na.rm = TRUE)}
-  if(type == "poisson"){res <- min(1, (s1-s2)/(t-s1)*(St - Ss1) / (Ss1 - Ss2), na.rm = TRUE)}
-  if(type == "geom"){res <- min(1, (s1-s2)/(t-s1)*(St - Ss1 - (t-s1)) / (Ss1 - Ss2 - (s1-s2)), na.rm = TRUE)}
-  if(type == "bern"){res <- (s1-s2)/(t-s1) * min((St - Ss1) / (Ss1 - Ss2),
-                                                 (St - Ss1 - (t-s1)) / (Ss1 - Ss2 - (s1-s2)), na.rm = TRUE)}
-  if(type == "binom"){res <- (s1-s2)/(t-s1) * min((St - Ss1) / (Ss1 - Ss2),
-                                                 (St - Ss1 - (t-s1)) / (Ss1 - Ss2 - (s1-s2)), na.rm = TRUE)}
-  if(type == "negbin"){res <- min(1, (s1-s2)/(t-s1)*(St - Ss1) / (Ss1 - Ss2), na.rm = TRUE)}
+  if(type == "exp"){res <-  min(1,  Mt / Ms, na.rm = TRUE)}
+  if(type == "poisson"){res <- min(1, Mt / Ms, na.rm = TRUE)}
+  if(type == "geom"){res <- min(1, (Mt - 1) / (Ms - 1), na.rm = TRUE)}
+  if(type == "bern"){res <-  min(Mt / Ms, (1 - Mt) / (1 - Ms), na.rm = TRUE)}
+  if(type == "binom"){res <-  min(Mt / Ms, (1 - Mt) / (1 - Ms), na.rm = TRUE)}
+  if(type == "negbin"){res <- min(1, Mt / Ms, na.rm = TRUE)}
 
-  res <- max(res,  0)* (t-s1)/(s1-s2) ### NORMALIZATION (because not done in D and R), max to avoid case res = -Inf (bern, binom)
+  res <- max(res,  0) ### to avoid negative result (if res = -10^-16 for some reason...)
 
   return(res)
 }
 
-##########################################################################################
-##########################################################################################
-##########################################################################################
 
+##########################################################################################
 ###
 ### EVAL FUNCTION
 ###
 
-eval <- function(x, A, data, const)
+eval <- function(nat_theta, A, data, const)
 {
- return(length(data)*A(x) - sum(data)*x + const)
+  ### data transformed by function statistic (often = identity)
+  ### nat_theta = natural parameter (not theta, but its transformation)
+  ###             it range : definition set of A
+  return(length(data)*A(nat_theta) - sum(data)*nat_theta + const)
 }
 
-
-###
-### EVAL DUAL FUNCTION
-###
-
-D <- function(mu, s1, s2, t){return((t - s1) - mu*(s1 - s2))}
-R <- function(mu, S, s1, s2, t){return(((S[t] - S[s1]) - mu * (S[s1] - S[s2])) / ((t - s1) - mu * (s1 - s2)))}
-
-
-evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
-{
-  Ratio <- R(mu, S, s1, s2, t)
-  Bratio <- B(Ratio)
-  Bratio2 <- Bratio
-  Bratio2[is.infinite(Bratio2)] <- 0
-  res1 <- D(mu, s1, s2, t) * (A(Bratio) - Ratio* Bratio2)
-  res2 <- const1 + mu*(const1 - const2)
-  return(res1 + res2)
-}
-
+##########################################################################################
 ###
 ### MINIMAL COST
 ###
@@ -109,13 +99,58 @@ evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
 min_cost <- function(A, B, S, s, t, const)
 {
   data <- S[t] - S[s]
-  point <- data/(t-s)
-  value1 <- B(point)
-  if(data == 0){value2 <- 0}else{value2 <- value1} #to avoid data*value = 0 * Inf
-  res <- (t-s)*A(value1) - data*value2 + const
-  if(is.nan(res)){res <- const} # cases geom, bern, binom with point = 1
+  my_mean <- data/(t-s)
+  argmin <- B(my_mean)
+
+  if(data == 0){argmin2 <- 0}else{argmin2 <- argmin} ### to solve data*value = 0 * Inf
+  res <- (t-s)*A(argmin) - data*argmin2 + const
+
+  ###
+  ### DANGER DANGER DANGER
+  ###
+  if(is.nan(res)){res <- const} # cases geom, bern, binom with my_mean = 1 (verified many times...)
+  ###
+  ### END OF DANGER DANGER DANGE
+  ###
+
   return(res)
 }
 
+
+##########################################################################################
+###
+### denominator and ratio
+###
+
+D <- function(mu){return(1 - mu)}
+R <- function(mu, S, s1, s2, t)
+{
+  Mt <- (S[t] - S[s1])/(t-s1)
+  Ms <- (S[s1] - S[s2])/(s1-s2)
+  if(Mt == Ms){return(Mt)}
+  return((Mt - mu * Ms) / (1 - mu))
+}
+
+
+##########################################################################################
+###
+### evalDual
+###
+###
+### DANGER : don't use it at mu_max value
+###
+
+evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
+{
+  Ratio <- R(mu, S, s1, s2, t)
+
+  Bratio2 <- B(Ratio)
+  Bratio2[is.infinite(Bratio2)] <- 0 ### to solve Ratio * B(Ratio) = 0 * Inf
+
+  res1 <- (t-s1)* D(mu) * (A(B(Ratio)) - Ratio* Bratio2)
+  res2 <- const1 + mu * ((t-s1)/(s1-s2)) * (const1 - const2)
+
+  return(res1 + res2)
+}
 
 

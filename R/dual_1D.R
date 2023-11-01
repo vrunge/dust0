@@ -9,9 +9,9 @@
 #' @param s2 index for q_t^s2
 #' @param t time step t
 #' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
-#' @param OP FALSE or TRUE, using the OP algorithm or not to get the costQ vector, otherwise all cost set to zero
+#' @param OP FALSE or TRUE, using the OP algorithm (\code{dust_R_1D}) or not to get the \code{costQ} vector, otherwise all cost set to zero
 #' @param penalty penalty value (non-negative)
-#' @param pruningOpt pruning option for \code{dust_R_1D}
+#' @param pruningOpt pruning option for \code{dust_R_1D}. See \code{pruningOpt} parameter in function \code{dust_R_1D}.
 #' @return Value on the dual function
 #' @examples
 #' data <- dataGenerator_1D(chpts = c(15,30), parameters = c(1,10), type = "gauss")
@@ -26,6 +26,10 @@ dual_1D <- function(mu, data, s1, s2, t,
   if(!is.vector(data)){stop('data is not a vector or a matrix')}
   if(length(data) <= 1){stop('no data to segment')}
   if(penalty < 0){stop('penalty must be non negative')}
+
+  if((s1%%1 != 0) || (s2%%1 != 0)  || (t%%1 != 0)){stop('s1 or s2 or t is not an integer')}
+  if((s1 >= t) || (s2 >= t) || (s1 <= 0) || (s2 <= 0)){stop('s1 and s2 must be smaller than t and positive')}
+  if(any(mu > 1 | mu < 0)){stop('one of the mu values is not between 0 and 1 (0 and 1 included)')}
 
   allowed.types <- c("gauss", "exp", "poisson", "geom", "bern", "binom", "negbin")
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
@@ -61,17 +65,20 @@ dual_1D <- function(mu, data, s1, s2, t,
 
   if(OP == TRUE)
   {
-    OPres <- dust_R_1D(data, penalty = penalty, type = type, pruningOpt = pruningOpt)
-    cost <- OPres$costQ
-    lastIndexSet <- OPres$lastIndexSet
+    algo_res <- dust_R_1D(data, penalty = penalty, type = type, pruningOpt = pruningOpt)
+    cost <- algo_res$costQ
+    lastIndexSet <- algo_res$lastIndexSet
     res <- evalDual(mu, A, B, S,
                     shift(s1), shift(s2), shift(t),
                     cost[shift(s1)] + penalty, cost[shift(s2)] + penalty)
   }
 
+  ###
+  ### all the info returned to the user
+  ###
   return(list(dualValues = res,
-              costQ = cost,
-              lastIndexSet = lastIndexSet,
-              pruningBound = cost[t] + penalty,
+              costQ = cost,                     ### NA if no algo run
+              lastIndexSet = lastIndexSet,      ### NA if no algo run
+              pruningBound = cost[t] + penalty, ### NA if no algo run
               mu_max = MAX))
 }

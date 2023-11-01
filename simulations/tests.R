@@ -109,6 +109,9 @@ plot(data, type = 'l')
 diff(res$lastIndexSet[-1])
 res$lastIndexSet
 
+
+
+
 #### VERY BIG TEST
 
 n <- 10^5
@@ -146,5 +149,38 @@ for(i in 1:nb)
 }
 print(j)
 barplot(bar)
+
+
+##############
+
+data <- dataGenerator_1D(chpts = 10, parameters = 0.5, type = "bern")
+data
+plot_dual_1D(mu = 1:99/100, data = data, s1 = 4, s2 = 1, type = "bern")
+
+
+
+data <- dataGenerator_1D(chpts = 10, parameters = 0.8, type = "geom")
+data
+plot_dual_1D(mu = 1:999/1000, data = data, s1 = 4, s2 = 3, type = "geom")
+
+
+
+
+data <- dataGenerator_1D(chpts = 10, parameters = 4, type = "poisson")
+data
+plot_dual_1D(mu = 1:999/1000, data = data, s1 = 4, s2 = 1, type = "poisson")
+
+
+data <- dataGenerator_1D(chpts = 10, parameters = 1, type = "exp")
+data
+plot_dual_1D(mu = 1:999/1000, data = data, s1 = 4, s2 = 3, type = "exp")
+
+
+data <- dataGenerator_1D(chpts = 10, parameters = 1, type = "gauss")
+data
+plot_dual_1D(mu = 1:99/100, data = data, s1 = 4, s2 = 3, type = "gauss")
+
+
+
 
 

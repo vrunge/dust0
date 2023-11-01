@@ -7,22 +7,49 @@
 #' @param s1 index for q_t^s1
 #' @param s2 index for q_t^s2
 #' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
+#' @param OP FALSE or TRUE, using the OP algorithm (\code{dust_R_1D}) or not to get the \code{costQ} vector, otherwise all cost set to zero
 #' @param penalty penalty value (non-negative)
-#' @return plot of the dual function
+#' @return plot of the dual function with threshold value in red and values leading to pruning in the dual between the green vertical lines (if there is any pruning)
 #' @examples
-#' data <- dataGenerator_1D(chpts = 10, parameters = 0, type = "gauss")
-#' plot_dual_1D(data = data, s1 = 4, s2 = 2, type = "gauss")
-plot_dual_1D <- function(mu =  1:99/100, data, s1, s2, type = "gauss", penalty = 2*length(data))
+#' data <- dataGenerator_1D(chpts = 5, parameters = 0, type = "gauss")
+#' plot_dual_1D(data = data, s1 = 2, s2 = 1, type = "gauss")
+#'
+#' data <- dataGenerator_1D(chpts = 10, parameters = 5, type = "poisson")
+#' plot_dual_1D(data = data, s1 = 2, s2 = 1, type = "poisson")
+#'
+#' data <- dataGenerator_1D(chpts = 10, parameters = 0.5, type = "geom")
+#' plot_dual_1D(data = data, s1 = 4, s2 = 1, type = "geom")
+plot_dual_1D <- function(mu =  (1:99)/100,
+                         data, s1, s2,
+                         type = "gauss",
+                         OP = FALSE,
+                         penalty = 2*length(data))
 {
-  res <- dual_1D(mu, data, s1, s2, length(data), type = "gauss", OP = TRUE, penalty = 2*length(data))
+  ###
+  ### we call dual_1D
+  ###
+  res <- dual_1D(mu, data, s1, s2, length(data), type = type, OP = OP, penalty = 2*length(data))
 
-  vertical <- which(res$dualValues > res$pruningBound)
-  limites <- vertical[c(1, length(vertical))]
+  ###
+  ### plot the dual values with information (in abline)
+  ###
+  if(OP == TRUE)
+  {
+    vertical <- which(res$dualValues > res$pruningBound)
+    limites <- vertical[c(1, length(vertical))]
 
-  plot(mu, res$dualValues, type = 'l', ylab = "dual values",
-       ylim = c(min(res$dualValues, res$pruningBound), max(res$dualValues, res$pruningBound)))
-  abline(h = res$pruningBound, col = 2, lwd = 2)
-  abline(v = mu[limites], col = 3, lwd = 2)
+    plot(mu, res$dualValues, type = 'l',
+         ylab = "dual values",
+         ylim = c(min(res$dualValues, res$pruningBound), max(res$dualValues, res$pruningBound)))
+
+    abline(h = res$pruningBound, col = 2, lwd = 2)
+    abline(v = mu[limites], col = 3, lwd = 2)
+  }
+
+  if(OP == FALSE)
+  {
+    plot(mu, res$dualValues, type = 'l', ylab = "dual values")
+  }
 }
 
 
@@ -37,22 +64,27 @@ plot_dual_1D <- function(mu =  1:99/100, data, s1, s2, type = "gauss", penalty =
 #' @param s1 index for q_t^s1
 #' @param s2 index for q_t^s2
 #' @param n data length
+#' @param oneParam value of the unique parameter of the unique segment
 #' @param type type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
 #' @param penalty penalty value (non-negative)
 #' @param pruningOpt pruningOpt pruning option for \code{dust_R_1D}.
-#' @return A barplot counting the number of time at each mu fixed, the dual value evaluated at mu exceeds the pruning threshold
+#' @return A barplot counting the number of time at each mu fixed, the dual value evaluated at mu exceeds the pruning threshold. The value returned by the function is the number of time s1 has not been pruned by s2. In case of pruning, we don't consider the assiciated simulation in the barplot.
 #' @examples
 #' barplot_dual_1D()
-barplot_dual_1D <- function(nb = 1000, s1 = 18, s2 = 15, n = 20,
-                            type = "gauss", penalty = 2*log(n), pruningOpt = 3)
+barplot_dual_1D <- function(nb = 1000, s1 = 18, s2 = 15,
+                            n = 20,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 3)
 {
-  bar <- rep(0,99)
-  u <- rep(1,99)
-  j <- 1
+  bar <- rep(0,99) #evaluation of 99 values for mu: 1:99/100
+  u <- rep(1,99) # for counting the pruning positions
+  j <- 0
 
   for(i in 1:nb)
   {
-    data <- dataGenerator_1D(chpts = n, parameters = 0, type = type)
+    data <- dataGenerator_1D(chpts = n, parameters = oneParam, type = type)
     res <- dual_1D(mu =  1:99/100, data = data, s1 = s1, s2 = s2, t = n,
                    type = type, OP = TRUE, penalty = penalty, pruningOpt = pruningOpt)
     vertical <- which(res$dualValues > res$pruningBound)

@@ -156,6 +156,7 @@ dataGenerator_MultiD <- function(chpts = 100,
                                  type = "gauss")
 {
   p <- ncol(parameters)
+  if(p == 1){stop('use the function dataGenerator_1D')}
 
   ##################################################
   ### replicate parameters for multivariate case ###
@@ -210,7 +211,7 @@ dataGenerator_MV <- function(chpts = 100,
   if(!is.numeric(means)){stop('means values are not all numeric')}
   if(length(chpts) != length(means)){stop('chpts and means vectors are of different size')}
   if(length(chpts) != length(sds)){stop('chpts and sds vectors are of different size')}
-  if(min(sds) < 0){stop('sds not all non-negative')}
+  if(min(sds) < 0){stop('sds values not all non-negative')}
 
 
   ############  data generation  ############

@@ -29,11 +29,11 @@ dual_1D(
 
 \item{type}{type of cost to use: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
 
-\item{OP}{FALSE or TRUE, using the OP algorithm or not to get the costQ vector, otherwise all cost set to zero}
+\item{OP}{FALSE or TRUE, using the OP algorithm (\code{dust_R_1D}) or not to get the \code{costQ} vector, otherwise all cost set to zero}
 
 \item{penalty}{penalty value (non-negative)}
 
-\item{pruningOpt}{pruning option for \code{dust_R_1D}}
+\item{pruningOpt}{pruning option for \code{dust_R_1D}. See \code{pruningOpt} parameter in function \code{dust_R_1D}.}
 }
 \value{
 Value on the dual function
