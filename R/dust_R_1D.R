@@ -129,20 +129,12 @@ dust_R_1D <- function(data,
     indexSet <- c(indexSet, t) #add new test point
   }
 
-  #########
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
 
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
+
+  return(list(changepoints = changepoints, nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
 }
 
 

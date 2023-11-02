@@ -73,20 +73,11 @@ OP_R_1D <- function(data,
     indexSet <- c(indexSet, t) #add new test point
   }
 
-  #########
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
 
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], costQ = costQ[-1]))
+  return(list(changepoints = changepoints, costQ = costQ[-1]))
 }
 
 
@@ -174,20 +165,11 @@ OP_R_MultiD <- function(data,
     indexSet <- c(indexSet, t) #add new test point
   }
 
-  #########
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
 
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], costQ = costQ[-1]))
+  return(list(changepoints = changepoints, costQ = costQ[-1]))
 }
 
 
@@ -318,19 +300,10 @@ OP_R_2param <- function(data,
     }
   }
   ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
 
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
-
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], costQ = costQ[-1]))
+  return(list(changepoints = changepoints, costQ = costQ[-1]))
 }
 

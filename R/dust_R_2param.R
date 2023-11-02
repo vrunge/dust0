@@ -143,21 +143,11 @@ dust_R_2param_meanVar <- function(data, penalty, pruningOpt)
     indexSet <- c(indexSet, t) #add new test point
   }
 
-  ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
-  #########
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
 
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
+  return(list(changepoints = changepoints, nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
 }
 
 
@@ -261,21 +251,11 @@ dust_R_2param_regression <- function(data, penalty, pruningOpt)
     indexSet <- c(indexSet, t) #add new test point
   }
 
-  ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
-  #########
-  ###
-  ### backtracking step
-  ###
-  changepoints <- n # vector of change-point to build
-  current <- n
+  ########## backtracking changepoint ##########
+  changepoints <- backtracking_changepoint(cp, n)
+  ########## backtracking changepoint ##########
 
-  while(changepoints[1] > 0)
-  {
-    pointval <- cp[current] #new last change
-    changepoints <- c(pointval, changepoints) # update vector
-    current <- pointval
-  }
-  return(list(changepoints = changepoints[-1], nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
+  return(list(changepoints = changepoints, nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
 }
 
 
