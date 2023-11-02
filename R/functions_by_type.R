@@ -154,3 +154,113 @@ evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
 }
 
 
+
+##########################################################################################
+##########################################################################################
+###
+### min_cost_meanVar
+###
+min_cost_meanVar <- function(S, S2, s, t, const)
+{
+  if(s + 1 == t){return(Inf)}
+  Ms <- (S[t] - S[s])/(t-s)
+  Ms2 <- (S2[t] - S2[s])/(t-s)
+  res <- ((t-s)/2)*(1 + log(Ms2 - Ms^2)) + const
+  return(res)
+}
+
+
+evalDual_meanVar <- function(mu, S, S2, s1, s2, t, const1, const2)
+{
+  l <- (t - s1) - mu * (s1 - s2)
+  D2 <- S2[t] - S2[s1] - mu * (S2[s1] - S2[s2])
+  D1 <- S[t] - S[s1] - mu *(S[s1] - S[s2])
+
+  res1 <- (1/2) * l * (1 + log((D2/l) - (D1/l)^2))
+  res2 <- const1 + mu * (const1 - const2)
+
+  return(res1 + res2)
+}
+
+
+##########################################################################################
+##########################################################################################
+###
+### min_cost_regression
+###
+min_cost_regression <- function(A, B, C, D, E, f, s, t, const)
+{
+  if(s + 1 == t){return(Inf)}
+  Adiff <- A[t] - A[s]
+  Bdiff <- B[t] - B[s]
+  Cdiff <- C[t] - C[s]
+  Ddiff <- D[t] - D[s]
+  Ediff <- E[t] - E[s]
+  Fdiff <- f[t] - f[s]
+
+  num <- 2 * Bdiff * Ddiff * Ediff - Adiff* Ediff^2 - Cdiff * Ddiff^2
+  denom <- Adiff * Cdiff - Bdiff^2
+  res <- num/denom + Fdiff + const
+  return(res)
+}
+
+
+evalDual_regression <- function(mu,A,B,C,D,E,f, s1, s2, t, const1, const2)
+{
+  Adiff <- A[t] - A[s1] - mu * (A[s1] - A[s2])
+  Bdiff <- B[t] - B[s1] - mu * (B[s1] - B[s2])
+  Cdiff <- C[t] - C[s1] - mu * (C[s1] - C[s2])
+  Ddiff <- D[t] - D[s1] - mu * (D[s1] - D[s2])
+  Ediff <- E[t] - E[s1] - mu * (E[s1] - E[s2])
+  Fdiff <- f[t] - f[s1] - mu * (f[s1] - f[s2])
+
+  num <- 2 * Bdiff * Ddiff * Ediff - Adiff* Ediff^2 - Cdiff * Ddiff^2
+  denom <- Adiff * Cdiff - Bdiff^2
+  res1 <- num/denom + Fdiff
+  res2 <- const1 + mu * (const1 - const2)
+  return(res1 + res2)
+}
+
+
+##########################################################################################
+###
+### mu_max case 2 param
+###
+
+mu_max_2param <- function(S, S2, s1, s2, t)
+{
+  if(s2 > s1){return(Inf)}
+
+  Mt <- (S[t] - S[s1])/(t - s1)
+  Mt2 <- (S2[t] - S2[s1])/(t - s1)
+  Ms <- (S[s1] - S[s2])/(s1 - s2)
+  Ms2 <- (S2[s1] - S2[s2])/(s1 - s2)
+
+  Va <- Mt2 - Mt^2
+  Vb <- Ms2 - Ms^2
+  eps <- (Mt - Ms)/sqrt(Va + Vb)
+  R <- (t-s1)/(s1-s2)
+  u <- (Va+Vb)*(1+eps^2)
+  delta <- u^2 - 4 * Va * Vb
+  res <- R*(u - sqrt(delta))/(2*Vb)
+  return(res)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

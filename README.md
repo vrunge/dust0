@@ -65,14 +65,19 @@ ___
 
 ### OP in R
 
-The base function `OP_R` is used to compute the change-point vector with the simplest dynamic programming algorithm with no pruning. This method is of quadratic time complexity. We propose 3 such functions:`OP_R_1D`, `OP_R_MultiD`, `OP_R_2Dquad`.
+The base function `OP_R` is used to compute the change-point vector with the simplest dynamic programming algorithm with no pruning. This method is of quadratic time complexity. We propose 3 such functions:`OP_R_1D`, `OP_R_MultiD`, `OP_R_2param`.
 
 `OP_R_1D <- function(data, penalty = 2*log(length(data)), type = "gauss")`
 
 Example: `OP_R_1D(dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss"))`
 
 
-*`OP_R_2Dquad` not yet ready*
+`OP_R_2param` is used for:
+
+- `type = "meanVar"` change in Gaussian data in mean and variance
+
+- `type = regression` change in simple regression model
+
 
 
 ### Dual Functions

@@ -207,7 +207,6 @@ abs(op1D$costQ - opMD2$costQ/p) < 10^(-13)
 
 
 
-
 p <- 20
 data <- dataGenerator_1D(100, parameter = 50, type = "poisson") # noise != 1 to generate changes at random positions
 pen <- 1
@@ -225,4 +224,40 @@ opMD2$nb
 
 abs((op1D$costQ - opMD$costQ/p)/op1D$costQ) < 10^(-13)
 abs((op1D$costQ - opMD2$costQ/p)/op1D$costQ) < 10^(-13)
+
+######################################################################
+
+data <- dataGenerator_MV(c(500,1000), c(0,0.1), c(0.5,0.3))
+res0 <- OP_R_2param(data, 4*log(100), type = "meanVar")
+res1 <- dust_R_2param(data, 4*log(100), type = "meanVar", pruningOpt = 1)
+res2 <- dust_R_2param(data, 4*log(100), type = "meanVar", pruningOpt = 3)
+
+res0$changepoints
+res0$changepoints == res1$changepoints
+res0$changepoints == res2$changepoints
+res0$costQ == res1$costQ
+res0$costQ == res2$costQ
+
+res1$nb
+plot(res2$nb)
+res2$nb/res1$nb*100
+
+
+##### REGRESSION
+n <- 10^3
+data <- dataGenerator_Reg(chpts = c(n/2,n), A = c(1,-1), B = c(2,0))
+
+res0 <- OP_R_2param(data, 4*log(n), type = "regression")
+res1 <- dust_R_2param(data, 4*log(n), type = "regression", pruningOpt = 1)
+res2 <- dust_R_2param(data, 4*log(n), type = "regression", pruningOpt = 3)
+res0$changepoints
+res0$changepoints == res1$changepoints
+res0$changepoints == res2$changepoints
+res0$costQ == res1$costQ
+res0$costQ == res2$costQ
+
+res1$nb
+res2$nb
+plot(res2$nb)
+res2$nb/res1$nb*100
 
