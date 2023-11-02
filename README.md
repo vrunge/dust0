@@ -59,8 +59,7 @@ ___
 
 **dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
 
-**dataGenerator_Reg** generates 2-dimensional data `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
-
+**dataGenerator_Reg** generates 2-dimensional data frame `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
 
 
 ### OP in R
@@ -105,6 +104,8 @@ and returns a list of two elements:
 
 - `costQ`: the vector of optimal cost (of size `length(data)`)
 
+
+### Plot functions 
 
 
 [Back to Top](#top)

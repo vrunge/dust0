@@ -25,11 +25,13 @@ library(dust) #our package
 ```
 
 
+In this document, we study the shape of the 1D dual function for different models in the exponential family.
+
 # data generators
 
-**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
+**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
   
-- `type = "gauss"` (parameter `sdNoise` and `gamma`)
+- `type = "gauss"` (additional parameters `sdNoise` and `gamma`)
 
 - `type = "exp"` 
 
@@ -39,9 +41,9 @@ library(dust) #our package
 
 - `type = "bern"` 
 
-- `type = "binom"` (parameter `nbTrials`)
+- `type = "binom"` (additional parameter `nbTrials`)
 
-- `type = "negbin"` (parameter `nbSuccess`)
+- `type = "negbin"` (additional parameter `nbSuccess`)
 
 ```{r}
 dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
@@ -51,11 +53,11 @@ dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, typ
 
 
 
-# Plots of the 1D dual
+# Limit value of the dual at `mu_max` for all models
 
 We first want to verify the behavior of the dual close to its boundary `mu_max`.
 
-We get `-Inf`:
+1) We know that we get `-Inf`:
 
 - when `type = "gauss"` 
 
@@ -63,7 +65,7 @@ We get `-Inf`:
 
 - when `type = "poisson"` and  `mu_max = 1`
 
-In all other cases, we get `0`
+2) In all other cases, we get `0` for the dual function removing the linear term (all optimal cost in `costQ` set to zero)
 
 We fix the index positions
 
@@ -73,7 +75,9 @@ s2 <- 3
 s1 <- 5
 ```
 
-## Case `-Inf` or `0`
+We use the function `plot_dual_1D` where the parameter `mu = (1:99)/100` by default and is always a re-scaled parameter between 0 and 1. With `OP = FALSE` we don't run any dynamic programming algorithm: the linear term using optimal cost `costQ` is removed.
+
+## Case `-Inf` or `0` for `gauss`, `exp` and `poisson`
 
 ### Gauss only `-Inf`
 
@@ -86,9 +90,9 @@ plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type)
 ```
 
 
-### exp `-Inf` or `0`
+### exp: `-Inf` or `0`
 
-CASE -Inf (`mu_max < 1`)
+**CASE -Inf (`mu_max < 1`)**
 
 ```{r, echo = FALSE}
 type <- "exp"
@@ -99,7 +103,7 @@ cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
 plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = FALSE)
 ```
 
-CASE 0 (`mu_max = 1`)
+**CASE 0 (`mu_max = 1`)**
 
 ```{r, echo = FALSE}
 type <- "exp"
@@ -110,9 +114,9 @@ cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
 plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = FALSE)
 ```
 
-### poisson `-Inf` or `0`
+### poisson: `-Inf` or `0`
 
-CASE -Inf (`mu_max = 1`)
+**CASE -Inf (`mu_max = 1`)**
 
 ```{r, echo = FALSE}
 type <- "poisson"
@@ -123,7 +127,7 @@ cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
 plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = FALSE)
 ```
 
-CASE 0 (`mu_max < 1`)
+**CASE 0 (`mu_max < 1`)**
 
 ```{r, echo = FALSE}
 type <- "poisson"
@@ -136,7 +140,7 @@ plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = F
 
 
 
-## All cases `0`
+## All cases `0` for `geom`, `bern`, `binom` and `negbin`
 
 
 ### geom 
@@ -186,39 +190,172 @@ plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = F
 
 
 
-# Pruning positions
+# The 1D dual and its pruning interval
 
+We use the function `plot_dual_1D` with `OP = TRUE` to plot the true dual function seen by the dynamic programming algorithm. 
+
+What we called the "pruning interval" is the interval of values between the vertical green lines for which the dual function takes a value higher than the pruning threshold, so that the index considered `s1` is pruned by `s2` at time `n`. 
+
+
+## Example with gauss model
+
+```{r, echo = FALSE}
+n <- 100
+s2 <- 3
+s1 <- 50
+type <- "gauss"
+set.seed(1)
+data <- dataGenerator_1D(chpts = n, parameters = 1, type = type)
+S <- c(0, cumsum(data))
+cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
+plot_dual_1D(mu = 1:99/100, data = data, s1 = s1, s2 = s2, type = type, OP = TRUE)
+```
+
+## Example with poisson model
 
 ```{r, echo = FALSE}
 type <- "poisson"
-set.seed(12)
+set.seed(1)
 data <- dataGenerator_1D(chpts = n, parameters = 1, type = type)
 S <- c(0, cumsum(data))
 cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
 plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, OP = TRUE)
 ```
 
+
+## Example with binom model
+
+```{r, echo = FALSE}
+n <- 15
+s2 <- 3
+s1 <- 8
+type <- "binom"
+set.seed(3)
+data <- dataGenerator_1D(chpts = n, parameters = 0.5, nbTrials = 10, type = type)
+data <- data/10 #rescaling
+S <- c(0, cumsum(data))
+cat("mu max = ", mu_max(S, shift(s1), shift(s2), shift(n), type))
+plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type, 
+             OP = TRUE, penalty = 5*log(6))
+```
+
+# Study of the pruning intervals
+
+Using function `barplot_dual_1D` we can repeat the generation of the pruning interval `nb` and count the number of time each value mu is in this interval.
+
+We add the values in the bar plot only if at the final time step `n`, the index `s1` has not been removed by the algorithm (the pruning option is given by option `pruningOpt`).
+
+We test different models, different indices, different penalty and pruning options.
+
+## Gauss tests
+
+
 ```{r}
+s1 <- 2
+s2 <- 1
+n <- 10
 barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 0,
                             type = "gauss",
                             penalty = 2*log(n),
-                            pruningOpt = 3)
+                            pruningOpt = 0)
+```
+
+```{r}
+s1 <- 2
+s2 <- 1
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
 ```
 
 
+
+```{r}
+s1 <- 5
+s2 <- 4
+n <- 10
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+
+```{r}
+s1 <- 5
+s2 <- 4
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+
+
+
+
+```{r}
+s1 <- 40
+s2 <- 20
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+
+```{r}
+s1 <- 98
+s2 <- 20
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+Removing when PELT pruned
+
+```{r}
+s1 <- 50
+s2 <- 1
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 1)
+```
+
+
+
+## Other tests
 
 ```{r}
 barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 5,
                             type = "exp",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 4*log(n),
+                            pruningOpt = 0)
 ```
-
-
 
 
 ```{r}
@@ -226,8 +363,8 @@ barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 5,
                             type = "poisson",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 10*log(n),
+                            pruningOpt = 0)
 ```
 
 
@@ -238,9 +375,23 @@ barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 0.2,
                             type = "geom",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 5*log(n),
+                            pruningOpt = 0)
 ```
+
+
+
+# Conclusions
+
+We need to adapt the threshold penalty for non-Gaussian models.
+
+Pruning with dual seems more efficient for small mu parameter values that for values close to the right boundary `mu_max`...
+
+We need a more theoretical approach to say interesting things... What's is happening with large data for the dual? Can we do better than a uniform random mu estimation?...
+
+
+
+
 
 
 

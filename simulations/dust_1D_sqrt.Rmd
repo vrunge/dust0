@@ -1,0 +1,237 @@
+---
+title: "Pruning Capacity of dust 1D in sqrt"
+subtitle: "Examples in exponential family"
+author: "Vincent Runge"
+date: "01/11/2023"
+output:
+  html_document:
+    keep_md: true
+    css: styles.css
+    toc: true
+    toc_float: true
+    highlight: tango
+    number_sections: true
+---
+
+
+```{r setup, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r, message=FALSE}
+library(dust) #our package
+```
+
+**We demonstrate using simulations that the number of non-pruned elements is of order `sqrt(n)` for `n` data points when using the dust method with uniform sampling.**
+
+This result is true for all the model considered and all possible penalty values.
+
+It remains to prove it formally...
+
+# Testing with 100 data points with Gauss model
+
+We test the `dust_R_1D` function with different pruning options and different data models.
+
+```{r}
+data <- dataGenerator_1D(chpts = 100, parameters = 0, sdNoise = 1, type = "gauss")
+
+(res0 <- dust_R_1D(data, type = "gauss", penalty = 2*log(100), pruningOpt = 0)) #no pruning
+(res1 <- dust_R_1D(data, type = "gauss", penalty = 2*log(100), pruningOpt = 1)) #PELT
+(res2 <- dust_R_1D(data, type = "gauss", penalty = 2*log(100), pruningOpt = 2)) #dust
+(res3 <- dust_R_1D(data, type = "gauss", penalty = 2*log(100), pruningOpt = 3)) #dust + PELT
+```
+
+
+
+```{r}
+all(res0$costQ == res1$costQ)
+all(res0$costQ == res2$costQ)
+all(res0$costQ == res3$costQ)
+
+sum(res0$nb)
+sum(res1$nb)
+sum(res2$nb)
+sum(res3$nb)
+```
+
+
+Percent of indices left with PELT in comparison with no pruning
+
+```{r}
+cat(sum(res1$nb)/sum(res0$nb)*100, "%")
+```
+
+
+Percent of indices left with DUST and DUST+PELT in comparison with PELT 
+
+```{r}
+cat(sum(res2$nb)/sum(res1$nb)*100, "%")
+cat(sum(res3$nb)/sum(res1$nb)*100, "%")
+```
+
+
+# Pruning capacity
+
+
+## Gauss
+
+```{r gauss 1}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0, sdNoise = 1, type = "gauss")
+res3 <- dust_R_1D(data, type = "gauss", penalty = 2*log(n), pruningOpt = 3) #dust + PELT
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+```
+
+
+Regression analysis
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+regIndices <- function(indices, remove = 10000)
+{
+  n <- length(indices)
+  x <- log(1:n)
+  y <- log(cumsum(indices))
+  x <- x[-(1:remove)]
+  y <- y[-(1:remove)]
+dat <- data.frame(x = x, y = y)
+model <- lm(y ~ x, data = dat)
+su <- summary(model)
+print(su$coefficients)
+ggplot(dat, aes(x, y)) +
+    geom_point() +
+    stat_smooth(method = lm)
+}
+```
+
+
+
+```{r}
+regIndices(res3$nb)
+```
+
+
+
+```{r gauss 2}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0, sdNoise = 1, type = "gauss")
+res3 <- dust_R_1D(data, type = "gauss", penalty = 2*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r gauss 3}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0, sdNoise = 1, type = "gauss")
+res3 <- dust_R_1D(data, type = "gauss", penalty = 4*log(n), pruningOpt = 3) #dust + PELT
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+```{r gauss 4}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0, sdNoise = 1, type = "gauss")
+res3 <- dust_R_1D(data, type = "gauss", penalty = 10*log(n), pruningOpt = 3) #dust + PELT
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r gauss 5}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0, sdNoise = 1, type = "gauss")
+res3 <- dust_R_1D(data, type = "gauss", penalty = 0.1*log(n), pruningOpt = 3) #dust + PELT
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+## Binomial
+
+
+```{r binom 1}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0.5, type = "binom")
+data <- data/10
+res3 <- dust_R_1D(data, type = "binom", penalty = 5*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r binom 2}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0.5, type = "binom")
+data <- data/10
+res3 <- dust_R_1D(data, type = "binom", penalty = 20*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r binom 3}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 0.5, type = "binom")
+data <- data/10
+res3 <- dust_R_1D(data, type = "binom", penalty = 0.1*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+
+
+## Poisson
+
+
+```{r poisson 1}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 10, type = "poisson")
+res3 <- dust_R_1D(data, type = "poisson", penalty = 10*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r poisson 2}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 10, type = "poisson")
+res3 <- dust_R_1D(data, type = "poisson", penalty = 30*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+```{r poisson 3}
+n <- 2*10^4
+data <- dataGenerator_1D(chpts = n, parameters = 10, type = "poisson")
+res3 <- dust_R_1D(data, type = "poisson", penalty = 1*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+# Conclusions
+
+The smaller the penalty, the more we prune. The slope is often around 1.5. Sometimes more?
+
+
+Last test with `10^5` data points.
+
+```{r last one}
+n <- 10^5
+data <- dataGenerator_1D(chpts = n, parameters = 0.5, type = "binom")
+data <- data/10
+res3 <- dust_R_1D(data, type = "binom", penalty = 1*log(n), pruningOpt = 2) #dust
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb)
+```
+
+
+
+
+

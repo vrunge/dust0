@@ -23,11 +23,13 @@ library(dust) #our package
 ```
 
 
+In this document, we study the shape of the 1D dual function for different models in the exponential family.
+
 # data generators
 
-**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
+**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
   
-- `type = "gauss"` (parameter `sdNoise` and `gamma`)
+- `type = "gauss"` (additional parameters `sdNoise` and `gamma`)
 
 - `type = "exp"` 
 
@@ -37,9 +39,9 @@ library(dust) #our package
 
 - `type = "bern"` 
 
-- `type = "binom"` (parameter `nbTrials`)
+- `type = "binom"` (additional parameter `nbTrials`)
 
-- `type = "negbin"` (parameter `nbSuccess`)
+- `type = "negbin"` (additional parameter `nbSuccess`)
 
 
 ```r
@@ -47,23 +49,26 @@ dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "
 ```
 
 ```
-##   [1] -0.06410710 -0.23031990 -0.27792825  0.18009586 -0.37921312 -0.08441478
-##   [7]  0.07540971  0.08111925 -0.17615882  0.39764937 -0.01110760  0.09576275
-##  [13]  0.33644493 -0.05261114  0.16033408  0.16162269  0.26136823  0.19439766
-##  [19]  0.05676300  0.09424982  0.16320309  0.37695169  0.16938620 -0.10031042
-##  [25]  0.09879668  0.13272741 -0.22281749  0.09677404  0.30240284 -0.03191999
-##  [31] -0.05242678 -0.16996254  0.17228063 -0.37277724  0.09844037  0.01803956
-##  [37] -0.07353612 -0.05358080  0.04536403 -0.11792338 -0.22748998  0.38364729
-##  [43]  0.28975798 -0.01936117  0.06406256  0.28825368  0.04579118  0.16839238
-##  [49] -0.11699843 -0.42857849  1.30638170  0.86301397  1.01558297  0.68760571
-##  [55]  1.36166976  1.12802026  1.41579991  1.02436916  1.20238994  1.21180775
-##  [61]  1.43257033  0.52107916  1.02533315  1.02311208  1.12310562  1.13500875
-##  [67]  1.15171825  0.97373471  0.89216780  1.03730797  1.01562903  1.41259460
-##  [73]  1.31858958  0.94917698  1.09276248  0.81867041  0.79585022  1.10612339
-##  [79]  0.95508890  0.70910116  0.73918417  0.99640370  1.27153044  1.32600638
-##  [85]  1.16211335  0.67774093  0.84378964  0.72864589  0.88429612  1.51881673
-##  [91]  0.96652528  1.23140913  0.93648832  1.09183753  1.03611608  0.96699344
-##  [97]  1.19087478  1.30866457  1.43345320  1.07760730
+##   [1]  0.375670671  0.147891879 -0.046354838  0.150090589  0.284532925
+##   [6] -0.100216812  0.290748802 -0.093759971  0.304516911  0.026134403
+##  [11]  0.147760158  0.122047781  0.149485321  0.034828153  0.034309886
+##  [16] -0.204456195 -0.708605645  0.142643964 -0.006656119  0.178810877
+##  [21]  0.167101343 -0.146960755  0.135581184  0.019031561  0.240873728
+##  [26]  0.207286903 -0.194544477 -0.083477229  0.400799705  0.087889456
+##  [31] -0.012254752  0.391810052 -0.011859973  0.113549940 -0.085477379
+##  [36]  0.167841402  0.312327375  0.001475551 -0.076774671 -0.519221903
+##  [41] -0.050603566 -0.020887553 -0.073102428 -0.174416796  0.072591897
+##  [46] -0.019110919  0.595048215  0.040054892  0.116788438 -0.096296178
+##  [51]  0.938059415  1.104557673  0.868391652  1.030526478  0.962425275
+##  [56]  1.038254666  1.205430661  1.178536656  0.732584471  1.265576013
+##  [61]  1.135201805  1.167372754  1.052499788  0.548231577  0.761389781
+##  [66]  1.041784089  0.969186212  0.969894471  1.374600190  1.138395603
+##  [71]  0.660231435  0.877442247  0.898636891  1.286322652  1.077288393
+##  [76]  0.765756588  1.230531898  1.216531496  1.058666055  0.831740269
+##  [81]  1.383310465  1.164417940  0.727168799  1.016680121  1.152615118
+##  [86]  0.976697707  0.893916621  1.336667618  0.924327418  0.669480676
+##  [91]  0.826435848  0.761853716  0.865322885  0.852069528  0.883935247
+##  [96]  0.938464246  0.958556310  1.291840949  0.952284639  1.059810317
 ```
 
 ```r
@@ -71,9 +76,9 @@ dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.2), type = "bern")
 ```
 
 ```
-##   [1] 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 0 1 0 0 1 1 1 0 1 0 1 0 0 1 0 0 1
-##  [38] 1 1 0 0 1 1 1 0 1 0 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
-##  [75] 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0
+##   [1] 1 1 1 1 1 1 0 1 1 0 1 1 1 1 0 0 1 0 1 1 1 0 0 1 1 1 1 0 1 0 1 1 1 0 1 1 0
+##  [38] 1 0 1 1 1 1 1 1 1 0 1 1 1 0 1 0 0 0 0 1 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 1 0
+##  [75] 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0
 ```
 
 ```r
@@ -81,19 +86,19 @@ dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, typ
 ```
 
 ```
-##   [1] 12  8 31 26 22  8 18 22  9 11 17 15 16 14 15 24  8  6 11 17 16 14 16  7 17
-##  [26] 26  9  7 20 12 15 13 14  5 24 17 12 10 22  5 11  9 16 13  5 11 13 10 20 12
-##  [51]  3  5  2  5  1  4  5  6 11  4  3  5  5  4  1  7  2  3  5  1  2  2  5  3  0
-##  [76]  4  4 12  3  7  1  6  3  4  6  4  8  4  3  5  9  6  8  5  4  5  5  3  4  4
+##   [1] 20 24 15 14 13 18 22  9 20 32 21 18 26 19 13 13  8 23 19 15 13 14 15 12 21
+##  [26] 13 17 12  6 11 14 30 19 12 13 16 12  8 23 18  4 15 24 26 14 13 10 16 12 14
+##  [51]  4  4  4  0  6  7  8  3  5  5  2  6  4  1  9  9  5  7  6  6  3  5  7  4 10
+##  [76]  3  5  2  4  2  2  8  6  5  5  3  4  1  6  2  7  6  3  5  6  5  2  5  1  3
 ```
 
 
 
-# Plots of the 1D dual
+# Limit value of the dual at `mu_max` for all models
 
 We first want to verify the behavior of the dual close to its boundary `mu_max`.
 
-We get `-Inf`:
+1) We know that we get `-Inf`:
 
 - when `type = "gauss"` 
 
@@ -101,7 +106,7 @@ We get `-Inf`:
 
 - when `type = "poisson"` and  `mu_max = 1`
 
-In all other cases, we get `0`
+2) In all other cases, we get `0` for the dual function removing the linear term (all optimal cost in `costQ` set to zero)
 
 We fix the index positions
 
@@ -112,7 +117,9 @@ s2 <- 3
 s1 <- 5
 ```
 
-## Case `-Inf` or `0`
+We use the function `plot_dual_1D` where the parameter `mu = (1:99)/100` by default and is always a re-scaled parameter between 0 and 1. With `OP = FALSE` we don't run any dynamic programming algorithm: the linear term using optimal cost `costQ` is removed.
+
+## Case `-Inf` or `0` for `gauss`, `exp` and `poisson`
 
 ### Gauss only `-Inf`
 
@@ -135,9 +142,9 @@ plot_dual_1D(mu = 1:999/1000, data = data, s1 = s1, s2 = s2, type = type)
 ![](Shape_1D_dual_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
-### exp `-Inf` or `0`
+### exp: `-Inf` or `0`
 
-CASE -Inf (`mu_max < 1`)
+**CASE -Inf (`mu_max < 1`)**
 
 
 ```
@@ -146,7 +153,7 @@ CASE -Inf (`mu_max < 1`)
 
 ![](Shape_1D_dual_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
-CASE 0 (`mu_max = 1`)
+**CASE 0 (`mu_max = 1`)**
 
 
 ```
@@ -155,9 +162,9 @@ CASE 0 (`mu_max = 1`)
 
 ![](Shape_1D_dual_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
-### poisson `-Inf` or `0`
+### poisson: `-Inf` or `0`
 
-CASE -Inf (`mu_max = 1`)
+**CASE -Inf (`mu_max = 1`)**
 
 
 ```
@@ -166,7 +173,7 @@ CASE -Inf (`mu_max = 1`)
 
 ![](Shape_1D_dual_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
-CASE 0 (`mu_max < 1`)
+**CASE 0 (`mu_max < 1`)**
 
 
 ```
@@ -177,7 +184,7 @@ CASE 0 (`mu_max < 1`)
 
 
 
-## All cases `0`
+## All cases `0` for `geom`, `bern`, `binom` and `negbin`
 
 
 ### geom 
@@ -221,8 +228,14 @@ CASE 0 (`mu_max < 1`)
 
 
 
-# Pruning positions
+# The 1D dual and its pruning interval
 
+We use the function `plot_dual_1D` with `OP = TRUE` to plot the true dual function seen by the dynamic programming algorithm. 
+
+What we called the "pruning interval" is the interval of values between the vertical green lines for which the dual function takes a value higher than the pruning threshold, so that the index considered `s1` is pruned by `s2` at time `n`. 
+
+
+## Example with gauss model
 
 
 ```
@@ -231,23 +244,182 @@ CASE 0 (`mu_max < 1`)
 
 ![](Shape_1D_dual_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
+## Example with poisson model
+
+
+```
+## mu max =  0.8496154
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+
+## Example with binom model
+
+
+```
+## mu max =  0.7881773
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+# Study of the pruning intervals
+
+Using function `barplot_dual_1D` we can repeat the generation of the pruning interval `nb` and count the number of time each value mu is in this interval.
+
+We add the values in the bar plot only if at the final time step `n`, the index `s1` has not been removed by the algorithm (the pruning option is given by option `pruningOpt`).
+
+We test different models, different indices, different penalty and pruning options.
+
+## Gauss tests
+
+
 
 ```r
+s1 <- 2
+s2 <- 1
+n <- 10
 barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 0,
                             type = "gauss",
                             penalty = 2*log(n),
-                            pruningOpt = 3)
+                            pruningOpt = 0)
 ```
 
-![](Shape_1D_dual_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ```
-## [1] 3
+## [1] 0
 ```
 
 
+```r
+s1 <- 2
+s2 <- 1
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
+```
+## [1] 0
+```
+
+
+
+
+```r
+s1 <- 5
+s2 <- 4
+n <- 10
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
+```
+## [1] 0
+```
+
+
+
+```r
+s1 <- 5
+s2 <- 4
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+```
+## [1] 0
+```
+
+
+
+
+
+
+```r
+s1 <- 40
+s2 <- 20
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+
+```
+## [1] 0
+```
+
+
+
+```r
+s1 <- 98
+s2 <- 20
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 0)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+```
+## [1] 0
+```
+
+Removing when PELT pruned
+
+
+```r
+s1 <- 50
+s2 <- 1
+n <- 100
+barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
+                            n = n,
+                            oneParam = 0,
+                            type = "gauss",
+                            penalty = 2*log(n),
+                            pruningOpt = 1)
+```
+
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+```
+## [1] 4
+```
+
+
+
+## Other tests
 
 
 ```r
@@ -255,17 +427,15 @@ barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 5,
                             type = "exp",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 4*log(n),
+                            pruningOpt = 0)
 ```
 
-![](Shape_1D_dual_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 ```
-## [1] 13
+## [1] 0
 ```
-
-
 
 
 
@@ -274,14 +444,14 @@ barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 5,
                             type = "poisson",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 10*log(n),
+                            pruningOpt = 0)
 ```
 
-![](Shape_1D_dual_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 ```
-## [1] 31
+## [1] 0
 ```
 
 
@@ -293,15 +463,29 @@ barplot_dual_1D(nb = 1000, s1 = s1, s2 = s2,
                             n = n,
                             oneParam = 0.2,
                             type = "geom",
-                            penalty = 2*log(n),
-                            pruningOpt = 3)
+                            penalty = 5*log(n),
+                            pruningOpt = 0)
 ```
 
-![](Shape_1D_dual_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](Shape_1D_dual_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
 
 ```
-## [1] 4
+## [1] 0
 ```
+
+
+
+# Conclusions
+
+We need to adapt the threshold penalty for non-Gaussian models.
+
+Pruning with dual seems more efficient for small mu parameter values that for values close to the right boundary `mu_max`...
+
+We need a more theoretical approach to say interesting things... What's is happening with large data for the dual? Can we do better than a uniform random mu estimation?...
+
+
+
+
 
 
 
