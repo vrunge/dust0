@@ -182,5 +182,47 @@ plot_dual_1D(mu = 1:99/100, data = data, s1 = 4, s2 = 3, type = "gauss")
 
 
 
+#####################################################################################
+#####################################################################################
+#####################################################################################
 
+
+p <- 2
+data <- dataGenerator_1D(100, sdNoise = 2) # noise != 1 to generate changes at random positions
+pen <- 2*log(100)
+op1D <- OP_R_1D(data = data, penalty = pen, type = "gauss")
+dataM <- matrix(data, p, 100, byrow = T)
+opMD <- OP_R_MultiD(data = dataM, penalty = p*pen, type = "gauss")
+
+opMD2 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+
+
+op1D$changepoints
+opMD$changepoints
+opMD2$changepoints
+opMD2$nb
+
+abs(op1D$costQ - opMD$costQ/p) < 10^(-13)
+abs(op1D$costQ - opMD2$costQ/p) < 10^(-13)
+
+
+
+
+p <- 20
+data <- dataGenerator_1D(100, parameter = 50, type = "poisson") # noise != 1 to generate changes at random positions
+pen <- 1
+op1D <- OP_R_1D(data = data, penalty = pen, type = "poisson")
+
+dataM <- matrix(data, p, 100, byrow = T)
+opMD <- OP_R_MultiD(data = dataM, penalty = p*pen, type = "poisson")
+opMD2 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "poisson", pruningOpt = 2)
+
+
+op1D$changepoints
+opMD$changepoints
+opMD2$changepoints
+opMD2$nb
+
+abs((op1D$costQ - opMD$costQ/p)/op1D$costQ) < 10^(-13)
+abs((op1D$costQ - opMD2$costQ/p)/op1D$costQ) < 10^(-13)
 

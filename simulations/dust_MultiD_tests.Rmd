@@ -23,3 +23,51 @@ rm(list = ls())
 library(dust) #our package
 ```
 
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+regIndices <- function(indices, remove = 10000)
+{
+  n <- length(indices)
+  x <- log(1:n)
+  y <- log(cumsum(indices))
+  x <- x[-(1:remove)]
+  y <- y[-(1:remove)]
+dat <- data.frame(x = x, y = y)
+model <- lm(y ~ x, data = dat)
+su <- summary(model)
+print(su$coefficients)
+ggplot(dat, aes(x, y)) +
+    geom_point() +
+    stat_smooth(method = lm)
+}
+```
+
+# Pruning capacity
+
+
+## Gauss
+
+```{r gauss 1}
+n <- 10^4
+pen <- 2*log(n)
+p <- 2
+dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+res3 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb, remove = 5000)
+```
+
+```{r gauss 2}
+n <- 10^4
+pen <- 2*log(n)
+p <- 5
+dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+res3 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+
+cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
+regIndices(res3$nb, remove = 5000)
+```
+
