@@ -14,8 +14,8 @@ Suggests:
     testthat (>= 3.0.0),
     rmarkdown,
     ggplot2,
-    knitr
+    knitr,
 VignetteBuilder: knitr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.1
 Config/testthat/edition: 3
