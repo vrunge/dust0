@@ -26,7 +26,25 @@ The `dust` package contains methods for detecting multiple change-points within 
 
 The proposed algorithm is a pruned dynamic programming algorithm optimizing a penalized likelihood **using a new pruning rule**, different from PELT or FPOP. We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est.
 
-Indeed, indices for potential last change-point are discarded by considering some constrained optimization problems. For each potential last change-point index, evaluating its associated dual function at a random testing point enables a fast and efficient test.
+Indeed, indices for potential last change-point are discarded by considering some constrained optimization problems. For each potential last change-point index, evaluating its associated dual function at a random (or deterministic) testing point enables a fast and efficient test.
+
+
+### Install the Rcpp package
+
+**REQUIREMENTS:**
+- R >= 3.4
+- devtools : `install.packages('devtools')`
+
+The package can then be installed from the github repo with the following command:
+    
+    devtools::install_github("vrunge/dust")
+
+and imported with:
+
+    library(dust)
+
+
+
 
 [Back to Top](#top)
 
