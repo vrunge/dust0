@@ -51,13 +51,13 @@ and imported with:
 
 
 
-### A first example
+### A simple example
 
 We generate some 1D time series from the Gaussian model and one change in the middle of the sequence.
 
 `data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
 
-We segment data using the dust 1D method coded in Rcpp.
+We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"`. See next section.
 
 `dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
 
@@ -69,7 +69,7 @@ ___
 
 <a id="Models"></a>
 
-## Models and data generator
+## Models and data generators
 
 ### Costs derived from the exponential family
 
