@@ -11,18 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// PELT
-std::vector<double> PELT(NumericVector data, double penalty);
-RcppExport SEXP _dust_PELT(SEXP dataSEXP, SEXP penaltySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
-    rcpp_result_gen = Rcpp::wrap(PELT(data, penalty));
-    return rcpp_result_gen;
-END_RCPP
-}
 // colPow
 arma::colvec colPow(arma::colvec& inputCol, int power);
 RcppExport SEXP _dust_colPow(SEXP inputColSEXP, SEXP powerSEXP) {
@@ -135,30 +123,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// dust_gauss
-bool dust_gauss(int j, int k);
-RcppExport SEXP _dust_dust_gauss(SEXP jSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(dust_gauss(j, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dust
-NumericVector dust(NumericVector data, double penalty);
-RcppExport SEXP _dust_dust(SEXP dataSEXP, SEXP penaltySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
-    rcpp_result_gen = Rcpp::wrap(dust(data, penalty));
-    return rcpp_result_gen;
-END_RCPP
-}
 // dust1D
 List dust1D(NumericVector data, double penalty);
 RcppExport SEXP _dust_dust1D(SEXP dataSEXP, SEXP penaltySEXP) {
@@ -214,7 +178,6 @@ RcppExport SEXP _rcpp_module_boot_RandomListModule();
 RcppExport SEXP _rcpp_module_boot_MCHandlerModule();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dust_PELT", (DL_FUNC) &_dust_PELT, 2},
     {"_dust_colPow", (DL_FUNC) &_dust_colPow, 2},
     {"_dust_test", (DL_FUNC) &_dust_test, 5},
     {"_dust_test1D", (DL_FUNC) &_dust_test1D, 6},
@@ -223,8 +186,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dust_modelCost", (DL_FUNC) &_dust_modelCost, 3},
     {"_dust_modelCostMV", (DL_FUNC) &_dust_modelCostMV, 3},
     {"_dust_madEstimator", (DL_FUNC) &_dust_madEstimator, 1},
-    {"_dust_dust_gauss", (DL_FUNC) &_dust_dust_gauss, 2},
-    {"_dust_dust", (DL_FUNC) &_dust_dust, 2},
     {"_dust_dust1D", (DL_FUNC) &_dust_dust1D, 2},
     {"_dust_dust1DRand", (DL_FUNC) &_dust_dust1DRand, 3},
     {"_dust_dust1DRandConstraint", (DL_FUNC) &_dust_dust1DRandConstraint, 3},

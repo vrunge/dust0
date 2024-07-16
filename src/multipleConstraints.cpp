@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include "multipleConstraints.h"
-#include "logging.h"
 #include <forward_list>
 #include <vector>
 
@@ -13,7 +12,7 @@ using namespace Rcpp;
 // the elements following the current position of the forwardlist iterator created
 // by MCHandler::reset_prune() and incremented by MCHandler::next_prune()
 // This class was tailored to be used in the DUST algorithm
-// 
+//
 // Parameters:
 
 

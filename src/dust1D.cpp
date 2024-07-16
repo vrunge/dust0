@@ -114,9 +114,7 @@ List dust1D(NumericVector data,
     // END (DUST loop)
 
     // Prune the last index (analoguous with a null (mu* = 0) duality simple test)
-    if (lastCost > optimalCost) {
-      validIndices.erase_after(before);
-    }
+    if (lastCost > optimalCost){validIndices.erase_after(before);}
 
     // update the available indices
     validIndices.push_front(t);

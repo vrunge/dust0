@@ -8,19 +8,25 @@
 
 ___ 
 
-> [Introduction](#intro)
+> [Quick start](#start)
 
-> [Functions in R code](#Rcode)
+> [Models and data generators](#Models)
 
-> [DuST Algorithms](#dust)
+> [dust 1D Algorithms](#dust1D)
+
+> [dust 2D Algorithms](#dust2D)
+
+> [dust multiD Algorithms](#dustmD)
 
 > [Pruning Capacity](#pruning)
 
 ___ 
 
-<a id="intro"></a>
+<a id="start"></a>
 
-## Introduction
+## Quick start
+
+### Introduction
 
 The `dust` package contains methods for detecting multiple change-points within time-series based on the optimal partitioning algorithm with pruning. A few models from the exponential family are considered (Gauss, Poisson, Exponential...).
 
@@ -45,16 +51,29 @@ and imported with:
 
 
 
+### A first example
+
+We generate some 1D time series from the Gaussian model and one change in the middle of the sequence.
+
+`data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
+
+We segment data using the dust 1D method coded in Rcpp.
+
+`dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
+
+
 
 [Back to Top](#top)
 
 ___ 
 
-<a id="Rcode"></a>
+<a id="Models"></a>
 
-## Functions in R code
+## Models and data generator
 
-### Data Generators
+### Costs derived from the exponential family
+
+### Data Generators in 1D
 
 **dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
   
@@ -72,13 +91,52 @@ ___
 
 - `type = "negbin"` (additional parameter `nbSuccess`)
 
-
-
-**dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+### Data Generators in 2D
 
 **dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
 
 **dataGenerator_Reg** generates 2-dimensional data frame `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
+
+### Data Generators in multiD
+
+**dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+
+___ 
+
+<a id="dust1D"></a>
+
+## dust 1D Algorithms
+
+
+[Back to Top](#top)
+
+___ 
+
+<a id="dust2D"></a>
+
+## dust 2D Algorithms
+
+
+[Back to Top](#top)
+
+___ 
+
+<a id="dustmD"></a>
+
+## dust multiD Algorithms
+
+
+[Back to Top](#top)
+
+
+
+___ 
+
+
+<a id="pruning"></a>
+
+## Pruning Capacity
+
 
 
 ### OP in R
@@ -173,25 +231,7 @@ We add the values in the bar plot only if at the final time step `n`, the index 
                             `penalty = 2*log(n),`
                             `pruningOpt = 3)`
                             
-                        
-[Back to Top](#top)
 
-___ 
-
-<a id="dust"></a>
-
-## DuST Algorithms
-
-
-
-[Back to Top](#top)
-
-
-<a id="pruning"></a>
-
-___ 
-
-## Pruning Capacity
 
 
 [Back to Top](#top)

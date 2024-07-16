@@ -4,10 +4,10 @@
 \alias{sdDiff}
 \title{sdDiff}
 \usage{
-sdDiff(x, method = "HALL")
+sdDiff(y, method = "HALL")
 }
 \arguments{
-\item{x}{Univariate time series}
+\item{y}{Univariate time series}
 
 \item{method}{Three available methods: \code{"HALL"}, \code{"MAD"} and \code{"SD"}}
 }

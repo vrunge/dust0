@@ -39,7 +39,7 @@ data_normalization <- function(y, type = "gauss")
 #'   \item \code{MAD} : the Median Absolute Deviation estimator computed on \code{diff(x)/sqrt(2)} with x the vector of data-points
 #'   \item \code{SD} : the standard deviation estimator (function sd) computed on \code{diff(x)/sqrt(2)} with x the vector of data-points
 #' }
-#' @param x Univariate time series
+#' @param y Univariate time series
 #' @param method Three available methods: \code{"HALL"}, \code{"MAD"} and \code{"SD"}
 #' @return a value equal to the estimated standard deviation
 #' @examples
@@ -47,12 +47,12 @@ data_normalization <- function(y, type = "gauss")
 #' sdDiff(data, method = "HALL")
 #' sdDiff(data, method = "MAD")
 #' sdDiff(data, method = "SD")
-sdDiff <- function(x, method = "HALL")
+sdDiff <- function(y, method = "HALL")
 {
-  if(is.numeric(x) == FALSE || length(x) < 5){stop('x is not a numeric vector or length < 5 (the HALL method cannot be used)')}
+  if(is.numeric(y) == FALSE || length(y) < 5){stop('x is not a numeric vector or length < 5 (the HALL method cannot be used)')}
   if(method == "HALL")
   {
-    n <- length(x)
+    n <- length(y)
     wei <- c(0.1942, 0.2809, 0.3832, -0.8582)
     mat <- wei %*% t(x)
     mat[2, -n] <- mat[2, -1]
@@ -62,11 +62,11 @@ sdDiff <- function(x, method = "HALL")
   }
   if(method == "MAD")
   {
-    return(mad(diff(x)/sqrt(2)))
+    return(mad(diff(y)/sqrt(2)))
   }
   if(method == "SD")
   {
-    return(sd(diff(x)/sqrt(2)))
+    return(sd(diff(y)/sqrt(2)))
   }
   return(NULL)
 }
