@@ -61,6 +61,12 @@ We segment data using the dust 1D method coded in Rcpp. We give data, the penalt
 
 `dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
 
+The result is a list whose elements are:
+
+- `chpts `A vector of change points (the index ending each of the segments)
+
+- `cost` The global cost of the segmentation: the sum of each of the segment cost.
+
 
 
 [Back to Top](#top)
