@@ -20,8 +20,8 @@ The estimation is efficient for time-series with constant standard deviation and
 Three estimators are available:
 \itemize{
   \item \code{HALL} : the so-called HALL-estimator of order 3. For more details see: \emph{(1990) Asymptotically optimal difference-based estimation of variance in nonparametric regression. Authors: Hall, Peter and Kay, JW and Titterinton, DM. Biometrika, pages 521--528}
-  \item \code{MAD} : the Median Absolute Deviation estimator computed on \code{diff(x)/sqrt(2)} with x the vector of data-points
-  \item \code{SD} : the standard deviation estimator (function sd) computed on \code{diff(x)/sqrt(2)} with x the vector of data-points
+  \item \code{MAD} : the Median Absolute Deviation estimator computed on \code{diff(y)/sqrt(2)} with y the vector of data-points
+  \item \code{SD} : the standard deviation estimator (function sd) computed on \code{diff(y)/sqrt(2)} with y the vector of data-points
 }
 }
 \examples{
