@@ -1,9 +1,9 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
 #ifndef HANDLER1D_H
 #define HANDLER1D_H
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include "A___Skeleton1D.h"
 
 using namespace Rcpp;

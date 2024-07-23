@@ -1,6 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 
 // --- // Algorithm file // --- //
 #include "A1__Algorithm1D.h"
@@ -78,7 +78,7 @@ Skeleton1D *newModule1D(const std::string& model, const std::string& method, dou
 
 RCPP_MODULE(DUSTMODULE1D)
 {
-  class_<Skeleton1D>("Skeleton1D")
+  Rcpp::class_<Skeleton1D>("Skeleton1D")
 
     .constructor()
 

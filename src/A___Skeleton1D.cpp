@@ -1,6 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include "A___Skeleton1D.h"
 #include "preProcessing.h"
 
@@ -36,7 +36,7 @@ void Skeleton1D::fit(NumericVector inData, Nullable<double> inPenalty)
 {
   data = inData;
   n = data.size();
-  
+
   if (inPenalty.isNull()) {
     penalty = 2 * pow(madEstimator(data), 2) * log(n);
   }
@@ -44,14 +44,14 @@ void Skeleton1D::fit(NumericVector inData, Nullable<double> inPenalty)
   {
     penalty = as<double>(inPenalty);
   }
-  
+
   changepointsForward = IntegerVector(n + 1, 0);
   valuesCumsum = NumericVector(n + 1, 0.);
   costRecord = NumericVector(n + 1, -penalty);
   changepoints = std::forward_list<int>{n};
-  
+
   init_handler();
-  
+
   validIndices->add(0);
   validIndices->add(1);
 }
@@ -64,26 +64,26 @@ void Skeleton1D::compute()
   // ... storing it allows pruning of the first available index
   int optimalChangepoint; // stores the optimal last changepoint for the current OP step
   double optimalCost; // stores the cost for the model with optimal last changepoint for the current OP step
-  
-  
+
+
   // Initialize pruning step values and vectors
   int i;
   double testValue; // the value to be checked vs. the test threshold = optimalCost
-  
-  
+
+
   // First OP step (t = 1)
   valuesCumsum[1] = data[0];
   costRecord[1] = modelCost(1, 0);
   changepointsForward[1] = 0;
-  
-  
+
+
   // Main loop
   for (int t = 2; t <= n; t++)
   {
     // update valuesCumsum
     valuesCumsum[t] =
       valuesCumsum[t - 1] + data[t - 1];
-    
+
     // OP step
     validIndices->reset();
     optimalCost = std::numeric_limits<double>::infinity();
@@ -100,12 +100,12 @@ void Skeleton1D::compute()
     }
     while(validIndices->check());
     // END (OP step)
-    
+
     // OP update
     optimalCost += penalty;
     costRecord[t] = optimalCost;
     changepointsForward[t] = optimalChangepoint;
-    
+
     // DUST step
     validIndices->reset_prune();
 
@@ -133,7 +133,7 @@ void Skeleton1D::compute()
     if (lastCost > optimalCost) {
       validIndices->prune_current();
     }
-    
+
     // update the available indices
     validIndices->add(t);
   }
@@ -152,7 +152,7 @@ void Skeleton1D::backtrack_changepoints()
 List Skeleton1D::get_partition()
 {
   backtrack_changepoints();
-  
+
   return List::create(
     _["changepoints"] = this->changepoints,
     _["lastIndexSet"] = this->validIndices->get_list(),

@@ -1,9 +1,9 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
 #ifndef ALGORITHM1D_H
 #define ALGORITHM1D_H
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 
 #include "A___Skeleton1D.h"
 #include "A11_IndicesHandler1D.h"

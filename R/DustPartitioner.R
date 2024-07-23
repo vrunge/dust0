@@ -1,5 +1,10 @@
 
 
+
+
+Rcpp::loadModule("DUSTMODULE1D", TRUE)
+
+
 ################################################
 #############    DUST Paritioner   #############
 ################################################
@@ -20,8 +25,8 @@ dust.partitioner = function(
     , alpha = 1e-9
 )
 {
-  #loadModule("Skeleton1D", TRUE)
-  partitioner = Rcpp::new(Skeleton1D, model, method, alpha)
+  #Rcpp::loadModule("DUSTMODULE1D", TRUE)
+  partitioner = methods::new(Skeleton1D, model, method, alpha)
   assign("fit", function(data, penalty = NULL) partitioner$fit_raw(data, penalty), envir = partitioner)
   assign("quick", function(data, penalty = NULL) partitioner$quick_raw(data, penalty), envir = partitioner)
   return(partitioner)

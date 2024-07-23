@@ -1,6 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include "B___IndicesModule.h"
 
 using namespace Rcpp;
@@ -64,7 +64,7 @@ void I_Random::reset_prune()
   current = list.begin();
   before = list.before_begin();
   pointersCurrent = pointers.rbegin();
-  
+
   nbC = nb;
   new_constraint();
 }
@@ -95,7 +95,7 @@ void I_Random::new_constraint()
 {
   nbC--;
   constraint = pointers[floor(nbC * (*u))];
-  
+
   ++u;
   if (u == randomU.end())
   {

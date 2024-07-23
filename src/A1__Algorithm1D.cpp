@@ -1,6 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include "A1__Algorithm1D.h"
 
 using namespace Rcpp;

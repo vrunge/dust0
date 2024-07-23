@@ -1,6 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(Rcpp)]]
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include "A12_Test1D.h"
 
 using namespace Rcpp;
