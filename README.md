@@ -30,12 +30,17 @@ ___
 
 > [Hidden Functions and Parameters (Package Development)](#hidden)
 
-___
-
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="start"></a>
 
 ## Quick start
+
+___ 
+
+
 
 ### Introduction
 
@@ -82,14 +87,17 @@ The result is a list whose elements are:
 
 [Back to Top](#top)
 
+
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>
 
-
 <a id="Models"></a>
 
 ## Models and data generators
+
+___ 
+
 
 ### Costs derived from the exponential family
 
@@ -139,39 +147,58 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MultiD`).
 
 
-___ 
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="rcpp"></a>
 
 ## Rcpp Structure
 
+___ 
+
+
+
 
 [Back to Top](#top)
 
-___ 
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="dust1D"></a>
 
 ## dust 1D (and multiD) Algorithms
 
+___ 
+
 
 [Back to Top](#top)
 
-___ 
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="dust2D"></a>
 
 ## dust 2D Algorithms
 
 
-[Back to Top](#top)
-
 ___ 
 
+
+[Back to Top](#top)
+
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="pruning"></a>
 
 ## Pruning Capacity
+
+
+___ 
 
 
 ### OP in R
@@ -267,11 +294,16 @@ We add the values in the bar plot only if at the final time step `n`, the index 
                             `pruningOpt = 3)`
                             
 
-___ 
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
 
 <a id="hidden"></a>
 
 ## Hidden Functions and Parameters (Package Development)
+
+___ 
+
 
 
 [Back to Top](#top)
