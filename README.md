@@ -33,7 +33,7 @@ ___
 
 > [Hidden Functions and Parameters From Package Development](#hidden)
 
-<hr style="height: 8px; background-color: black; border: none;"/>
+<hr style="height: 8px; background-color: red; border: none;"/>
 
 <a id="start"></a>
 
