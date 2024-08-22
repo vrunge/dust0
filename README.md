@@ -13,12 +13,10 @@
 <img src="man/figures/dust.png" alt="" style="width:30%;"/>
 </center>
 
-___ 
-
 
 > [Quick start](#start)
 
-> [Models and data generators](#Models)
+> [Models And Data Generators](#Models)
 
 > [Rcpp Structure](#rcpp)
 
@@ -37,9 +35,6 @@ ___
 <a id="start"></a>
 
 ## Quick start
-
-___ 
-
 
 
 ### Introduction
@@ -85,7 +80,7 @@ The result is a list whose elements are:
 - `cost` The global cost of the segmentation: the sum of each of the segment cost.
 
 
-[Back to Top](#top)
+[(Back to Top)](#top)
 
 
 <center>
@@ -94,12 +89,8 @@ The result is a list whose elements are:
 
 <a id="Models"></a>
 
-## Models and data generators
+## Models And Data Generators
 
-___ 
-
-
-### Costs derived from the exponential family
 
 ### Data Generators in 1D
 
@@ -147,6 +138,9 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MultiD`).
 
 
+[(Back to Top)](#top)
+
+
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>
@@ -155,12 +149,9 @@ Additional information and examples are easily accessible in the help of these f
 
 ## Rcpp Structure
 
-___ 
+[(Back to Top)](#top)
 
 
-
-
-[Back to Top](#top)
 
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
@@ -170,10 +161,9 @@ ___
 
 ## dust 1D (and multiD) Algorithms
 
-___ 
 
 
-[Back to Top](#top)
+[(Back to Top)](#top)
 
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
@@ -184,10 +174,10 @@ ___
 ## dust 2D Algorithms
 
 
-___ 
+
+[(Back to Top)](#top)
 
 
-[Back to Top](#top)
 
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
@@ -197,8 +187,6 @@ ___
 
 ## Pruning Capacity
 
-
-___ 
 
 
 ### OP in R
@@ -294,6 +282,9 @@ We add the values in the bar plot only if at the final time step `n`, the index 
                             `pruningOpt = 3)`
                             
 
+[(Back to Top)](#top)
+
+
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>
@@ -302,9 +293,8 @@ We add the values in the bar plot only if at the final time step `n`, the index 
 
 ## Hidden Functions and Parameters (Package Development)
 
-___ 
+
+[(Back to Top)](#top)
 
 
-
-[Back to Top](#top)
 
