@@ -10,9 +10,8 @@
 
 
 <center>
-<img src="man/figures/dust.png" alt="My Image" style="width:30%;"/>
+<img src="man/figures/dust.png" alt="" style="width:30%;"/>
 </center>
-
 
 ___ 
 
@@ -23,17 +22,16 @@ ___
 
 > [Rcpp Structure](#rcpp)
 
-> [dust 1D Algorithms](#dust1D)
-
-> [dust multiD Algorithms](#dustmD)
+> [dust 1D and multiD Algorithms](#dust1D)
 
 > [dust 2D Algorithms](#dust2D)
 
 > [Pruning Capacity](#pruning)
 
-> [Hidden Functions and Parameters From Package Development](#hidden)
+> [Hidden Functions and Parameters (Package Development)](#hidden)
 
-<hr style="height: 8px; background-color: red; border: none;"/>
+___
+
 
 <a id="start"></a>
 
@@ -47,7 +45,7 @@ We called this method the **DUST** pruning rule, standing for **Du**ality **S**i
 
 Data are modeled by a cost derived from the **exponential family** (Gauss, Poisson, Exponential...). We provide a polymorphic structure in Rcpp **allowing any User to easily add a new cost** of their own choice. The steps to follow are described in details [in this Section](#rcpp). The User only have to provide two Rcpp functions: the (primal) cost function and its dual, in addition with the expression for min (for primal) and max (for dual) values.
 
-Various tests and simulations are provided in this **readme file** and in the **simulation folder** and show that the dust dual approach is **highly efficient in all regimes** (many or few changes) with improved time efficient comparing to PELT and FPOP. Furthermore, unlike these 2 methods, the DUST method is capable of reducing time for multivariate cost functions (See Section [2D](#dust2D) and [multiD](#dustmD)).
+Various tests and simulations are provided in this **readme file** and in the **simulation folder** and show that the dust dual approach is **highly efficient in all regimes** (many or few changes) with improved time efficient comparing to PELT and FPOP. Furthermore, unlike these 2 methods, the DUST method is capable of reducing time for multivariate cost functions (See Section [pruning](#pruning)).
 
 
 ### Installing the dust Rcpp package
@@ -111,13 +109,13 @@ ___
 - `type = "negbin"` (additional parameter `nbSuccess`)
 
 
-We show two data examples with Gaussian and Exponential models (`"gauss"`, `"geom"`, `"binom"`, `"negbin"`)
+We show two data examples with Gaussian and Exponential models (`"gauss"` and `"exp"`)
 
 <center>
 <img src="man/figures/cost1.png" alt="" style="width:80%;"/>
 </center>
 
-and some other examples with integer-valued cost (`"poisson"` and `"exp"`):
+and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"`, `"negbin"`):
 <center>
 <img src="man/figures/cost2.png" alt="" style="width:80%;"/>
 </center>
@@ -151,7 +149,7 @@ ___
 
 <a id="dust1D"></a>
 
-## dust 1D Algorithms
+## dust 1D (and multiD) Algorithms
 
 
 [Back to Top](#top)
@@ -167,22 +165,10 @@ ___
 
 ___ 
 
-<a id="dustmD"></a>
-
-## dust multiD Algorithms
-
-
-[Back to Top](#top)
-
-
-
-___ 
-
 
 <a id="pruning"></a>
 
 ## Pruning Capacity
-
 
 
 ### OP in R
@@ -282,7 +268,7 @@ ___
 
 <a id="hidden"></a>
 
-## Hidden Functions and Parameters From Package Development
+## Hidden Functions and Parameters (Package Development)
 
 
 [Back to Top](#top)
