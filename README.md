@@ -117,7 +117,15 @@ ___
 
 ## Rcpp Structure
 
-![My Image](man/figures/duck.jpeg)
+![](man/figures/duck.png)
+
+<img src="man/figures/duck.png" alt="My Image" width="400"/>
+
+You can also adjust the size as a percentage:
+
+<center>
+<img src="man/figures/duck.png" alt="My Image" style="width:50%;"/>
+</center>
 
 
 [Back to Top](#top)
