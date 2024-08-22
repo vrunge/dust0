@@ -82,7 +82,10 @@ The result is a list whose elements are:
 
 [Back to Top](#top)
 
-___ 
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
+
 
 <a id="Models"></a>
 

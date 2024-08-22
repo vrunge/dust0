@@ -1,5 +1,9 @@
 
 
+###
+### data from dataGenerator_1D
+### plots for the readme file
+###
 
 par(mfrow=c(1,2))
 data <- dataGenerator_1D(chpts = c(50,80, 100), parameters = c(0,1,-1), sdNoise = 0.2, type = "gauss")
@@ -11,6 +15,8 @@ plot(data, type = 'b', xlab = "GAUSS COST with 'chpts = c(50,80,100), parameters
 data <- dataGenerator_1D(chpts = c(40,100,130), parameters = c(2,14,5), type = "exp")
 plot(data, type = 'b', xlab = "EXP COST with 'chpts = c(40,100,130), parameters = c(2,14,5)'", ylab = "", col = 4)
 
+
+###################################
 
 
 par(mfrow=c(2,2))
