@@ -61,7 +61,7 @@ We generate some 1D time series from the Gaussian model and one change in the mi
 
 `data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
 
-We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"`. See next Section.
+We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"` (additional parameter `nbSuccess`). See next [Section](#Models).
 
 `dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
 
@@ -84,7 +84,7 @@ ___
 
 ### Data Generators in 1D
 
-**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution in `type`. We have the following choices for type:
+**dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution (from the exponential family) in `type`. The following types are available in the current package version:
   
 - `type = "gauss"` (additional parameters `sdNoise` and `gamma`)
 
@@ -100,21 +100,24 @@ ___
 
 - `type = "negbin"` (additional parameter `nbSuccess`)
 
-### Data Generators in 2D
+### Data Generators in 2D and multiD
 
 **dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
 
 **dataGenerator_Reg** generates 2-dimensional data frame `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
 
-### Data Generators in multiD
-
 **dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+
+Additional information and examples are easily accessible in the help of these functions.
+
 
 ___ 
 
 <a id="rcpp"></a>
 
 ## Rcpp Structure
+
+![My Image](man/figures/duck.jpeg)
 
 
 [Back to Top](#top)
@@ -255,10 +258,6 @@ ___
 <a id="hidden"></a>
 
 ## Hidden Functions and Parameters From Package Development
-
-- <span style="color:green">Green text</span> for success.
-- <span style="color:red">Red text</span> for errors.
-- <span style="color:blue">Blue text</span> for informational messages.
 
 
 [Back to Top](#top)
