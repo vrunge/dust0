@@ -2,11 +2,20 @@
 
 # dust Vignette
 
+
+
+
 ### Vincent Runge and Simon Querné
-#### LaMME, Evry University
-### August 31, 2024
+#### LaMME, Evry University, August 31, 2024
+
+
+<center>
+<img src="man/figures/dust.png" alt="My Image" style="width:30%;"/>
+</center>
+
 
 ___ 
+
 
 > [Quick start](#start)
 
@@ -23,7 +32,8 @@ ___
 > [Pruning Capacity](#pruning)
 
 > [Hidden Functions and Parameters From Package Development](#hidden)
-___ 
+
+<hr style="height: 8px; background-color: black; border: none;"/>
 
 <a id="start"></a>
 
@@ -100,15 +110,32 @@ ___
 
 - `type = "negbin"` (additional parameter `nbSuccess`)
 
+
+We show two data examples with Gaussian and Exponential models (`"gauss"`, `"geom"`, `"binom"`, `"negbin"`)
+
+<center>
+<img src="man/figures/cost1.png" alt="" style="width:80%;"/>
+</center>
+
+and some other examples with integer-valued cost (`"poisson"` and `"exp"`):
+<center>
+<img src="man/figures/cost2.png" alt="" style="width:80%;"/>
+</center>
+
+
+
+
 ### Data Generators in 2D and multiD
 
 **dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
 
 **dataGenerator_Reg** generates 2-dimensional data frame `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
 
+
+
 **dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
 
-Additional information and examples are easily accessible in the help of these functions.
+Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MultiD`).
 
 
 ___ 
@@ -116,16 +143,6 @@ ___
 <a id="rcpp"></a>
 
 ## Rcpp Structure
-
-![](man/figures/duck.png)
-
-<img src="man/figures/duck.png" alt="My Image" width="400"/>
-
-You can also adjust the size as a percentage:
-
-<center>
-<img src="man/figures/duck.png" alt="My Image" style="width:50%;"/>
-</center>
 
 
 [Back to Top](#top)

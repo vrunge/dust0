@@ -308,15 +308,6 @@ dataGenerator_Reg <- function(chpts = 100,
 }
 
 
-###################################################################################################
-###################################################################################################
-### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-
-
 ##################################################
 #############  dataGenerator_AR1  ################
 ##################################################
@@ -350,7 +341,7 @@ dataGenerator_AR1 <- function(chpts = 100,
   {if(any(rho > 1) || any(rho < 0)){stop('The vector rho should contain values between 0 and 1')}}
   if(length(chpts) != length(rho)){stop('chpts and rho vectors are of different size')}
 
-  #############  ##########1##  #############
+  #############  #############  #############
   ############ data generation   ############
   #############  #############  #############
 
@@ -358,11 +349,7 @@ dataGenerator_AR1 <- function(chpts = 100,
   repetition <- c(chpts[1], diff(chpts))
   mu <- rep(means, repetition)
 
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+
   y <- rnorm(n, mean = mu, sd = sdNoise)
 
   return(y)

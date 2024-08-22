@@ -1,5 +1,12 @@
 
+##########################################
+#############  statistic  ################
+##########################################
 
+#' statistic
+#'
+#' @description statistic function (cf exponential familly)
+#' @param type the type of cost
 statistic <- function(type)
 {
   if(type == "gauss"){statistic <- function(x) x}
@@ -12,11 +19,16 @@ statistic <- function(type)
   return(statistic)
 }
 
-##########################################################################################
-###
-### A
-###
 
+
+##################################
+#############  A  ################
+##################################
+
+#' A
+#'
+#' @description Non linear function A
+#' @param type the type of cost
 A <- function(type)
 {
   if(type == "gauss"){A <- function(nat_theta) nat_theta^2/2}
@@ -29,11 +41,15 @@ A <- function(type)
   return(A)
 }
 
-##########################################################################################
-###
-### B = (grad A)^(-1)
-###
 
+##################################
+#############  B  ################
+##################################
+
+#' B
+#'
+#' @description Non linear function B = (grad A)^(-1)
+#' @param type the type of cost
 B <- function(type)
 {
   ###
@@ -51,14 +67,21 @@ B <- function(type)
   return(B)
 }
 
-##########################################################################################
-###
-### mu_max (work for 1D case only)
-###
 
+#######################################
+#############  mu_max  ################ (work for 1D case only)
+#######################################
+
+#' mu_max
+#'
+#' @description Getting the argmax dual value
+#' @param S The cumsum S vector
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
+#' @param type the type of cost
 mu_max <- function(S, s1, s2, t, type)
 {
-
   if(s2 > s1){return(Inf)}
 
   Mt <- (S[t] - S[s1])/(t - s1)
@@ -78,11 +101,17 @@ mu_max <- function(S, s1, s2, t, type)
 }
 
 
-##########################################################################################
-###
-### EVAL FUNCTION
-###
+#####################################
+#############  eval  ################
+#####################################
 
+#' eval
+#'
+#' @description Evaluation of the primal function
+#' @param nat_theta the value of the natural parameter theta
+#' @param A the nonlinear function
+#' @param data the data to use in sum
+#' @param const the constant term
 eval <- function(nat_theta, A, data, const)
 {
   ### data transformed by function statistic (often = identity)
@@ -91,11 +120,19 @@ eval <- function(nat_theta, A, data, const)
   return(length(data)*A(nat_theta) - sum(data)*nat_theta + const)
 }
 
-##########################################################################################
-###
-### MINIMAL COST
-###
+#########################################
+#############  min_cost  ################
+#########################################
 
+#' min_cost
+#'
+#' @description minimal cost value
+#' @param A the nonlinear function
+#' @param B the B derived from A function
+#' @param S the cumsum data
+#' @param s the start index
+#' @param t the end index
+#' @param const the constant term
 min_cost <- function(A, B, S, s, t, const)
 {
   data <- S[t] - S[s]
@@ -117,12 +154,26 @@ min_cost <- function(A, B, S, s, t, const)
 }
 
 
-##########################################################################################
-###
-### denominator and ratio
-###
 
+
+#######################################################
+#############   denominator and ratio  ################
+#######################################################
+
+#' D
+#'
+#' @description denominator value
+#' @param mu the mu value
 D <- function(mu){return(1 - mu)}
+
+#' R
+#'
+#' @description ratio
+#' @param mu the mu value
+#' @param S The cumsum S vector
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
 R <- function(mu, S, s1, s2, t)
 {
   Mt <- (S[t] - S[s1])/(t-s1)
@@ -132,14 +183,24 @@ R <- function(mu, S, s1, s2, t)
 }
 
 
-##########################################################################################
-###
-### evalDual
-###
-###
-### DANGER : don't use it at mu_max value
-###
 
+
+##########################################
+#############  evalDual   ################ DANGER : don't use it at mu_max value
+##########################################
+
+#' evalDual
+#'
+#' @description evaluation of the dual function
+#' @param mu the mu value, evaluation point
+#' @param A the nonlinear function
+#' @param B the B derived from A function
+#' @param S The cumsum S vector
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
+#' @param const1 first constant term
+#' @param const2 second constant term
 evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
 {
   Ratio <- R(mu, S, s1, s2, t)
@@ -155,11 +216,18 @@ evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
 
 
 
-##########################################################################################
-##########################################################################################
-###
-### min_cost_meanVar
-###
+##################################################
+#############  min_cost_meanVar   ################
+##################################################
+
+#' min_cost_meanVar
+#'
+#' @description evaluation of the cost function at its minimum for mean and var change Gaussian problem
+#' @param S The cumsum S vector
+#' @param S2 The second cumsum vector for squared data
+#' @param s the start index
+#' @param t the end step
+#' @param const constant term
 min_cost_meanVar <- function(S, S2, s, t, const)
 {
   if(s + 1 == t){return(Inf)}
@@ -169,7 +237,21 @@ min_cost_meanVar <- function(S, S2, s, t, const)
   return(res)
 }
 
+##################################################
+#############  evalDual_meanVar   ################
+##################################################
 
+#' evalDual_meanVar
+#'
+#' @description evaluation of the dual function
+#' @param mu the mu value, evaluation point
+#' @param S The cumsum S vector
+#' @param S2 The second cumsum vector for squared data
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
+#' @param const1 first constant term
+#' @param const2 second constant term
 evalDual_meanVar <- function(mu, S, S2, s1, s2, t, const1, const2)
 {
   l <- (t - s1) - mu * (s1 - s2)
@@ -183,11 +265,22 @@ evalDual_meanVar <- function(mu, S, S2, s1, s2, t, const1, const2)
 }
 
 
-##########################################################################################
-##########################################################################################
-###
-### min_cost_regression
-###
+#####################################################
+#############  min_cost_regression   ################
+#####################################################
+
+#' min_cost_regression
+#'
+#' @description evaluation of the min cost value
+#' @param A A
+#' @param B B
+#' @param C C
+#' @param D D
+#' @param E E
+#' @param f f
+#' @param s the start index
+#' @param t the end index
+#' @param const  constant term
 min_cost_regression <- function(A, B, C, D, E, f, s, t, const)
 {
   if(s + 1 == t){return(Inf)}
@@ -204,7 +297,25 @@ min_cost_regression <- function(A, B, C, D, E, f, s, t, const)
   return(res)
 }
 
+#####################################################
+#############  evalDual_regression   ################
+#####################################################
 
+#' evalDual_regression
+#'
+#' @description evaluation of the dual function
+#' @param mu mu
+#' @param A A
+#' @param B B
+#' @param C C
+#' @param D D
+#' @param E E
+#' @param f f
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
+#' @param const1 first constant term
+#' @param const2 second constant term
 evalDual_regression <- function(mu,A,B,C,D,E,f, s1, s2, t, const1, const2)
 {
   Adiff <- A[t] - A[s1] - mu * (A[s1] - A[s2])
@@ -222,11 +333,18 @@ evalDual_regression <- function(mu,A,B,C,D,E,f, s1, s2, t, const1, const2)
 }
 
 
-##########################################################################################
-###
-### mu_max case 2 param
-###
+###############################################
+#############  mu_max_2param   ################
+###############################################
 
+#' mu_max_2param
+#'
+#' @description evaluation of the mu max in 2 param case
+#' @param S The cumsum S vector
+#' @param S2 The second cumsum vector for squared data
+#' @param s1 the first index
+#' @param s2 the second index
+#' @param t the time step
 mu_max_2param <- function(S, S2, s1, s2, t)
 {
   if(s2 > s1){return(Inf)}
