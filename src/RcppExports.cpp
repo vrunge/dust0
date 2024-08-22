@@ -21,23 +21,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mad_std
-double mad_std(const std::vector<double>& data);
-RcppExport SEXP _dust_mad_std(SEXP dataSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::vector<double>& >::type data(dataSEXP);
-    rcpp_result_gen = Rcpp::wrap(mad_std(data));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_madEstimator", (DL_FUNC) &_dust_madEstimator, 1},
-    {"_dust_mad_std", (DL_FUNC) &_dust_mad_std, 1},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {NULL, NULL, 0}
 };

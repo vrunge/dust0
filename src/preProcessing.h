@@ -1,5 +1,3 @@
-// [[Rcpp::depends(Rcpp)]]
-
 #ifndef PREP_H
 #define PREP_H
 
