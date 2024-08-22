@@ -2,9 +2,9 @@
 
 # dust Vignette
 
-### Vincent Runge
+### Vincent Runge and Simon Querné
 #### LaMME, Evry University
-### October 11, 2023
+### August 31, 2024
 
 ___ 
 
@@ -12,14 +12,17 @@ ___
 
 > [Models and data generators](#Models)
 
-> [dust 1D Algorithms](#dust1D)
+> [Rcpp Structure](#rcpp)
 
-> [dust 2D Algorithms](#dust2D)
+> [dust 1D Algorithms](#dust1D)
 
 > [dust multiD Algorithms](#dustmD)
 
+> [dust 2D Algorithms](#dust2D)
+
 > [Pruning Capacity](#pruning)
 
+> [Hidden Functions and Parameters From Package Development](#hidden)
 ___ 
 
 <a id="start"></a>
@@ -28,14 +31,16 @@ ___
 
 ### Introduction
 
-The `dust` package contains methods for detecting multiple change-points within time-series based on the optimal partitioning algorithm with pruning. A few models from the exponential family are considered (Gauss, Poisson, Exponential...).
+The `dust` package contains methods **for detecting multiple change-points within time-series** based on the optimal partitioning algorithm, which is a dynamic programming (DP) algorithm. Our algorithms optimize a penalized likelihood and the DP algorithm is encoded with pruning rules for reducing execution time. The novelty of the `dust` package consists in its pruning step. We use a **new pruning rule**, different from the two standard ones: [PELT rule (2012)](https://doi.org/10.1080/01621459.2012.737745) and [FPOP rule  (2017)](https://doi.org/10.1007/s11222-016-9636-3).  
 
-The proposed algorithm is a pruned dynamic programming algorithm optimizing a penalized likelihood **using a new pruning rule**, different from PELT or FPOP. We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est.
+We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est. This method is based on considering some constrained optimization problems and its dual for discarding indices in the search for the last change-point index.
 
-Indeed, indices for potential last change-point are discarded by considering some constrained optimization problems. For each potential last change-point index, evaluating its associated dual function at a random (or deterministic) testing point enables a fast and efficient test.
+Data are modeled by a cost derived from the **exponential family** (Gauss, Poisson, Exponential...). We provide a polymorphic structure in Rcpp **allowing any User to easily add a new cost** of their own choice. The steps to follow are described in details [in this Section](#rcpp). The User only have to provide two Rcpp functions: the (primal) cost function and its dual, in addition with the expression for min (for primal) and max (for dual) values.
+
+Various tests and simulations are provided in this **readme file** and in the **simulation folder** and show that the dust dual approach is **highly efficient in all regimes** (many or few changes) with improved time efficient comparing to PELT and FPOP. Furthermore, unlike these 2 methods, the DUST method is capable of reducing time for multivariate cost functions (See Section [2D](#dust2D) and [multiD](#dustmD)).
 
 
-### Install the Rcpp package
+### Installing the dust Rcpp package
 
 **REQUIREMENTS:**
 - R >= 3.4
@@ -50,14 +55,13 @@ and imported with:
     library(dust)
 
 
-
 ### A simple example
 
 We generate some 1D time series from the Gaussian model and one change in the middle of the sequence.
 
 `data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
 
-We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"`. See next section.
+We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"`. See next Section.
 
 `dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
 
@@ -66,7 +70,6 @@ The result is a list whose elements are:
 - `chpts `A vector of change points (the index ending each of the segments)
 
 - `cost` The global cost of the segmentation: the sum of each of the segment cost.
-
 
 
 [Back to Top](#top)
@@ -106,6 +109,15 @@ ___
 ### Data Generators in multiD
 
 **dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+
+___ 
+
+<a id="rcpp"></a>
+
+## Rcpp Structure
+
+
+[Back to Top](#top)
 
 ___ 
 
@@ -238,6 +250,15 @@ We add the values in the bar plot only if at the final time step `n`, the index 
                             `pruningOpt = 3)`
                             
 
+___ 
+
+<a id="hidden"></a>
+
+## Hidden Functions and Parameters From Package Development
+
+- <span style="color:green">Green text</span> for success.
+- <span style="color:red">Red text</span> for errors.
+- <span style="color:blue">Blue text</span> for informational messages.
 
 
 [Back to Top](#top)

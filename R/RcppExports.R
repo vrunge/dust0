@@ -5,3 +5,7 @@ madEstimator <- function(data) {
     .Call(`_dust_madEstimator`, data)
 }
 
+mad_std <- function(data) {
+    .Call(`_dust_mad_std`, data)
+}
+

@@ -1,8 +1,24 @@
 
+######################################
+#############  shift  ################
+######################################
+
+#' shift
+#'
+#' @description Shifting integer by +1 value
+#' @param k an integer
 shift <- function(k){return(k+1)}
 
 
+#########################################################
+#############  backtracking_changepoint  ################
+#########################################################
 
+#' backtracking_changepoint
+#'
+#' @description Shifting integer by +1 value
+#' @param cp vector of changepoints of size n+1
+#' @param n data length
 backtracking_changepoint <- function(cp, n)
 {
   changepoints <- n ##### vector of change-point to build

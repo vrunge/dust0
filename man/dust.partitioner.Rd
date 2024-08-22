@@ -7,7 +7,7 @@
 dust.partitioner(model = "gauss", method = "fastest", alpha = 1e-09)
 }
 \arguments{
-\item{model}{the underlying model of the data. defaults to "gauss". available models: c("gauss", "poisson)}
+\item{model}{the underlying model of the data. defaults to "gauss". available models: c("gauss", "poisson")}
 
 \item{method}{the method for handling the indices and pruning tests in the alrgorithm. defaults to "fastest", which returns the fastest method available on input model. available methods: "all.random" prunes indices based on a random dual test, where the value of the dual is evaluated at a random point, and the dual is defined by a random index; "deterministic", where the dual is defined by the closest index smaller than the tested index, and evaluated at its maximum; "half.random", where the dual is defined by a random index but evaluated at its maximum. Caution: "half.random" and "deterministic" methods are not available for every method}
 
