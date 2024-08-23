@@ -38,7 +38,7 @@ void DUST_1D::init_method()
   {
     indices = new DeterministicIndices;
   }
-  
+
   if (use_dual_max)
   {
     current_test = &DUST_1D::exact_test;
@@ -54,7 +54,7 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 {
   data = std::move(inData);
   n = data.size();
-  
+
   if (inPenalty.isNull()) {
     penalty = 2 * pow(madEstimator(data), 2) * log(n);
   }
@@ -62,14 +62,14 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
   {
     penalty = as<double>(inPenalty);
   }
-  
+
   changepointRecord = IntegerVector(n + 1, 0);
-  
+
   cumsum = NumericVector(n + 1, 0.);
   costRecord = NumericVector(n + 1, -penalty);
-  
+
   init_method();
-  
+
   indices->add(0);
   indices->add(1);
 }
@@ -82,21 +82,21 @@ void DUST_1D::compute()
   // ... storing it allows pruning of the first available index
   double minCost;
   int argMin; // stores the optimal last changepoint for the current OP step
-  
+
   // First OP step (t = 1)
   int t = 1;
   int s = 0;
   cumsum[1] = data[0];
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
-  
+
   // Main loop
   for (t = 2; t <= n; t++)
   {
     // update cumsum
     cumsum[t] =
       cumsum[t - 1] + data[t - 1];
-    
+
     // OP step
     indices->reset();
     minCost = std::numeric_limits<double>::infinity();
@@ -113,12 +113,12 @@ void DUST_1D::compute()
     }
     while(indices->check());
     // END (OP step)
-    
+
     // OP update
     minCost += penalty;
     costRecord[t] = minCost;
     changepointRecord[t] = argMin;
-    
+
     // DUST step
     indices->reset_prune();
 
@@ -143,7 +143,7 @@ void DUST_1D::compute()
     if (lastCost > minCost) {
       indices->prune_last();
     }
-    
+
     // update the available indices
     indices->add(t);
   }
@@ -174,6 +174,7 @@ std::forward_list<int> DUST_1D::backtrack_changepoints()
 // --- // Retrieves optimal partition // --- //
 List DUST_1D::get_partition()
 {
+  costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
   return List::create(
     _["changepoints"] = backtrack_changepoints(),
     _["lastIndexSet"] = indices->get_list(),

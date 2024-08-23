@@ -2,6 +2,12 @@
 
 // --- // Models // --- //
 #include "1D_A1_GaussModel.h"
+#include "1D_A2_PoissonModel.h"
+#include "1D_A3_ExpModel.h"
+#include "1D_A4_GeomModel.h"
+#include "1D_A5_BernModel.h"
+#include "1D_A6_BinomModel.h"
+#include "1D_A7_NegbinModel.h"
 
 using namespace Rcpp;
 
@@ -35,17 +41,17 @@ DUST_1D *newModule1D(const std::string& model, const std::string& method, Nullab
   if (model == "gauss")
     return new Gauss_1D(use_dual_max, random_constraint, alpha);
   if (model == "poisson")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Poisson_1D(use_dual_max, random_constraint, alpha);
   if (model == "exp")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Exp_1D(use_dual_max, random_constraint, alpha);
   if (model == "geom")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Geom_1D(use_dual_max, random_constraint, alpha);
   if (model == "bern")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Bern_1D(use_dual_max, random_constraint, alpha);
   if (model == "binom")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Binom_1D(use_dual_max, random_constraint, alpha);
   if (model == "negbin")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Negbin_1D(use_dual_max, random_constraint, alpha);
   return nullptr;
 }
 
