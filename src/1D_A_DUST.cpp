@@ -55,7 +55,8 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
   data = std::move(inData);
   n = data.size();
 
-  if (inPenalty.isNull()) {
+  if (inPenalty.isNull())
+  {
     penalty = 2 * pow(madEstimator(data), 2) * log(n);
   }
   else
@@ -140,7 +141,8 @@ void DUST_1D::compute()
     // END (DUST loop)
 
     // Prune the last index (analoguous with a null (mu* = 0) duality simple test)
-    if (lastCost > minCost) {
+    if (lastCost > minCost)
+    {
       indices->prune_last();
     }
 

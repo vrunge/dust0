@@ -9,8 +9,11 @@ Geom_1D::Geom_1D(bool use_dual_max, bool random_constraint, Nullable<double> alp
 
 double Geom_1D::Cost(int t, int s) const
 {
+  double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
-  return (t - s) * log(m - 1) - (cumsum[t] - cumsum[s]) * log((m - 1) / m);
+  if(m != 1)
+  {res = (t - s) * log(m - 1) - (cumsum[t] - cumsum[s]) * log((m - 1) / m);}
+  return res;
 }
 
 double Geom_1D::dualEval(double point, double minCost, int t, int s, int r) const
@@ -23,10 +26,10 @@ double Geom_1D::dualEval(double point, double minCost, int t, int s, int r) cons
   ///
   /// point in the right interval:
   /// TO DO: IMPROVE with exception objectiveMean = 0
-  point = point * std::min(1.0, (constraintMean - 1)/(objectiveMean - 1));
+  point = point * std::min(1.0, (objectiveMean - 1)/(constraintMean - 1));
   ///
   ///
-  double R = (constraintMean - point * objectiveMean) / (1 - point);
+  double R = (objectiveMean - point * constraintMean) / (1 - point);
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength

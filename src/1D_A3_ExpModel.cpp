@@ -22,10 +22,10 @@ double Exp_1D::dualEval(double point, double minCost, int t, int s, int r) const
   ///
   /// point in the right interval:
   /// TO DO: IMPROVE with exception objectiveMean = 0
-  point = point * std::min(1.0, constraintMean/objectiveMean);
+  point = point * std::min(1.0, objectiveMean/constraintMean);
   ///
   ///
-  double R = (constraintMean - point * objectiveMean) / (1 - point);
+  double R = (objectiveMean - point * constraintMean) / (1 - point);
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength

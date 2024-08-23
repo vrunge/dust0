@@ -10,7 +10,10 @@ Poisson_1D::Poisson_1D(bool use_dual_max, bool random_constraint, Nullable<doubl
 
 double Poisson_1D::Cost(int t, int s) const
 {
-  return (cumsum[t] - cumsum[s])*(1 - log((cumsum[t] - cumsum[s])/(t - s)));
+  double res = 0;
+  if(cumsum[t] - cumsum[s] != 0)
+    {res = (cumsum[t] - cumsum[s])*(1 - log((cumsum[t] - cumsum[s])/(t - s)));}
+  return res;
 }
 
 double Poisson_1D::dualEval(double point, double minCost, int t, int s, int r) const
@@ -29,7 +32,7 @@ double Poisson_1D::dualEval(double point, double minCost, int t, int s, int r) c
 
   return (costRecord[s] - minCost) / objectiveLength
     + point * (costRecord[s] - costRecord[r]) / constraintLength
-    -(constraintMean - point * objectiveMean)* (log((constraintMean - point * objectiveMean) / (1 - point)) - 1);
+    -(objectiveMean - point * constraintMean) * (log((objectiveMean - point * constraintMean) / (1 - point)) - 1);
 }
 
 double Poisson_1D::dualMax(double minCost, int t, int s, int r) const

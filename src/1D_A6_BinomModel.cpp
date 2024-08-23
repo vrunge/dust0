@@ -9,8 +9,11 @@ Binom_1D::Binom_1D(bool use_dual_max, bool random_constraint, Nullable<double> a
 
 double Binom_1D::Cost(int t, int s) const
 {
+  double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
-  return -(t - s) * log(1 - m) - (cumsum[t] - cumsum[s]) * log(m / (1 - m));
+  if(m != 0 && m != 1)
+  {res = -(t - s) * log(1 - m) - (cumsum[t] - cumsum[s]) * log(m / (1 - m));;}
+  return res;
 }
 
 double Binom_1D::dualEval(double point, double minCost, int t, int s, int r) const
@@ -23,10 +26,10 @@ double Binom_1D::dualEval(double point, double minCost, int t, int s, int r) con
   ///
   /// point in the right interval:
   /// TO DO: IMPROVE with exception objectiveMean = 0
-  point = point * std::min(constraintMean/objectiveMean, (constraintMean - 1)/(objectiveMean - 1));
+  point = point * std::min(objectiveMean/constraintMean, (objectiveMean - 1)/(constraintMean - 1));
   ///
   ///
-  double R = (constraintMean - point * objectiveMean) / (1 - point);
+  double R = (objectiveMean - point * constraintMean) / (1 - point);
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength

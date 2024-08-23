@@ -9,8 +9,11 @@ Negbin_1D::Negbin_1D(bool use_dual_max, bool random_constraint, Nullable<double>
 
 double Negbin_1D::Cost(int t, int s) const
 {
+  double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
-  return (t - s) * log(1 + m) - (cumsum[t] - cumsum[s]) * log(m / (1 + m));
+  if(m != 0)
+  {res = (t - s) * log(1 + m) - (cumsum[t] - cumsum[s]) * log(m / (1 + m));}
+  return res;
 }
 
 double Negbin_1D::dualEval(double point, double minCost, int t, int s, int r) const
@@ -23,15 +26,14 @@ double Negbin_1D::dualEval(double point, double minCost, int t, int s, int r) co
   ///
   /// point in the right interval:
   /// TO DO: IMPROVE with exception objectiveMean = 0
-  point = point * std::min(1.0, constraintMean/objectiveMean);
+  point = point * std::min(1.0, objectiveMean/constraintMean);
   ///
   ///
-  double R = (constraintMean - point * objectiveMean) / (1 - point);
+  double R = (objectiveMean - point * constraintMean) / (1 - point);
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength
   + (1 - point) * (R * log(R) - (1 + R) * log(1 + R));
-
 }
 
 double Negbin_1D::dualMax(double minCost, int t, int s, int r) const
