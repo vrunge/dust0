@@ -22,20 +22,20 @@ DUST_1D *newModule1D(const std::string& model, const std::string& method, Nullab
 {
   bool use_dual_max;
   bool random_constraint;
-  if (method == "all.random")
+  if (method == "randIndex_randEval")
   {
-    use_dual_max = false;
-    random_constraint = true;
+    use_dual_max = false; /// random evaluation of the dual
+    random_constraint = true;  /// random choice for the unique constraint
   }
-  else if (method == "half.random")
+  else if (method == "randIndex_detEval")
   {
-    use_dual_max = true;
-    random_constraint = true;
+    use_dual_max = true; /// exact evaluation of the dual
+    random_constraint = true; /// random choice for the unique constraint
   }
   else
   {
-    use_dual_max = true;
-    random_constraint = false;
+    use_dual_max = true;  /// exact evaluation of the dual
+    random_constraint = false;  /// choice of the closest index
   }
 
   if (model == "gauss")

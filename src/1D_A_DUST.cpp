@@ -1,10 +1,15 @@
 #include <Rcpp.h>
 
+#include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
+
 #include "1D_A_DUST.h"
 #include "preProcessing.h"
 
 using namespace Rcpp;
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
 DUST_1D::DUST_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha_)
@@ -30,7 +35,7 @@ DUST_1D::~DUST_1D()
 void DUST_1D::init_method()
 {
   delete indices;
-  if (random_constraint)
+  if(random_constraint)
   {
     indices = new RandomIndices(n, alpha);
   }
@@ -39,7 +44,7 @@ void DUST_1D::init_method()
     indices = new DeterministicIndices;
   }
 
-  if (use_dual_max)
+  if(use_dual_max)
   {
     current_test = &DUST_1D::exact_test;
   }
@@ -47,7 +52,15 @@ void DUST_1D::init_method()
   {
     current_test = &DUST_1D::random_test;
   }
+
+  engine.seed(std::random_device{}());
+  dist = std::uniform_real_distribution<double>(0.0, 1.0);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
 void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
@@ -57,7 +70,7 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * pow(madEstimator(data), 2) * log(n);
+    penalty = 2 * pow(madEstimator(data), 2) * log(n); //to do
   }
   else
   {
@@ -66,27 +79,36 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 
   changepointRecord = IntegerVector(n + 1, 0);
 
-  cumsum = NumericVector(n + 1, 0.);
-  costRecord = NumericVector(n + 1, -penalty);
+  //cumsum = NumericVector(n + 1, 0.);
+  //costRecord = NumericVector(n + 1, -penalty);
+  cumsum = std::vector<double>(n + 1, 0.);
+  costRecord = std::vector<double>(n + 1, -penalty);
+
 
   init_method();
 
   indices->add(0);
   indices->add(1);
+
 }
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 // --- // Algorithm-specific method // --- //
 void DUST_1D::compute()
 {
   // Initialize OP step value
-  double lastCost; // temporarily stores the cost for the model with last changepoint at some i, then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
-  // ... storing it allows pruning of the first available index
+  double lastCost; // temporarily stores the cost for the model with last changepoint at some i
+                   // then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
+                   // ... storing it allows pruning of the first available index
   double minCost;
-  int argMin; // stores the optimal last changepoint for the current OP step
+  unsigned int argMin; // stores the optimal last changepoint for the current OP step
 
   // First OP step (t = 1)
-  int t = 1;
-  int s = 0;
+  unsigned int t = 1;
+  unsigned int s = 0;
   cumsum[1] = data[0];
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
@@ -152,20 +174,30 @@ void DUST_1D::compute()
 }
 
 // --- // Test methods // --- //
-double DUST_1D::exact_test(double minCost, int t, int s, int r)
+double DUST_1D::exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   return dualMax(minCost, t, s, r);
 }
 
-double DUST_1D::random_test(double minCost, int t, int s, int r)
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+double DUST_1D::random_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return dualEval(runif(1)[0], minCost, t, s, r);
+  return dualEval(dist(engine), minCost, t, s, r);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
 // --- // Builds changepoints // --- //
-std::forward_list<int> DUST_1D::backtrack_changepoints()
+std::forward_list<unsigned int> DUST_1D::backtrack_changepoints()
 {
-  std::forward_list<int> changepoints {n};
+  std::forward_list<unsigned int> changepoints {n};
   for (int newChangepoint = changepointRecord[n]; newChangepoint != 0; newChangepoint = changepointRecord[newChangepoint])
   {
     changepoints.push_front(newChangepoint);

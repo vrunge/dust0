@@ -7,16 +7,16 @@ using namespace Rcpp;
 Exp_1D::Exp_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha)
   : DUST_1D(use_dual_max, random_constraint, alpha) {}
 
-double Exp_1D::Cost(int t, int s) const
+double Exp_1D::Cost(unsigned int t, unsigned int s) const
 {
   return (t - s)*(1 + log((cumsum[t] - cumsum[s])/(t - s)));
 }
 
-double Exp_1D::dualEval(double point, double minCost, int t, int s, int r) const
+double Exp_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  int objectiveLength = t - s;
+  unsigned int objectiveLength = t - s;
   double objectiveMean = (cumsum[t] - cumsum[s]) / objectiveLength; // m_it
-  int constraintLength = s - r;
+  unsigned int constraintLength = s - r;
   double constraintMean = (cumsum[s] - cumsum[r]) / constraintLength; // m_ji
 
   ///
@@ -32,7 +32,7 @@ double Exp_1D::dualEval(double point, double minCost, int t, int s, int r) const
   + (1 - point) * (log(R) + 1);
 }
 
-double Exp_1D::dualMax(double minCost, int t, int s, int r) const
+double Exp_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return - std::numeric_limits<double>::infinity();
 }

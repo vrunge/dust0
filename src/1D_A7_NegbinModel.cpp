@@ -7,7 +7,7 @@ using namespace Rcpp;
 Negbin_1D::Negbin_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha)
   : DUST_1D(use_dual_max, random_constraint, alpha) {}
 
-double Negbin_1D::Cost(int t, int s) const
+double Negbin_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
@@ -16,11 +16,11 @@ double Negbin_1D::Cost(int t, int s) const
   return res;
 }
 
-double Negbin_1D::dualEval(double point, double minCost, int t, int s, int r) const
+double Negbin_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  int objectiveLength = t - s;
+  unsigned int objectiveLength = t - s;
   double objectiveMean = (cumsum[t] - cumsum[s]) / objectiveLength; // m_it
-  int constraintLength = s - r;
+  unsigned int constraintLength = s - r;
   double constraintMean = (cumsum[s] - cumsum[r]) / constraintLength; // m_ji
 
   ///
@@ -36,7 +36,7 @@ double Negbin_1D::dualEval(double point, double minCost, int t, int s, int r) co
   + (1 - point) * (R * log(R) - (1 + R) * log(1 + R));
 }
 
-double Negbin_1D::dualMax(double minCost, int t, int s, int r) const
+double Negbin_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return - std::numeric_limits<double>::infinity();
 }

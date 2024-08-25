@@ -27,12 +27,12 @@ bool Indices::check()
   return current != list.end();
 }
 
-int Indices::get_current()
+unsigned int Indices::get_current()
 {
   return *current;
 }
 
-std::forward_list<int> Indices::get_list()
+std::forward_list<unsigned int> Indices::get_list()
 {
   return list;
 }
@@ -44,14 +44,14 @@ std::forward_list<int> Indices::get_list()
 // --- /////////////////// --- //
 // --------------------------- //
 
-RandomIndices::RandomIndices(int size, double alpha) {
+RandomIndices::RandomIndices(unsigned int size, double alpha) {
   // --- // Generate pseudo-random vector // --- //
   double k = std::max(2., ceil(pow(size, .2)));
   randomU = Rcpp::runif(log(alpha) / log(1 - 1/k));
   u = randomU.begin();
 }
 
-void RandomIndices::add(int value)
+void RandomIndices::add(unsigned int value)
 {
   list.push_front(value);
   pointers.push_back(&list.front());
@@ -63,7 +63,7 @@ void RandomIndices::reset_prune()
   current = list.begin();
   before = list.before_begin();
   pointersCurrent = pointers.rbegin();
-  
+
   nbC = nb - 1;
 }
 
@@ -78,7 +78,7 @@ void RandomIndices::next_prune()
 void RandomIndices::prune_current()
 {
   current = list.erase_after(before);
-  pointersCurrent = std::vector<int*>::reverse_iterator(pointers.erase(std::next(pointersCurrent).base()));
+  pointersCurrent = std::vector<unsigned int*>::reverse_iterator(pointers.erase(std::next(pointersCurrent).base()));
   nb--;
   new_constraint();
 }
@@ -103,16 +103,16 @@ void RandomIndices::new_constraint()
   nbC--;
 }
 
-int RandomIndices::get_constraint()
+unsigned int RandomIndices::get_constraint()
 {
   constraint = pointers[floor(nbC * (*u))];
-  
+
   ++u;
   if (u == randomU.end())
   {
     u = randomU.begin();
   }
-  
+
   return *constraint;
 }
 
@@ -123,7 +123,7 @@ int RandomIndices::get_constraint()
 // --- ////////////////////////// --- //
 // ---------------------------------- //
 
-void DeterministicIndices::add(int value)
+void DeterministicIndices::add(unsigned int value)
 {
   list.push_front(value);
 }
@@ -163,7 +163,7 @@ void DeterministicIndices::new_constraint()
   ++constraint;
 }
 
-int DeterministicIndices::get_constraint()
+unsigned int DeterministicIndices::get_constraint()
 {
   return *constraint;
 }
