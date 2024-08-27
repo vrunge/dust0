@@ -4,7 +4,7 @@
 ### GAUSS ###
 
 n = 10^2
-beta = 2*log(n)/10
+beta = 2*log(n)/4
 y <- dataGenerator_1D(chpts = c(n/2,n), parameters = c(1,2), type = "gauss")
 plot(y)
 res1 <- dust.partitioner.1D(model = "gauss", method = "randIndex_randEval")$quick(data = y, penalty = 2*beta)
@@ -12,6 +12,7 @@ res3 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y,
 res2 <- dust_R_1D(y, type = "gauss", penalty = beta, pruningOpt = 0)
 
 y
+res2$costQ
 
 res1$changepoints
 res2$changepoints

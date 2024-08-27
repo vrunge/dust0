@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <algorithm> // for std::min
+#include <cmath>
 
 #include <random>
 
@@ -14,16 +15,14 @@ double Poisson_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
   if(cumsum[t] - cumsum[s] != 0)
-    {res = (cumsum[t] - cumsum[s])*(1 - log((cumsum[t] - cumsum[s])/(t - s)));}
+    {res = (cumsum[t] - cumsum[s])*(1 - std::log((cumsum[t] - cumsum[s])/double(t - s)));}
   return res;
 }
 
 double Poisson_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  unsigned int objectiveLength = t - s;
-  double objectiveMean = (cumsum[t] - cumsum[s]) / objectiveLength; // m_it
-  unsigned int constraintLength = s - r;
-  double constraintMean = (cumsum[s] - cumsum[r]) / constraintLength; // m_ji
+  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it
+  double constraintMean = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
 
   ///
   /// point in the right interval:
@@ -32,9 +31,9 @@ double Poisson_1D::dualEval(double point, double minCost, unsigned int t, unsign
   ///
   ///
 
-  return (costRecord[s] - minCost) / objectiveLength
-    + point * (costRecord[s] - costRecord[r]) / constraintLength
-    -(objectiveMean - point * constraintMean) * (log((objectiveMean - point * constraintMean) / (1 - point)) - 1);
+  return (costRecord[s] - minCost) / (t - s)
+    + point * (costRecord[s] - costRecord[r]) / (s - r)
+    - (objectiveMean - point * constraintMean) * (std::log((objectiveMean - point * constraintMean) / (1 - point)) - 1);
 }
 
 double Poisson_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const

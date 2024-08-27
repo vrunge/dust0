@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cmath>
 
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 
@@ -70,7 +71,7 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * pow(madEstimator(data), 2) * log(n); //to do
+    penalty = 2 * pow(madEstimator(data), 2) * std::log(n); //to do
   }
   else
   {

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cmath>
 
 #include "1D_A7_NegbinModel.h"
 
@@ -12,7 +13,7 @@ double Negbin_1D::Cost(unsigned int t, unsigned int s) const
   double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
   if(m != 0)
-  {res = (t - s) * log(1 + m) - (cumsum[t] - cumsum[s]) * log(m / (1 + m));}
+  {res = double(t - s) * std::log(1 + m) - (cumsum[t] - cumsum[s]) * std::log(m / (1 + m));}
   return res;
 }
 
@@ -33,7 +34,7 @@ double Negbin_1D::dualEval(double point, double minCost, unsigned int t, unsigne
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength
-  + (1 - point) * (R * log(R) - (1 + R) * log(1 + R));
+  + (1 - point) * (R * std::log(R) - (1 + R) * std::log(1 + R));
 }
 
 double Negbin_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const

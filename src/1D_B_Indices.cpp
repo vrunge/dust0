@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cmath>
 
 #include "1D_B_Indices.h"
 
@@ -47,7 +48,7 @@ std::forward_list<unsigned int> Indices::get_list()
 RandomIndices::RandomIndices(unsigned int size, double alpha) {
   // --- // Generate pseudo-random vector // --- //
   double k = std::max(2., ceil(pow(size, .2)));
-  randomU = Rcpp::runif(log(alpha) / log(1 - 1/k));
+  randomU = Rcpp::runif(std::log(alpha) / std::log(1 - 1/k));
   u = randomU.begin();
 }
 

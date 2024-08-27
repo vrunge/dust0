@@ -1,5 +1,7 @@
 #include <Rcpp.h>
 
+#include <cmath>
+
 #include "1D_A5_BernModel.h"
 
 using namespace Rcpp;
@@ -10,18 +12,17 @@ Bern_1D::Bern_1D(bool use_dual_max, bool random_constraint, Nullable<double> alp
 double Bern_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
-  double m = (cumsum[t] - cumsum[s])/(t - s);
+  double m = (cumsum[t] - cumsum[s]) / (t - s);
   if(m != 0 && m != 1)
-  {res = -(t - s) * log(1 - m) - (cumsum[t] - cumsum[s]) * log(m / (1 - m));}
+  {res = - double(t - s) * (m * std::log(m) + (1 - m) *  std::log(1 - m));}
   return res;
 }
 
 double Bern_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  unsigned int objectiveLength = t - s;
-  double objectiveMean = (cumsum[t] - cumsum[s]) / objectiveLength; // m_it
-  unsigned int constraintLength = s - r;
-  double constraintMean = (cumsum[s] - cumsum[r]) / constraintLength; // m_ji
+  return -std::numeric_limits<double>::infinity();
+  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it
+  double constraintMean = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
 
   ///
   /// point in the right interval:
@@ -32,9 +33,9 @@ double Bern_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
   ///
   double R = (objectiveMean - point * constraintMean) / (1 - point);
 
-  return (costRecord[s] - minCost) / objectiveLength
-  + point * (costRecord[s] - costRecord[r]) / constraintLength
-  + (1 - point) * ((1 - R) * log(1 - R) + R * log(R));
+  return (costRecord[s] - minCost) / (t - s)
+  + point * (costRecord[s] - costRecord[r]) / (s - r)
+  - (1 - point) * (R * log(R) + (1 - R) * log(1 - R));
 }
 
 double Bern_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const

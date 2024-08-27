@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cmath>
 
 #include "1D_A6_BinomModel.h"
 
@@ -10,9 +11,9 @@ Binom_1D::Binom_1D(bool use_dual_max, bool random_constraint, Nullable<double> a
 double Binom_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
-  double m = (cumsum[t] - cumsum[s])/(t - s);
+  double m = (cumsum[t] - cumsum[s]) / (t - s);
   if(m != 0 && m != 1)
-  {res = -(t - s) * log(1 - m) - (cumsum[t] - cumsum[s]) * log(m / (1 - m));;}
+  {res = - double(t - s) * (m * std::log(m) + (1 - m) *  std::log(1 - m));}
   return res;
 }
 
@@ -33,7 +34,7 @@ double Binom_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 
   return (costRecord[s] - minCost) / objectiveLength
   + point * (costRecord[s] - costRecord[r]) / constraintLength
-  + (1 - point) * ((1 - R) * log(1 - R) + R * log(R));
+  + (1 - point) * ((1 - R) * std::log(1 - R) + R * std::log(R));
 }
 
 double Binom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const

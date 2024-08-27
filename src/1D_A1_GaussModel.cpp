@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cmath>
 
 #include "1D_A1_GaussModel.h"
 
@@ -9,7 +10,7 @@ Gauss_1D::Gauss_1D(bool use_dual_max, bool random_constraint, Nullable<double> a
 
 double Gauss_1D::Cost(unsigned int t, unsigned int s) const
 {
-  return - (cumsum[t] - cumsum[s]) * (cumsum[t] - cumsum[s]) / (t - s);
+  return - 0.5 * (cumsum[t] - cumsum[s]) * (cumsum[t] - cumsum[s]) / (t - s);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,9 +19,9 @@ double Gauss_1D::Cost(unsigned int t, unsigned int s) const
 
 double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return -(minCost - costRecord[s]) / (t - s)
+  return - (minCost - costRecord[s]) / (t - s)
     + point * (costRecord[s] - costRecord[r]) / (s - r)
-    - pow((cumsum[t] - cumsum[s]) / (t - s) - point * (cumsum[s] - cumsum[r]) / (s - r), 2) / (1 - point);
+    - 0.5 * pow(((cumsum[t] - cumsum[s]) / (t - s)) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,28 +31,17 @@ double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   // Compute the optimal point on which to evaluate the duality function
-  //
-  // Denoting y_it = y[(s+1):t]; y_ji = y[(r+1):s]
-  // Denoting m_it = mean(y_it); m_ji = mean(y_ji)
-  // Duality function: D(mu) = Qi + (t - s) ( mu (Qi-Qj)/(s-r) - (m_it - mu m_ji)/(1-mu))
-  //
-  // Formula: mu* = max(0, 1 - abs(m_it - m_ji)/sqrt((Qi-Qj)/(s-r) + m_ji^2))
-  // Formula: mu* > 0, d* = D(mu*) = Qi - (t-s) m_it^2 + (t-s) (sqrt((Qi-Qj)/(s-r) + m_ji^2) - abs(m_it - m_ji))^2
-  // Formula: (d* - Qt) / (t - s) = (Qi-Qt)/(t-s) - m_it^2 + (sqrt((Qi-Qj)/(s-r) + m_ji^2) - abs(m_it - m_ji))^2
-  // Pruning happens if (d* - Qt) / (t - s) > 0
 
-  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it
-  double constraintMean = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
-
-  double costJI = (costRecord[s] - costRecord[r]) / (s - r) + constraintMean*constraintMean; // Qi - Qj / s - r
-  double costIT = (minCost - costRecord[s]) / (t - s) + pow(objectiveMean, 2);
-  double meanGap = fabs(objectiveMean - constraintMean);
+  double A = (cumsum[t] - cumsum[s]) / (t - s); // m_it
+  double B = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
+  double C = (costRecord[s] - costRecord[r]) / (s - r);
+  //double D = (minCost - costRecord[s]) / (t - s) ;
 
   // Case 1: mu* = 0
   // deduce the following condition from the formula for mu*
-  if (costJI <= pow(meanGap, 2))
-    return - costIT;
+  if ((A-B)*(A-B) > B*B + 2*C)
+    return Gauss_1D::dualEval(0.0, minCost, t, s, r);
 
   // Case 2: mu* > 0
-  return - costIT + pow(meanGap - sqrt(costJI), 2);
+  return Gauss_1D::dualEval(1.0 - (std::abs(A - B) / std::sqrt(B*B + 2*C)), minCost, t, s, r);;
 }
