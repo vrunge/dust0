@@ -19,7 +19,7 @@ double Gauss_1D::Cost(unsigned int t, unsigned int s) const
 
 double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return - (minCost - costRecord[s]) / (t - s)
+  return (costRecord[s] - minCost) / (t - s)
     + point * (costRecord[s] - costRecord[r]) / (s - r)
     - 0.5 * pow(((cumsum[t] - cumsum[s]) / (t - s)) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
 }
@@ -35,13 +35,16 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
   double A = (cumsum[t] - cumsum[s]) / (t - s); // m_it
   double B = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
   double C = (costRecord[s] - costRecord[r]) / (s - r);
-  //double D = (minCost - costRecord[s]) / (t - s) ;
+  double AmB = A - B;
+  double B2p2C = B*B + 2*C;
 
   // Case 1: mu* = 0
   // deduce the following condition from the formula for mu*
-  if ((A-B)*(A-B) > B*B + 2*C)
-    return Gauss_1D::dualEval(0.0, minCost, t, s, r);
+  if (AmB*AmB > B2p2C)
+    return (costRecord[s] - minCost) / (t - s) - 0.5 * A * A;
 
   // Case 2: mu* > 0
-  return Gauss_1D::dualEval(1.0 - (std::abs(A - B) / std::sqrt(B*B + 2*C)), minCost, t, s, r);;
+  return (costRecord[s] - minCost) / (t - s) + C - B * AmB - std::abs(AmB) * std::sqrt(B2p2C);
 }
+
+
