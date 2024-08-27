@@ -5,23 +5,32 @@ beta = 2*log(n)
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 t3 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
 t3
-system.time(fpopw::Fpop(y, beta))
+s <- system.time(fpopw::Fpop(y, beta))
+s
+(t3[[1]] - s[[1]])/s[[1]]
+
 
 n = 10^8
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 t3 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
 t3
-system.time(fpopw::Fpop(y, beta))
+s <- system.time(fpopw::Fpop(y, beta))
+s
+(t3[[1]] - s[[1]])/s[[1]]
 
 
-n = 10^3
-beta = 2*log(n)/5
+n = 10^2
+beta = 2*log(n)/3
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
-res1 <- dust.partitioner.1D(model = "gauss", method = "randIndex_randEval")$quick(data = y, penalty = beta)
 res3 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta)
 
-res1$changepoints
+v <- dust_R_1D(y,penalty = beta,
+               type = "gauss",
+               pruningOpt = 0)
+
 res3$changepoints
+v$changepoints
+res3$costQ - v$costQ
 
 
 ###################################################################################################

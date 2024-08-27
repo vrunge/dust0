@@ -21,7 +21,7 @@ double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 {
   return (costRecord[s] - minCost) / (t - s)
     + point * (costRecord[s] - costRecord[r]) / (s - r)
-    - 0.5 * pow(((cumsum[t] - cumsum[s]) / (t - s)) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
+    - 0.5 * pow((cumsum[t] - cumsum[s]) / (t - s) - point * ((cumsum[s] - cumsum[r]) / (s - r)),2) / (1 - point);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,18 +32,18 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 {
   // Compute the optimal point on which to evaluate the duality function
 
-  double A = (cumsum[t] - cumsum[s]) / (t - s); // m_it
-  double B = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
+  double A = (cumsum[t] - cumsum[s])/ (t - s); // m_it
+  double B = (cumsum[s] - cumsum[r])/ (s - r); // m_ji
   double AmB = std::abs(A - B);
-  double B2p2C = std::sqrt(B*B + 2*(costRecord[s] - costRecord[r]) / (s - r));
+  double B2p2C = std::sqrt(B*B + 2*(costRecord[s] - costRecord[r])/ (s - r));
 
   // Case 1: mu* = 0
   // deduce the following condition from the formula for mu*
-  if (AmB > B2p2C)
-    return (costRecord[s] - minCost) / (t - s) - 0.5 * A * A;
+  if (AmB >= B2p2C)
+    return (costRecord[s] - minCost) / (t - s)  - 0.5 * A*A;
 
   // Case 2: mu* > 0
-  return (costRecord[s] - minCost) / (t - s) + 0.5 * (AmB - B2p2C) *  (AmB - B2p2C);
+    return (costRecord[s] - minCost) / (t - s) + 0.5 * (AmB - B2p2C)*(AmB - B2p2C) - 0.5*A*A;
 }
 
 
