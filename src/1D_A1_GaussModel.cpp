@@ -34,9 +34,8 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 
   double A = (cumsum[t] - cumsum[s]) / (t - s); // m_it
   double B = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
-  double C = (costRecord[s] - costRecord[r]) / (s - r);
   double AmB = std::abs(A - B);
-  double B2p2C = std::sqrt(B*B + 2*C);
+  double B2p2C = std::sqrt(B*B + 2*(costRecord[s] - costRecord[r]) / (s - r));
 
   // Case 1: mu* = 0
   // deduce the following condition from the formula for mu*
