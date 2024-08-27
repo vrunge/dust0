@@ -1,7 +1,7 @@
 
 library(fpopw)
 n = 10^7
-beta = 2*log(n)
+beta = 2*log(n)/50
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 t3 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
 t3
@@ -19,10 +19,11 @@ s
 (t3[[1]] - s[[1]])/s[[1]]
 
 
-n = 10^2
-beta = 2*log(n)/3
+n = 10^7
+beta = 0
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 res3 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta)
+length(res3$changepoints)
 
 v <- dust_R_1D(y,penalty = beta,
                type = "gauss",

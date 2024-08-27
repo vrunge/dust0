@@ -21,7 +21,7 @@ double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 {
   return (costRecord[s] - minCost) / (t - s)
     + point * (costRecord[s] - costRecord[r]) / (s - r)
-    - 0.5 * pow((cumsum[t] - cumsum[s]) / (t - s) - point * ((cumsum[s] - cumsum[r]) / (s - r)),2) / (1 - point);
+    - 0.5 * pow((cumsum[t] - cumsum[s]) / (t - s) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
     return (costRecord[s] - minCost) / (t - s)  - 0.5 * A*A;
 
   // Case 2: mu* > 0
-    return (costRecord[s] - minCost) / (t - s) + 0.5 * (AmB - B2p2C)*(AmB - B2p2C) - 0.5*A*A;
+    return (costRecord[s] - minCost) / (t - s) - 0.5*A*A + 0.5 * (AmB - B2p2C)*(AmB - B2p2C);
 }
 
 
