@@ -34,5 +34,19 @@ double Exp_1D::dualEval(double point, double minCost, unsigned int t, unsigned i
 
 double Exp_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return - std::numeric_limits<double>::infinity();
+  double max_val = Exp_1D::dualEval(0.4, minCost, t, s, r);
+  double max_val2 = Exp_1D::dualEval(0.6, minCost, t, s, r);
+
+  if (max_val2 > max_val)
+  {
+    max_val = max_val2;
+    double max_val3 = Exp_1D::dualEval(0.8, minCost, t, s, r);
+    if (max_val3 > max_val){max_val = max_val3;}
+  }
+  else
+  {
+    double max_val3 = Exp_1D::dualEval(0.2, minCost, t, s, r);
+    if (max_val3 > max_val){max_val = max_val3;}
+  }
+  return max_val;
 }

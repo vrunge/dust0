@@ -27,6 +27,7 @@ double Geom_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
   /// point in the right interval:
   /// TO DO: IMPROVE with exception objectiveMean = 0
   point = point * std::min(1.0, (objectiveMean - 1)/(constraintMean - 1));
+  if(constraintMean == 1){point = 0;}
   ///
   ///
   double R = (objectiveMean - point * constraintMean) / (1 - point);
@@ -38,5 +39,19 @@ double Geom_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
 
 double Geom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return - std::numeric_limits<double>::infinity();
+  double max_val = Geom_1D::dualEval(0.4, minCost, t, s, r);
+  double max_val2 = Geom_1D::dualEval(0.6, minCost, t, s, r);
+
+  if (max_val2 > max_val)
+  {
+    max_val = max_val2;
+    double max_val3 = Geom_1D::dualEval(0.8, minCost, t, s, r);
+    if (max_val3 > max_val){max_val = max_val3;}
+  }
+  else
+  {
+    double max_val3 = Geom_1D::dualEval(0.2, minCost, t, s, r);
+    if (max_val3 > max_val){max_val = max_val3;}
+  }
+  return max_val;
 }
