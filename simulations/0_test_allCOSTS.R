@@ -1,13 +1,13 @@
 
 library(fpopw)
-n = 10^6
+n = 10^7
 beta = 2*log(n)
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 t3 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
 t3
 system.time(fpopw::Fpop(y, beta))
 
-n = 10^7
+n = 10^8
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 t3 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
 t3
