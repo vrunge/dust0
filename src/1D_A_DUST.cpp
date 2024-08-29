@@ -13,7 +13,7 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_1D::DUST_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha_)
+DUST_1D::DUST_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
   : use_dual_max(use_dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
@@ -25,6 +25,14 @@ DUST_1D::DUST_1D(bool use_dual_max, bool random_constraint, Nullable<double> alp
   else
   {
     alpha = as<double>(alpha_);
+  }
+  if(nbLoops.isNull())
+  {
+    nb_Loops = 10;
+  }
+  else
+  {
+    nb_Loops = as<int>(nbLoops);
   }
 }
 
@@ -56,6 +64,7 @@ void DUST_1D::init_method()
 
   engine.seed(std::random_device{}());
   dist = std::uniform_real_distribution<double>(0.0, 1.0);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

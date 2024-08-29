@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Gauss_1D::Gauss_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha)
-  : DUST_1D(use_dual_max, random_constraint, alpha) {}
+Gauss_1D::Gauss_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
+  : DUST_1D(use_dual_max, random_constraint, alpha, nbLoops) {}
 
 double Gauss_1D::Cost(unsigned int t, unsigned int s) const
 {
@@ -34,16 +34,38 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 
   double A = (cumsum[t] - cumsum[s])/ (t - s); // m_it
   double B = (cumsum[s] - cumsum[r])/ (s - r); // m_ji
-  double AmB = std::abs(A - B);
-  double B2p2C = std::sqrt(B*B + 2*(costRecord[s] - costRecord[r])/ (s - r));
+  double absAmB = std::abs(A - B);
+  double sqrtB2p2C = std::sqrt(B*B + 2*(costRecord[s] - costRecord[r])/ (s - r));
 
   // Case 1: mu* = 0
   // deduce the following condition from the formula for mu*
-  if (AmB >= B2p2C)
+  if (absAmB >= sqrtB2p2C)
     return (costRecord[s] - minCost) / (t - s)  - 0.5 * A*A;
 
   // Case 2: mu* > 0
-    return (costRecord[s] - minCost) / (t - s) - 0.5*A*A + 0.5 * (AmB - B2p2C)*(AmB - B2p2C);
+    return (costRecord[s] - minCost) / (t - s) - 0.5*A*A + 0.5 * (absAmB - sqrtB2p2C)*(absAmB - sqrtB2p2C);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+double Gauss_1D::Dstar(double x) const
+{
+  return 0;
+}
+
+
+double Gauss_1D::DstarPrime(double x) const
+{
+  return 0;
+}
+
+double Gauss_1D::DstarSecond(double x) const
+{
+  return 0;
+}
+
 
 

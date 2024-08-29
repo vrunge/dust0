@@ -19,7 +19,8 @@ class DUST_1D
 public:
   DUST_1D(bool use_dual_max,
           bool random_constraint,
-          Nullable<double> alpha = Nullable<double>());
+          Nullable<double> alpha = Nullable<double>(),
+          Nullable<int> nbLoops = Nullable<int>());
 
   virtual ~DUST_1D();
 
@@ -45,10 +46,15 @@ public:
 protected:
   std::vector<double> cumsum;
   std::vector<double> costRecord;
+  int nb_Loops; // number of loops in optimization step (For dual max)
 
   virtual double Cost(unsigned int t, unsigned int s) const = 0;
   virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
   virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
+
+  virtual double Dstar(double x) const = 0;
+  virtual double DstarPrime(double x) const = 0;
+  virtual double DstarSecond(double x) const = 0;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 

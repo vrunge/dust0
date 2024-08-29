@@ -18,7 +18,10 @@ using namespace Rcpp;
 // --- //////////////////// --- //
 // ---------------------------- //
 
-DUST_1D *newModule1D(const std::string& model, const std::string& method, Nullable<double> alpha)
+DUST_1D *newModule1D(const std::string& model,
+                     const std::string& method,
+                     Nullable<double> alpha,
+                     Nullable<int> nbLoops)
 {
   bool use_dual_max;
   bool random_constraint;
@@ -39,19 +42,19 @@ DUST_1D *newModule1D(const std::string& model, const std::string& method, Nullab
   }
 
   if (model == "gauss")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha);
+    return new Gauss_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "poisson")
-    return new Poisson_1D(use_dual_max, random_constraint, alpha);
+    return new Poisson_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "exp")
-    return new Exp_1D(use_dual_max, random_constraint, alpha);
+    return new Exp_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "geom")
-    return new Geom_1D(use_dual_max, random_constraint, alpha);
+    return new Geom_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "bern")
-    return new Bern_1D(use_dual_max, random_constraint, alpha);
+    return new Bern_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "binom")
-    return new Binom_1D(use_dual_max, random_constraint, alpha);
+    return new Binom_1D(use_dual_max, random_constraint, alpha, nbLoops);
   if (model == "negbin")
-    return new Negbin_1D(use_dual_max, random_constraint, alpha);
+    return new Negbin_1D(use_dual_max, random_constraint, alpha, nbLoops);
   return nullptr;
 }
 
@@ -67,7 +70,7 @@ RCPP_MODULE(DUSTMODULE1D)
 {
   class_<DUST_1D>("DUST_1D")
 
-    .factory<const std::string&, const std::string&, Nullable<double>>(newModule1D)
+    .factory<const std::string&, const std::string&, Nullable<double>, Nullable<int>>(newModule1D)
 
     .method("init_raw", &DUST_1D::init)
     .method("compute", &DUST_1D::compute)

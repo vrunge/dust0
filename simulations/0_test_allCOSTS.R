@@ -1,4 +1,41 @@
 
+
+
+n <- 10^3
+beta <- 2 * log(n)
+
+type = "gauss"
+param = 0.5
+myData <- dataGenerator_1D(n, parameters = param, type = type)
+d <- dust.partitioner.1D(model = type, method = "randIndex_randEval", nbLoops = 1)
+
+d$quick(data = myData, penalty = beta)
+
+
+
+####
+
+n =3*10^5
+beta = 2*log(n)
+y <- dataGenerator_1D(chpts = n, parameters = 1, type = "poisson")
+t1 <- system.time(dust.partitioner.1D(model = "poisson", method = "fastest")$quick(data = y, penalty = beta))
+t2 <- system.time(dust.partitioner.1D(model = "poisson", method = "randIndex_randEval")$quick(data = y, penalty = beta))
+t1
+t2
+
+
+n = 10^7
+beta = 2*log(n)
+y <- dataGenerator_1D(chpts = n, parameters = 1, type = "poisson")
+t2 <- system.time(dust.partitioner.1D(model = "poisson", method = "fastest")$quick(data = y, penalty = beta))
+t2
+
+
+
+
+
+
+
 library(fpopw)
 n = 10^7
 beta = 2*log(n)/50
@@ -63,32 +100,43 @@ print(v$changepoints)
 v
 
 
-n <- 10^4
-beta <- 5 * log(n)/10
+##################################################################
+##################################################################
 
-test <- function(n = 10^4, type = "gauss", param = 0.5)
+
+nb <- 9
+n <- 10^6
+beta <- 2 * log(n)
+
+test <- function(n = 10^4, type = "gauss", param = 0.5, beta = 0)
 {
+  if(beta == 0){beta <- 2 * log(n)}
   myData <- dataGenerator_1D(n, parameters = param, type = type)
 
   if(type == "binom"){myData <- myData/max(myData)}
-  t1 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_randEval")$quick(data = myData, penalty = beta))
-  t2 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_detEval")$quick(data = myData, penalty = beta))
-  t3 <- system.time(dust.partitioner.1D(model = type, method = "fastest")$quick(data = myData, penalty = beta))
-  u <- dust.partitioner.1D(model = type, method = "randIndex_randEval")$quick(data = myData, penalty = beta)
-  v <- dust_R_1D(myData, beta, type = type, pruningOpt = 2)
+  t1 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_randEval", nbLoops = nb)$quick(data = myData, penalty = beta))
+  t2 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_detEval", nbLoops = nb)$quick(data = myData, penalty = beta))
+  t3 <- system.time(dust.partitioner.1D(model = type, method = "fastest", nbLoops = nb)$quick(data = myData, penalty = beta))
+  u <- dust.partitioner.1D(model = type, method = "fastest")$quick(data = myData, penalty = beta)
   print(u$changepoints)
-  print(v$changepoints)
+  #v <- dust_R_1D(myData, beta, type = type, pruningOpt = 2)
+  #print(u$changepoints)
+  #print(v$changepoints)
   return(c(t1[[1]],t2[[1]],t3[[1]]))
 }
 
+test(n, "gauss", beta = beta)
+test(n, "poisson", beta = beta)
+test(n, "exp", beta = beta)
+test(n, "geom", beta = beta)
+test(n, "bern", beta = beta)
+test(n, "binom", beta = beta)
+test(n, "negbin", beta = beta)
 
-test(n, "gauss")
-test(n, "poisson")
-test(n, "exp")
-test(n, "geom")
-test(n, "bern") ### PB
-test(n, "binom")
-test(n, "negbin")
+##################################################################
+##################################################################
+
+
 
 type <- "bern"
 param <- 0.5

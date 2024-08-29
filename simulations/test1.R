@@ -141,14 +141,11 @@ plot((res1$costQ - res2$costQ) - cumsum(y^2))
 ### POISSON ###
 
 n = 10^3
-beta = 2*log(n)/2
+beta = 2*log(n)
 y <- dataGenerator_1D(chpts = c(n/2,n), parameters = c(1,2), type = "poisson")
-plot(y)
+
 res1 <- dust.partitioner.1D(model = "poisson", method = "randIndex_randEval")$quick(data = y, penalty = beta)
 res2 <- dust_R_1D(y, type = "poisson", penalty = beta, pruningOpt = 0)
-
-
-y
 
 res1$changepoints
 res2$changepoints
