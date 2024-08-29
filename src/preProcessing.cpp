@@ -28,7 +28,7 @@ using namespace Rcpp;
 //'   }
 //'
 //' @examples
-//' y <- c(1, 2, 4, 7, 11, 16)
+//' y <- c(rnorm(500, mean = 1), rnorm(500,mean = 2))
 //' sdDiff(y, "HALL")
 //' sdDiff(y, "MAD")
 //' sdDiff(y, "SD")

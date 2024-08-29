@@ -23,7 +23,7 @@ Rcpp::loadModule("DUSTMODULE1D", TRUE)
 #' @param nbLoops number of iteration in the optimization algorithm for maximizing the dual function
 #' @return a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the other 3 methods.
 #' @examples
-
+#' dust.partitioner.1D()
 dust.partitioner.1D = function(
     model = "gauss"
     , method = "fastest"

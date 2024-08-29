@@ -26,3 +26,6 @@ a DUST partitioner object that provides methods : fit, for fitting the data; com
 \description{
 Generates a DUST partitioner
 }
+\examples{
+dust.partitioner.1D()
+}
