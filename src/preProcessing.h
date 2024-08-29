@@ -13,9 +13,9 @@ using namespace Rcpp;
 // Parameters:
 //  - data (vector): a vector of numeric values
 
-double madEstimator
+double sdDiff
 (
-    NumericVector& data
+    Rcpp::NumericVector& y, std::string method = "HALL"
 );
 
 #endif

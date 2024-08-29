@@ -80,7 +80,7 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * pow(madEstimator(data), 2) * std::log(n); //to do
+    penalty = 2 * pow(sdDiff(data), 2) * std::log(n); //to do
   }
   else
   {

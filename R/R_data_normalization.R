@@ -24,14 +24,14 @@ data_normalization <- function(y, type = "gauss")
   return(y)
 }
 
-#######################################
-#############  sdDiff  ################
-#######################################
+#########################################
+#############  sdDiff_R  ################
+#########################################
 
 
-#' sdDiff
+#' sdDiff_R
 #'
-#' @description sdDiff is a function based on the difference operator (or difference order for HALL method) estimating the time-series standard deviation in Gaussian model
+#' @description sdDiff_R is a function based on the difference operator (or difference order for HALL method) estimating the time-series standard deviation in Gaussian model
 #' The estimation is efficient for time-series with constant standard deviation and multiple changes in mean.
 #' Three estimators are available:
 #' \itemize{
@@ -44,10 +44,10 @@ data_normalization <- function(y, type = "gauss")
 #' @return a value equal to the estimated standard deviation
 #' @examples
 #' data <- dataGenerator_1D(chpts = c(100, 200, 300), parameters = c(0,1,0), sdNoise = 2)
-#' sdDiff(data, method = "HALL")
-#' sdDiff(data, method = "MAD")
-#' sdDiff(data, method = "SD")
-sdDiff <- function(y, method = "HALL")
+#' sdDiff_R(data, method = "HALL")
+#' sdDiff_R(data, method = "MAD")
+#' sdDiff_R(data, method = "SD")
+sdDiff_R <- function(y, method = "HALL")
 {
   if(is.numeric(y) == FALSE || length(y) < 5){stop('y is not a numeric vector or length < 5 (the HALL method cannot be used)')}
   if(method == "HALL")

@@ -104,34 +104,49 @@ v
 ##################################################################
 
 
-nb <- 9
-n <- 10^6
-beta <- 2 * log(n)
-
-test <- function(n = 10^4, type = "gauss", param = 0.5, beta = 0)
+test <- function(n = 10^4, type = "gauss", param = 0.5, beta = 0, nbLoops = 5)
 {
-  if(beta == 0){beta <- 2 * log(n)}
   myData <- dataGenerator_1D(n, parameters = param, type = type)
 
   if(type == "binom"){myData <- myData/max(myData)}
-  t1 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_randEval", nbLoops = nb)$quick(data = myData, penalty = beta))
-  t2 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_detEval", nbLoops = nb)$quick(data = myData, penalty = beta))
-  t3 <- system.time(dust.partitioner.1D(model = type, method = "fastest", nbLoops = nb)$quick(data = myData, penalty = beta))
-  u <- dust.partitioner.1D(model = type, method = "fastest")$quick(data = myData, penalty = beta)
-  print(u$changepoints)
-  #v <- dust_R_1D(myData, beta, type = type, pruningOpt = 2)
-  #print(u$changepoints)
-  #print(v$changepoints)
+  t1 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_randEval", nbLoops = nbLoops)$quick(data = myData, penalty = beta))
+  t2 <- system.time(dust.partitioner.1D(model = type, method = "randIndex_detEval", nbLoops = nbLoops)$quick(data = myData, penalty = beta))
+  t3 <- system.time(dust.partitioner.1D(model = type, method = "fastest", nbLoops = nbLoops)$quick(data = myData, penalty = beta))
   return(c(t1[[1]],t2[[1]],t3[[1]]))
 }
 
-test(n, "gauss", beta = beta)
-test(n, "poisson", beta = beta)
-test(n, "exp", beta = beta)
-test(n, "geom", beta = beta)
-test(n, "bern", beta = beta)
-test(n, "binom", beta = beta)
-test(n, "negbin", beta = beta)
+
+n <- 10^5
+beta <- 2 * log(n)
+nb <- 10
+
+test(n, "gauss", beta = beta, nbLoops = nb)
+test(n, "poisson", beta = beta, nbLoops = nb)
+test(n, "exp", beta = beta, nbLoops = nb)
+test(n, "geom", beta = beta, nbLoops = nb)
+test(n, "bern", beta = beta, nbLoops = nb)
+test(n, "binom", beta = beta, nbLoops = nb)
+test(n, "negbin", beta = beta, nbLoops = nb)
+
+
+################################################################################
+################################################################################
+
+library(gfpop)
+n <- 10^6
+beta <- 2 * log(n)
+chgtpt <- c(1)
+myData <- dataGenerator_1D(n, chgtpt, 0.5, type = "exp")
+GRAPH <- graph(type = "std", penalty = beta)
+
+system.time(gfpop(data = myData, type = "exp", mygraph = GRAPH))
+system.time(dust.partitioner.1D(model = "exp", method = "fastest")$quick(data = myData, penalty = beta))
+
+
+
+
+
+
 
 ##################################################################
 ##################################################################
