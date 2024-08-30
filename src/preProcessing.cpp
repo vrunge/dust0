@@ -4,6 +4,9 @@ using namespace Rcpp;
 
 #include <Rcpp.h>
 #include <cmath>
+#include <algorithm> // for std::max_element
+
+
 
 //' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 //'
@@ -144,5 +147,126 @@ double sdDiff(Rcpp::NumericVector& y, std::string method = "HALL")
   }
   return(0);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//' Data Normalization Function
+//'
+//' @name data_normalization
+//'
+//' @description
+//' Normalizes the input time series data `y` according to the specified `type`.
+//' The normalization process depends on the statistical model type, which can be one of the following:
+//' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
+//' "poisson" (Poisson distribution), "geom" (geometric distribution),
+//' "bern" (Bernoulli distribution), "binom" (binomial distribution), or
+//' "negbin" (negative binomial distribution).
+//'
+//' @param y A numeric vector representing the time series to be normalized and then segmented.
+//' @param type A string specifying the model type for normalization.
+//' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", and "negbin".
+//' The default is "gauss".
+//' @return A numeric vector that is the normalized version of the input time series `y`.
+//' @examples
+//' # Normalize a random time series using the Gaussian model
+//' normalized_y <- data_normalization(rnorm(100), type = "gauss")
+//'
+//' # Normalize using the Poisson model
+//' normalized_y <- data_normalization(rpois(100, lambda = 3), type = "poisson")
+//'
+//' # Normalize using the Exponential model
+//' normalized_y <- data_normalization(rexp(100), type = "exp")
+//'
+//' @export
+// [[Rcpp::export]]
+NumericVector data_normalization(Rcpp::NumericVector& y, std::string type = "gauss")
+{
+  int n = y.size();
+
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  if (type == "gauss")
+  {
+    double sdNoise = sdDiff(y);
+    for (int i = 0; i < n; ++i){y[i] = y[i] / sdNoise;}
+    return y;
+  }
+
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  if(type == "poisson")
+  {
+    for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with poisson model");}}
+    double mean_y = Rcpp::mean(y);
+    for(int i = 0; i < n; ++i) {y[i] = y[i] / mean_y;}
+    return y;
+  }
+
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  if(type == "exp")
+  {
+    for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with exp model");}}
+    double mean_y = Rcpp::mean(y);
+    for(int i = 0; i < n; ++i) {y[i] = y[i] / mean_y;}
+    return y;
+  }
+
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  if(type == "binom")
+  {
+    for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with exp model");}}
+    double max_y = *(std::max_element(y.begin(), y.end()));
+
+    // Return the maximum value
+    for(int i = 0; i < n; ++i) {y[i] = y[i] / max_y;}
+    return y;
+  }
+
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  //////////  //////////  //////////  //////////
+  if(type == "negbin")
+  {
+    unsigned int windowSize = 100;
+    unsigned int k = y.size() / windowSize;
+    double mean = 0;
+    double variance = 0;
+    double disp = 0;
+
+    for(unsigned int j = 0; j < k; j++)
+    {
+      mean = 0;
+      variance = 0;
+      for(unsigned int i = j * windowSize; i < (j + 1)*windowSize; i++){mean = mean + y[i];}
+      mean = mean/windowSize;
+      for(unsigned int i =  j * windowSize; i < (j + 1)*windowSize; i++){variance = variance + (y[i] - mean) * (y[i] - mean);}
+      variance = variance/(windowSize - 1);
+      disp = disp  + (mean * mean / (variance - mean));
+    }
+    disp = disp/k;
+    for(int i = 0; i < y.size(); i++){y[i] = y[i]/disp;}
+    return y;
+  }
+
+  // Additional models can be added here (exp, geom, bern, binom, negbin)
+
+  Rcpp::stop("Unsupported type specified.");
+}
+
 
 

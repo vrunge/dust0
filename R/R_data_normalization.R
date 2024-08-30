@@ -1,33 +1,8 @@
-###################################################
-#############  data_normalization  ################
-###################################################
 
-#' data_normalization
-#'
-#' @description Normalizing data for use in algorithm
-#' @param y time series to segment
-#' @param type the model: "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin"
-#' @return the same time series `y` after normalization
-#' @examples
-#' data_normalization(rnorm(100), type = "gauss")
-data_normalization <- function(y, type = "gauss")
-{
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  ### TO DO TO DO TO DO TO DO TO DO TO DO TO DO
-  #negbin y <- y / estimate nbSuccess
-  #binom <- estimate nbTrials
-  #gauss <- estimate sdNoise
-
-  return(y)
-}
 
 #########################################
 #############  sdDiff_R  ################
 #########################################
-
 
 #' sdDiff_R
 #'

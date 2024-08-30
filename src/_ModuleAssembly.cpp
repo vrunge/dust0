@@ -18,15 +18,7 @@ using namespace Rcpp;
 // --- //////////////////// --- //
 // ---------------------------- //
 
-//' @title MyModule: Exposing DUST_1D to R
-//'
-//' @name DUST_1D
-//'
-//' @description
-//' This module exposes the \code{DUST_1D} C++ class to R, allowing you to create
-//' instances of \code{DUST_1D} and call its methods directly from R.
-//'
-//' @export
+
 DUST_1D *newModule1D(const std::string& model,
                      const std::string& method,
                      Nullable<double> alpha,

@@ -12,17 +12,6 @@
 #' @export
 NULL
 
-#' @title MyModule: Exposing DUST_1D to R
-#'
-#' @name DUST_1D
-#'
-#' @description
-#' This module exposes the \code{DUST_1D} C++ class to R, allowing you to create
-#' instances of \code{DUST_1D} and call its methods directly from R.
-#'
-#' @export
-NULL
-
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 #'
 #' The `sdDiff` function calculates a measure of variability (standard deviation or MAD)
@@ -54,5 +43,37 @@ NULL
 #' @export
 sdDiff <- function(y, method = "HALL") {
     .Call(`_dust_sdDiff`, y, method)
+}
+
+#' Data Normalization Function
+#'
+#' @name data_normalization
+#'
+#' @description
+#' Normalizes the input time series data `y` according to the specified `type`.
+#' The normalization process depends on the statistical model type, which can be one of the following:
+#' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
+#' "poisson" (Poisson distribution), "geom" (geometric distribution),
+#' "bern" (Bernoulli distribution), "binom" (binomial distribution), or
+#' "negbin" (negative binomial distribution).
+#'
+#' @param y A numeric vector representing the time series to be normalized and then segmented.
+#' @param type A string specifying the model type for normalization.
+#' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", and "negbin".
+#' The default is "gauss".
+#' @return A numeric vector that is the normalized version of the input time series `y`.
+#' @examples
+#' # Normalize a random time series using the Gaussian model
+#' normalized_y <- data_normalization(rnorm(100), type = "gauss")
+#'
+#' # Normalize using the Poisson model
+#' normalized_y <- data_normalization(rpois(100, lambda = 3), type = "poisson")
+#'
+#' # Normalize using the Exponential model
+#' normalized_y <- data_normalization(rexp(100), type = "exp")
+#'
+#' @export
+data_normalization <- function(y, type = "gauss") {
+    .Call(`_dust_data_normalization`, y, type)
 }
 

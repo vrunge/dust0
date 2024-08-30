@@ -22,11 +22,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// data_normalization
+NumericVector data_normalization(Rcpp::NumericVector& y, std::string type);
+RcppExport SEXP _dust_data_normalization(SEXP ySEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(data_normalization(y, type));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
+    {"_dust_data_normalization", (DL_FUNC) &_dust_data_normalization, 2},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {NULL, NULL, 0}
 };

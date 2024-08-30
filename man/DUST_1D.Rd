@@ -6,7 +6,4 @@
 \description{
 This module exposes the \code{DUST_1D} C++ class to R, allowing you to create
 instances of \code{DUST_1D} and call its methods directly from R.
-
-This module exposes the \code{DUST_1D} C++ class to R, allowing you to create
-instances of \code{DUST_1D} and call its methods directly from R.
 }
