@@ -25,11 +25,10 @@ length(res1$lastIndexSet)
 
 
 
-n = 1e2
+n = 10^6
 beta = 2*log(n)
 y <- dataGenerator_1D(n, parameters = 10, type = "poisson")
 system.time(dust.partitioner.1D("poisson", "randIndex_randEval")$quick(y, beta))
-system.time(dust.partitioner.1D("poisson", "randIndex_detEval")$quick(y, beta))
 system.time(dust.partitioner.1D("poisson", "fastest")$quick(y, beta))
 
 

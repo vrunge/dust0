@@ -1,16 +1,45 @@
+################################################################################
+################################################################################
+
+n <- 10^5
+beta <- 2*log(n)
+#y <- c(rnorm(n), rnorm(n,sd = 2), rnorm(n, mean = 1, sd = 2))
+y <- rnorm(n)
+#plot(y, type = 'b')
+res2 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = beta)
+#res3 <- dust_R_2param(y, penalty = beta, pruningOpt = 2)
+
+#all(res2$changepoints == res3$changepoints)
+res2$changepoints
+res2$lastIndexSet
+length(res2$lastIndexSet)
+length(res2$lastIndexSet)/(n) * 100
+
+#(res2$costQ - res3$costQ)[n]
+
+################################################################################
+################################################################################
 
 
 
-n <- 10^3
-beta <- 2 * log(n)
+res1$lastIndexSet
+res2$lastIndexSet
 
-type = "gauss"
-param = 0.5
+
+n <- 10^4
+beta <- 2 * log(n)/10
+
+type = "poisson"
+param = 10
 myData <- dataGenerator_1D(n, parameters = param, type = type)
 d <- dust.partitioner.1D(model = type, method = "randIndex_randEval", nbLoops = 1)
+res <- d$quick(data = myData, penalty = beta)
 
-d$quick(data = myData, penalty = beta)
-
+res2 <- dust_R_1D(myData, type = "poisson", penalty = beta)
+res$lastIndexSet
+res2$lastIndexSet
+length(res$lastIndexSet)/n * 100
+length(res2$lastIndexSet)/n * 100
 
 
 ####

@@ -4,6 +4,8 @@
 #include <Rcpp.h>
 
 #include <forward_list>
+#include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
+
 
 using namespace Rcpp;
 
@@ -63,8 +65,8 @@ private:
   std::vector<unsigned int*> pointers;
   std::vector<unsigned int*>::reverse_iterator pointersCurrent;
 
-  NumericVector randomU;
-  NumericVector::iterator u;
+  std::vector<double> randomU;
+  std::vector<double>::iterator u;
 
 };
 

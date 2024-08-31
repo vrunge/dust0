@@ -36,11 +36,13 @@ END_RCPP
 }
 
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
+RcppExport SEXP _rcpp_module_boot_DUSTMODULEMeanVar();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
     {"_dust_data_normalization", (DL_FUNC) &_dust_data_normalization, 2},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
+    {"_rcpp_module_boot_DUSTMODULEMeanVar", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMeanVar, 0},
     {NULL, NULL, 0}
 };
 

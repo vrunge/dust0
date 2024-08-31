@@ -9,15 +9,15 @@
 #include "1D_A6_BinomModel.h"
 #include "1D_A7_NegbinModel.h"
 
-using namespace Rcpp;
+#include "2D_DUSTmeanVar.h"
 
+using namespace Rcpp;
 
 // ---------------------------- //
 // --- //////////////////// --- //
 // --- // Object factory // --- //
 // --- //////////////////// --- //
 // ---------------------------- //
-
 
 DUST_1D *newModule1D(const std::string& model,
                      const std::string& method,
@@ -60,7 +60,6 @@ DUST_1D *newModule1D(const std::string& model,
 }
 
 
-
 // --------------------------------- //
 // --- ///////////////////////// --- //
 // --- // Exposing the module // --- //
@@ -88,3 +87,72 @@ RCPP_MODULE(DUSTMODULE1D)
     .method("quick_raw", &DUST_1D::quick)
   ;
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+DUST_meanVar *newModuleMeanVar(const std::string& method,
+                               Nullable<double> alpha,
+                               Nullable<int> nbLoops)
+{
+  bool use_dual_max;
+  bool random_constraint;
+  if (method == "randIndex_randEval")
+  {
+    use_dual_max = false; /// random evaluation of the dual
+    random_constraint = true;  /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_detEval")
+  {
+    use_dual_max = true; /// exact evaluation of the dual
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else
+  {
+    use_dual_max = true;  /// exact evaluation of the dual
+    random_constraint = false;  /// choice of the closest index
+  }
+
+  return new DUST_meanVar(use_dual_max, random_constraint, alpha, nbLoops);
+}
+
+
+// --------------------------------- //
+// --- ///////////////////////// --- //
+// --- // Exposing the module // --- //
+// --- ///////////////////////// --- //
+// --------------------------------- //
+
+//' @title MyModule: Exposing DUST_meanVar to R
+ //'
+ //' @name DUST_meanVar
+ //'
+ //' @description
+ //' This module exposes the \code{DUST_meanVar} C++ class to R, allowing you to create
+ //' instances of \code{DUST_meanVar} and call its methods directly from R.
+ //'
+ //' @export
+ RCPP_MODULE(DUSTMODULEMeanVar)
+ {
+   class_<DUST_meanVar>("DUST_meanVar")
+
+   .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleMeanVar)
+
+   .method("init_raw", &DUST_meanVar::init)
+   .method("compute", &DUST_meanVar::compute)
+   .method("get_partition", &DUST_meanVar::get_partition)
+   .method("quick_raw", &DUST_meanVar::quick)
+   ;
+ }
+
+
+

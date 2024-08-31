@@ -45,10 +45,20 @@ std::forward_list<unsigned int> Indices::get_list()
 // --- /////////////////// --- //
 // --------------------------- //
 
-RandomIndices::RandomIndices(unsigned int size, double alpha) {
-  // --- // Generate pseudo-random vector // --- //
+RandomIndices::RandomIndices(unsigned int size, double alpha)
+{
+
+  // length of the random vector
   double k = std::max(2., ceil(pow(size, .2)));
-  randomU = Rcpp::runif(std::log(alpha) / std::log(1 - 1/k));
+  int len = std::log(alpha) / std::log(1 - 1/k);
+
+  randomU = std::vector<double>(len, 0.);
+
+  // Random number engine
+  std::minstd_rand0  engine(std::random_device{}());
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+  for(int i = 0; i < len; ++i) {randomU[i] = dist(engine);}
   u = randomU.begin();
 }
 
