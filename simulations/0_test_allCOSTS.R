@@ -1,13 +1,14 @@
+
 ################################################################################
 ################################################################################
 
-n <- 10^5
+n <- 10^2
 beta <- 2*log(n)
 #y <- c(rnorm(n), rnorm(n,sd = 2), rnorm(n, mean = 1, sd = 2))
 y <- rnorm(n)
 #plot(y, type = 'b')
 res2 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = beta)
-#res3 <- dust_R_2param(y, penalty = beta, pruningOpt = 2)
+res3 <- dust_R_2param(y, penalty = beta, pruningOpt = 2)
 
 #all(res2$changepoints == res3$changepoints)
 res2$changepoints

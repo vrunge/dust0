@@ -175,6 +175,10 @@ void DUST_meanVar::compute()
     // Prune the last index (analoguous with a null (mu* = 0) duality simple test)
     if (lastCost > minCost)
     {
+      // TO DO
+      // TO DO
+      // TO DO
+      // Discuss with Simon. What it does exactly?
       //indices->prune_last();
     }
 
