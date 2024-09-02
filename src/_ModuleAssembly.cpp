@@ -134,26 +134,26 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
 // --------------------------------- //
 
 //' @title MyModule: Exposing DUST_meanVar to R
- //'
- //' @name DUST_meanVar
- //'
- //' @description
- //' This module exposes the \code{DUST_meanVar} C++ class to R, allowing you to create
- //' instances of \code{DUST_meanVar} and call its methods directly from R.
- //'
- //' @export
- RCPP_MODULE(DUSTMODULEMeanVar)
- {
-   class_<DUST_meanVar>("DUST_meanVar")
+//'
+//' @name DUST_meanVar
+//'
+//' @description
+//' This module exposes the \code{DUST_meanVar} C++ class to R, allowing you to create
+//' instances of \code{DUST_meanVar} and call its methods directly from R.
+//'
+//' @export
+RCPP_MODULE(DUSTMODULEMeanVar)
+{
+  class_<DUST_meanVar>("DUST_meanVar")
 
-   .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleMeanVar)
+  .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleMeanVar)
 
-   .method("init_raw", &DUST_meanVar::init)
-   .method("compute", &DUST_meanVar::compute)
-   .method("get_partition", &DUST_meanVar::get_partition)
-   .method("quick_raw", &DUST_meanVar::quick)
-   ;
- }
+  .method("init_raw", &DUST_meanVar::init)
+  .method("compute", &DUST_meanVar::compute)
+  .method("get_partition", &DUST_meanVar::get_partition)
+  .method("quick_raw", &DUST_meanVar::quick)
+  ;
+}
 
 
 
@@ -200,26 +200,26 @@ DUST_reg *newModuleReg(const std::string& method,
 // --------------------------------- //
 
 //' @title MyModule: Exposing DUST_reg to R
- //'
- //' @name DUST_reg
- //'
- //' @description
- //' This module exposes the \code{DUST_reg} C++ class to R, allowing you to create
- //' instances of \code{DUST_reg} and call its methods directly from R.
- //'
- //' @export
- RCPP_MODULE(DUSTMODULEreg)
- {
-   class_<DUST_reg>("DUST_reg")
+//'
+//' @name DUST_reg
+//'
+//' @description
+//' This module exposes the \code{DUST_reg} C++ class to R, allowing you to create
+//' instances of \code{DUST_reg} and call its methods directly from R.
+//'
+//' @export
+RCPP_MODULE(DUSTMODULEreg)
+{
+  class_<DUST_reg>("DUST_reg")
 
-   .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleReg)
+  .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleReg)
 
-   .method("init_raw", &DUST_reg::init)
-   .method("compute", &DUST_reg::compute)
-   .method("get_partition", &DUST_reg::get_partition)
-   .method("quick_raw", &DUST_reg::quick)
-   ;
- }
+  .method("init_raw", &DUST_reg::init)
+  .method("compute", &DUST_reg::compute)
+  .method("get_partition", &DUST_reg::get_partition)
+  .method("quick_raw", &DUST_reg::quick)
+  ;
+}
 
 
 

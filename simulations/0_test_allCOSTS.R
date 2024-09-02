@@ -10,12 +10,12 @@ res2 <- system.time(fpopw::Fpop(y, beta))
 res1
 res2
 
-n = 10^3
-beta = 2*log(n)/3
+n = 10^7
+beta = 2*log(n)
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 res1 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2)
 res2 <- fpopw::Fpop(y, beta)
-res1
+res1$nb
 res1$changepoints
 res2$t.est
 

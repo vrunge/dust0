@@ -13,9 +13,25 @@
 NULL
 
 #' @title MyModule: Exposing DUST_meanVar to R
+#'
+#' @name DUST_meanVar
+#'
+#' @description
+#' This module exposes the \code{DUST_meanVar} C++ class to R, allowing you to create
+#' instances of \code{DUST_meanVar} and call its methods directly from R.
+#'
+#' @export
 NULL
 
 #' @title MyModule: Exposing DUST_reg to R
+#'
+#' @name DUST_reg
+#'
+#' @description
+#' This module exposes the \code{DUST_reg} C++ class to R, allowing you to create
+#' instances of \code{DUST_reg} and call its methods directly from R.
+#'
+#' @export
 NULL
 
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
