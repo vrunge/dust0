@@ -86,13 +86,12 @@ public:
   double alpha;
 
   Indices* indices;
-  std::forward_list<unsigned int> nb_indices;
+  std::vector<int> nb_indices;
 
   unsigned int n; // number of observations
   double penalty;
 
   std::vector<int> changepointRecord;
-
 };
 
 #endif

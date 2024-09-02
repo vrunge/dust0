@@ -87,7 +87,7 @@ void DUST_1D::init(std::vector<double>& inData, Nullable<double> inPenalty)
   }
 
   changepointRecord = std::vector<int>(n + 1, 0);
-
+  nb_indices = std::vector<int>(n, 0);
 
   cumsum = std::vector<double>(n + 1, 0.);
   costRecord = std::vector<double>(n + 1, -penalty);
@@ -120,6 +120,9 @@ void DUST_1D::compute(std::vector<double>& inData)
   cumsum[1] = inData[0];
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
+
+  int nbt = 2;
+  nb_indices[0] = 1;
 
   // Main loop
   for (t = 2; t <= n; t++)
@@ -161,6 +164,7 @@ void DUST_1D::compute(std::vector<double>& inData)
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still
         indices->prune_current();
+        nbt--;
       }
       else
       {
@@ -174,10 +178,13 @@ void DUST_1D::compute(std::vector<double>& inData)
     if (lastCost > minCost)
     {
       indices->prune_last();
+      nbt--;
     }
 
     // update the available indices
     indices->add(t);
+    nbt++;
+    nb_indices[t - 1] = nbt;
   }
 }
 
@@ -220,6 +227,7 @@ List DUST_1D::get_partition()
   return List::create(
     _["changepoints"] = backtrack_changepoints(),
     _["lastIndexSet"] = indices->get_list(),
+    _["nb"] = nb_indices,
     _["costQ"] = costRecord
   );
 }

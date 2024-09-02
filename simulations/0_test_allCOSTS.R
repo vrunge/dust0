@@ -15,6 +15,7 @@ beta = 2*log(n)/3
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 res1 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2)
 res2 <- fpopw::Fpop(y, beta)
+res1
 res1$changepoints
 res2$t.est
 

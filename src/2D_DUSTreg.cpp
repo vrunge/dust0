@@ -128,6 +128,8 @@ void DUST_reg::compute()
   E[1] = - data_y[0];
   F[1] = data_y[0] * data_y[0];
 
+  int nbt = 2;
+  nb_indices[0] = 1;
 
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
@@ -142,8 +144,6 @@ void DUST_reg::compute()
     D[t] = D[t - 1] - data_x[t - 1] * data_y[t - 1];
     E[t] = E[t - 1] - data_y[t - 1];
     F[t] = F[t - 1] + data_y[t - 1] * data_y[t - 1];
-
-
 
 
     // OP step
@@ -179,6 +179,7 @@ void DUST_reg::compute()
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still
         indices->prune_current();
+        nbt--;
       }
       else
       {
@@ -200,6 +201,8 @@ void DUST_reg::compute()
 
     // update the available indices
     indices->add(t);
+    nbt++;
+    nb_indices[t - 1] = nbt;
   }
 }
 
@@ -242,6 +245,7 @@ List DUST_reg::get_partition()
   return List::create(
     _["changepoints"] = backtrack_changepoints(),
     _["lastIndexSet"] = indices->get_list(),
+    _["nb"] = nb_indices,
     _["costQ"] = costRecord
   );
 }

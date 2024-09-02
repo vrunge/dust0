@@ -89,7 +89,7 @@ public:
   double alpha;
 
   Indices* indices;
-  std::forward_list<unsigned int> nb_indices;
+  std::vector<int> nb_indices;
 
   unsigned int n; // number of observations
   NumericVector data_x;
