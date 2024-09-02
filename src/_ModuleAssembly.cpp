@@ -10,6 +10,7 @@
 #include "1D_A7_NegbinModel.h"
 
 #include "2D_DUSTmeanVar.h"
+#include "2D_DUSTreg.h"
 
 using namespace Rcpp;
 
@@ -153,6 +154,73 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
    .method("quick_raw", &DUST_meanVar::quick)
    ;
  }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+DUST_reg *newModuleReg(const std::string& method,
+                       Nullable<double> alpha,
+                       Nullable<int> nbLoops)
+{
+  bool use_dual_max;
+  bool random_constraint;
+  if (method == "randIndex_randEval")
+  {
+    use_dual_max = false; /// random evaluation of the dual
+    random_constraint = true;  /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_detEval")
+  {
+    use_dual_max = true; /// exact evaluation of the dual
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else
+  {
+    use_dual_max = true;  /// exact evaluation of the dual
+    random_constraint = false;  /// choice of the closest index
+  }
+
+  return new DUST_reg(use_dual_max, random_constraint, alpha, nbLoops);
+}
+
+
+// --------------------------------- //
+// --- ///////////////////////// --- //
+// --- // Exposing the module // --- //
+// --- ///////////////////////// --- //
+// --------------------------------- //
+
+//' @title MyModule: Exposing DUST_reg to R
+ //'
+ //' @name DUST_reg
+ //'
+ //' @description
+ //' This module exposes the \code{DUST_reg} C++ class to R, allowing you to create
+ //' instances of \code{DUST_reg} and call its methods directly from R.
+ //'
+ //' @export
+ RCPP_MODULE(DUSTMODULEreg)
+ {
+   class_<DUST_reg>("DUST_reg")
+
+   .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleReg)
+
+   .method("init_raw", &DUST_reg::init)
+   .method("compute", &DUST_reg::compute)
+   .method("get_partition", &DUST_reg::get_partition)
+   .method("quick_raw", &DUST_reg::quick)
+   ;
+ }
+
 
 
 

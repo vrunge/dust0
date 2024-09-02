@@ -15,7 +15,7 @@ using namespace Rcpp;
 
 double sdDiff
 (
-    Rcpp::NumericVector& y, std::string method = "HALL"
+    std::vector<double>& y, std::string method = "HALL"
 );
 
 #endif

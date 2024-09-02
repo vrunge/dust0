@@ -73,21 +73,20 @@ void DUST_1D::init_method()
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
-void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
+void DUST_1D::init(std::vector<double>& inData, Nullable<double> inPenalty)
 {
-  data = std::move(inData);
-  n = data.size();
+  n = inData.size();
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * pow(sdDiff(data), 2) * std::log(n); //to do
+    penalty = 2 * pow(sdDiff(inData), 2) * std::log(n); //to do
   }
   else
   {
     penalty = as<double>(inPenalty);
   }
 
-  changepointRecord = IntegerVector(n + 1, 0);
+  changepointRecord = std::vector<int>(n + 1, 0);
 
 
   cumsum = std::vector<double>(n + 1, 0.);
@@ -106,7 +105,7 @@ void DUST_1D::init(NumericVector& inData, Nullable<double> inPenalty)
 
 
 // --- // Algorithm-specific method // --- //
-void DUST_1D::compute()
+void DUST_1D::compute(std::vector<double>& inData)
 {
   // Initialize OP step value
   double lastCost; // temporarily stores the cost for the model with last changepoint at some i
@@ -118,7 +117,7 @@ void DUST_1D::compute()
   // First OP step (t = 1)
   unsigned int t = 1;
   unsigned int s = 0;
-  cumsum[1] = data[0];
+  cumsum[1] = inData[0];
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
 
@@ -127,7 +126,7 @@ void DUST_1D::compute()
   {
     // update cumsum
     cumsum[t] =
-      cumsum[t - 1] + data[t - 1];
+      cumsum[t - 1] + inData[t - 1];
 
     // OP step
     indices->reset();
@@ -227,9 +226,9 @@ List DUST_1D::get_partition()
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //
-List DUST_1D::quick(NumericVector& inData, Nullable<double> inPenalty)
+List DUST_1D::quick(std::vector<double>& inData, Nullable<double> inPenalty)
 {
   init(inData, inPenalty);
-  compute();
+  compute(inData);
   return get_partition();
 }

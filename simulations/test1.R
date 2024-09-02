@@ -59,8 +59,11 @@ microbenchmark::microbenchmark(
 
 
 
-
+res <- dust.partitioner.1D()
+res <- res$quick(rnorm(1e4))
+res
 res <- dust.partitioner.1D()$quick(rnorm(1e4))
+
 res$changepoints
 res$lastIndexSet
 
@@ -70,9 +73,6 @@ DUST = new(DUST_1D, "gauss", "randIndex_randEval", NULL) # random in indices and
 DUST = new(DUST_1D, "gauss", "randIndex_detEval", NULL) # random in indices and eval dual max (time 2)
 
 
-DUST$init_raw(rnorm(1e3), NULL)
-DUST$compute()
-DUST$get_partition()
 
 res <- dust.partitioner.1D("gauss", "full.random")$quick(c(rnorm(1e3), rnorm(1e3, mean = 1)))
 

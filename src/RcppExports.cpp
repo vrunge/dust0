@@ -11,38 +11,100 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // sdDiff
-double sdDiff(Rcpp::NumericVector& y, std::string method);
+double sdDiff(std::vector<double>& y, std::string method);
 RcppExport SEXP _dust_sdDiff(SEXP ySEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type y(ySEXP);
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
     rcpp_result_gen = Rcpp::wrap(sdDiff(y, method));
     return rcpp_result_gen;
 END_RCPP
 }
 // data_normalization
-NumericVector data_normalization(Rcpp::NumericVector& y, std::string type);
+std::vector<double> data_normalization(std::vector<double>& y, std::string type);
 RcppExport SEXP _dust_data_normalization(SEXP ySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type y(ySEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
     rcpp_result_gen = Rcpp::wrap(data_normalization(y, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cs1
+double cs1(NumericVector& x);
+RcppExport SEXP _dust_cs1(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs1(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cs2
+double cs2(NumericVector& x);
+RcppExport SEXP _dust_cs2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs2(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cs3
+double cs3(NumericVector& x);
+RcppExport SEXP _dust_cs3(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs3(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cs4
+double cs4(NumericVector& x);
+RcppExport SEXP _dust_cs4(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs4(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cs5
+double cs5(NumericVector& x);
+RcppExport SEXP _dust_cs5(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs5(x));
     return rcpp_result_gen;
 END_RCPP
 }
 
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULEMeanVar();
+RcppExport SEXP _rcpp_module_boot_DUSTMODULEreg();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
     {"_dust_data_normalization", (DL_FUNC) &_dust_data_normalization, 2},
+    {"_dust_cs1", (DL_FUNC) &_dust_cs1, 1},
+    {"_dust_cs2", (DL_FUNC) &_dust_cs2, 1},
+    {"_dust_cs3", (DL_FUNC) &_dust_cs3, 1},
+    {"_dust_cs4", (DL_FUNC) &_dust_cs4, 1},
+    {"_dust_cs5", (DL_FUNC) &_dust_cs5, 1},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {"_rcpp_module_boot_DUSTMODULEMeanVar", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMeanVar, 0},
+    {"_rcpp_module_boot_DUSTMODULEreg", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEreg, 0},
     {NULL, NULL, 0}
 };
 

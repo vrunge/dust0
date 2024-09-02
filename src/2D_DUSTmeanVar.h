@@ -26,10 +26,10 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(NumericVector& inData, Nullable<double> inPenalty = Nullable<double>());
+  void init(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
 
   // --- // Main computation // --- //
-  void compute();
+  void compute(std::vector<double>& inData);
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
@@ -37,21 +37,23 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(NumericVector& inData, Nullable<double> inPenalty = Nullable<double>());
+  List quick(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
 
   ////////////////////////////////
   ////////////////////////////////
   ////////////////////////////////
 
   private:
+  const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
+
   std::vector<double> cumsum;
   std::vector<double> cumsum2;
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
 
-  double Cost(unsigned int t, unsigned int s) const;
-  double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const;
-  double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const;
+  double Cost(unsigned int t, unsigned int s);
+  double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   double Dstar(double x) const;
   double DstarPrime(double x) const;
@@ -84,12 +86,12 @@ public:
   double alpha;
 
   Indices* indices;
+  std::forward_list<unsigned int> nb_indices;
 
   unsigned int n; // number of observations
-  NumericVector data;
   double penalty;
 
-  IntegerVector changepointRecord;
+  std::vector<int> changepointRecord;
 
 };
 

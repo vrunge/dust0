@@ -1,5 +1,5 @@
-#ifndef DUST_1D_H
-#define DUST_1D_H
+#ifndef DUST_reg_H
+#define DUST_reg_H
 
 #include <Rcpp.h>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
@@ -9,7 +9,7 @@
 using namespace Rcpp;
 
 
-class DUST_1D
+class DUST_reg
 {
 
   ////////////////////////////////
@@ -17,19 +17,19 @@ class DUST_1D
   ////////////////////////////////
 
 public:
-  DUST_1D(bool use_dual_max,
-          bool random_constraint,
-          Nullable<double> alpha = Nullable<double>(),
-          Nullable<int> nbLoops = Nullable<int>());
+  DUST_reg(bool use_dual_max,
+           bool random_constraint,
+           Nullable<double> alpha = Nullable<double>(),
+           Nullable<int> nbLoops = Nullable<int>());
 
-  virtual ~DUST_1D();
+  ~DUST_reg();
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
+  void init(DataFrame& inData, Nullable<double> inPenalty = Nullable<double>());
 
   // --- // Main computation // --- //
-  void compute(std::vector<double>& inData);
+  void compute();
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
@@ -37,24 +37,30 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
+  List quick(DataFrame& inData, Nullable<double> inPenalty = Nullable<double>());
 
   ////////////////////////////////
   ////////////////////////////////
   ////////////////////////////////
 
-protected:
-  std::vector<double> cumsum;
+  private:
+  std::vector<double> A;
+  std::vector<double> B;
+  std::vector<double> C;
+  std::vector<double> D;
+  std::vector<double> E;
+  std::vector<double> F;
+
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
 
-  virtual double Cost(unsigned int t, unsigned int s) const = 0;
-  virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
-  virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
+  double Cost(unsigned int t, unsigned int s) const;
+  double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const;
+  double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const;
 
-  virtual double Dstar(double x) const = 0;
-  virtual double DstarPrime(double x) const = 0;
-  virtual double DstarSecond(double x) const = 0;
+  double Dstar(double x) const;
+  double DstarPrime(double x) const;
+  double DstarSecond(double x) const;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 
@@ -65,7 +71,6 @@ protected:
   ////////////////////////////////
   ////////////////////////////////
 
-private:
   // --- // Test and Indices init // --- //
   void init_method();
 
@@ -73,7 +78,7 @@ private:
   double exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r);
   double random_test(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
-  double (DUST_1D::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double (DUST_reg::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();
@@ -84,9 +89,11 @@ private:
   double alpha;
 
   Indices* indices;
-  std::vector<int> nb_indices;
+  std::forward_list<unsigned int> nb_indices;
 
   unsigned int n; // number of observations
+  NumericVector data_x;
+  NumericVector data_y;
   double penalty;
 
   std::vector<int> changepointRecord;

@@ -4,8 +4,7 @@ using namespace Rcpp;
 
 #include <Rcpp.h>
 #include <cmath>
-#include <algorithm> // for std::max_element
-
+#include <algorithm> // for std::max_element, for std::all_of and std::isfinite
 
 
 //' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
@@ -38,14 +37,14 @@ using namespace Rcpp;
 //'
 //' @export
 // [[Rcpp::export]]
-double sdDiff(Rcpp::NumericVector& y, std::string method = "HALL")
+double sdDiff(std::vector<double>& y, std::string method = "HALL")
 {
   ///////////////////////  HALL
   ///////////////////////  HALL
   ///////////////////////  HALL
   if(method == "HALL")
   {
-    if(!Rcpp::is_true(Rcpp::all(Rcpp::is_finite(y))) || y.size() < 5)
+    if(!std::all_of(y.begin(), y.end(), [](double val) { return std::isfinite(val); }) || y.size() < 5)
     {
       Rcpp::stop("y is not a numeric vector or length < 5 (the HALL method cannot be used)");
     }
@@ -84,7 +83,7 @@ double sdDiff(Rcpp::NumericVector& y, std::string method = "HALL")
   ///////////////////////  MAD
   if(method == "MAD")
   {
-    if(!Rcpp::is_true(Rcpp::all(Rcpp::is_finite(y))) || y.size() < 2)
+    if(!std::all_of(y.begin(), y.end(), [](double val) { return std::isfinite(val); }) || y.size() < 2)
     {
       Rcpp::stop("y is not a numeric vector or length < 2 (the MAD method cannot be used)");
     }
@@ -128,7 +127,7 @@ double sdDiff(Rcpp::NumericVector& y, std::string method = "HALL")
   if(method == "SD")
   {
     int n = y.size() - 1;
-    if(!Rcpp::is_true(Rcpp::all(Rcpp::is_finite(y))) || y.size() < 2)
+    if(!std::all_of(y.begin(), y.end(), [](double val) { return std::isfinite(val); }) || y.size() < 2)
     {
       Rcpp::stop("y is not a numeric vector or length < 2 (the SD method cannot be used)");
     }
@@ -188,7 +187,7 @@ double sdDiff(Rcpp::NumericVector& y, std::string method = "HALL")
 //'
 //' @export
 // [[Rcpp::export]]
-NumericVector data_normalization(Rcpp::NumericVector& y, std::string type = "gauss")
+std::vector<double> data_normalization(std::vector<double>& y, std::string type = "gauss")
 {
   int n = y.size();
 
@@ -208,7 +207,7 @@ NumericVector data_normalization(Rcpp::NumericVector& y, std::string type = "gau
   if(type == "poisson")
   {
     for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with poisson model");}}
-    double mean_y = Rcpp::mean(y);
+    double mean_y = std::accumulate(y.begin(), y.end(), 0.0) / n;
     for(int i = 0; i < n; ++i) {y[i] = y[i] / mean_y;}
     return y;
   }
@@ -219,7 +218,7 @@ NumericVector data_normalization(Rcpp::NumericVector& y, std::string type = "gau
   if(type == "exp")
   {
     for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with exp model");}}
-    double mean_y = Rcpp::mean(y);
+    double mean_y = std::accumulate(y.begin(), y.end(), 0.0) / n;
     for(int i = 0; i < n; ++i) {y[i] = y[i] / mean_y;}
     return y;
   }

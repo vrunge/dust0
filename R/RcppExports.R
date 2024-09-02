@@ -15,6 +15,9 @@ NULL
 #' @title MyModule: Exposing DUST_meanVar to R
 NULL
 
+#' @title MyModule: Exposing DUST_reg to R
+NULL
+
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 #'
 #' The `sdDiff` function calculates a measure of variability (standard deviation or MAD)
@@ -78,5 +81,25 @@ sdDiff <- function(y, method = "HALL") {
 #' @export
 data_normalization <- function(y, type = "gauss") {
     .Call(`_dust_data_normalization`, y, type)
+}
+
+cs1 <- function(x) {
+    .Call(`_dust_cs1`, x)
+}
+
+cs2 <- function(x) {
+    .Call(`_dust_cs2`, x)
+}
+
+cs3 <- function(x) {
+    .Call(`_dust_cs3`, x)
+}
+
+cs4 <- function(x) {
+    .Call(`_dust_cs4`, x)
+}
+
+cs5 <- function(x) {
+    .Call(`_dust_cs5`, x)
 }
 

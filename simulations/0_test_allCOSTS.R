@@ -1,13 +1,102 @@
 
+library(fpopw)
+n = 10^7
+beta = 2*log(n)
+
+y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
+res1 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2))
+res2 <- system.time(fpopw::Fpop(y, beta))
+(res1[[1]] - res2[[1]])/res2[[1]]
+res1
+res2
+
+n = 10^3
+beta = 2*log(n)/3
+y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
+res1 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2)
+res2 <- fpopw::Fpop(y, beta)
+res1$changepoints
+res2$t.est
+
+
+########################################################################
+
+n <- 10^8
+z <- rnorm(n)
+system.time(cs1(z))
+system.time(cs2(z))
+system.time(cs3(z))
+system.time(cs4(z))
+system.time(cs5(z))
+
+n <- 10^6
+m <- 10
+z <- rnorm(n)
+system.time(for(i in 1:m){cs1(z)})
+system.time(for(i in 1:m){cs2(z)})
+system.time(for(i in 1:m){cs3(z)})
+system.time(for(i in 1:m){cs4(z)})
+system.time(for(i in 1:m){cs5(z)})
+
+
+
+n <- 10^5
+beta <- 2*log(n)/4
+y2 <- dataGenerator_Reg()
+y <- y2$x
+
+r1 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = beta)
+r2 <- dust.partitioner.reg(method = "randIndex_randEval")$quick(data = y2, penalty = beta)
+r3 <- dust_R_2param_regression(data = y2, penalty = beta, pruningOpt = 2)
+r1$changepoints
+r2$changepoints
+r3$changepoints
+
+r2$costQ - r3$costQ
+
+
+################################################
+
+
+n <- 10^4
+beta <- 2*log(n)
+y <- rnorm(n)
+system.time(dust.partitioner.meanVar(method = "fastest")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.meanVar(method = "randIndex_randEval")$quick(data = y, penalty = beta))
+
+
+res1 <- dust.partitioner.1D(model = "gauss", method = "randIndex_detEval")$quick(data = y, penalty = beta)
+res2 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = 2*beta)
+res1$lastIndexSet
+res2$lastIndexSet
+length(res1$lastIndexSet)/n
+length(res2$lastIndexSet)/n
+
+
+
+
+
 ################################################################################
 ################################################################################
 
-n <- 10^2
+n <- 3*10^4
 beta <- 2*log(n)
 #y <- c(rnorm(n), rnorm(n,sd = 2), rnorm(n, mean = 1, sd = 2))
 y <- rnorm(n)
+z <- dataGenerator_1D(n, parameters = 40, type = "poisson")
 #plot(y, type = 'b')
-res2 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = beta)
+system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.meanVar(method = "randIndex_randEval")$quick(data = y, penalty = beta))
+
+
+res1 <- dust.partitioner.1D(model = "gauss", method = "randIndex_detEval")$quick(data = y, penalty = beta)
+res2 <- dust.partitioner.meanVar(method = "randIndex_detEval")$quick(data = y, penalty = 2*beta)
+res1$lastIndexSet
+res2$lastIndexSet
+length(res1$lastIndexSet)/n
+length(res2$lastIndexSet)/n
+
+res4 <- dust.partitioner.reg(method = "randIndex_detEval")$quick(data = y, penalty = beta)
 res3 <- dust_R_2param(y, penalty = beta, pruningOpt = 2)
 
 #all(res2$changepoints == res3$changepoints)

@@ -4,7 +4,7 @@
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 #include <limits>
 
-#include "2D_DUSTmeanVar.h"
+#include "2D_DUSTreg.h"
 #include "preProcessing.h"
 
 using namespace Rcpp;
@@ -14,7 +14,7 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_meanVar::DUST_meanVar(bool use_dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_reg::DUST_reg(bool use_dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
   : use_dual_max(use_dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
@@ -37,12 +37,12 @@ DUST_meanVar::DUST_meanVar(bool use_dual_max, bool random_constraint, Nullable<d
   }
 }
 
-DUST_meanVar::~DUST_meanVar()
+DUST_reg::~DUST_reg()
 {
   delete indices;
 }
 
-void DUST_meanVar::init_method()
+void DUST_reg::init_method()
 {
   delete indices;
   if(random_constraint)
@@ -56,11 +56,11 @@ void DUST_meanVar::init_method()
 
   if(use_dual_max)
   {
-    current_test = &DUST_meanVar::exact_test;
+    current_test = &DUST_reg::exact_test;
   }
   else
   {
-    current_test = &DUST_meanVar::random_test;
+    current_test = &DUST_reg::random_test;
   }
 
   engine.seed(std::random_device{}());
@@ -73,23 +73,24 @@ void DUST_meanVar::init_method()
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
-void DUST_meanVar::init(std::vector<double>& inData, Nullable<double> inPenalty)
+void DUST_reg::init(DataFrame& inData, Nullable<double> inPenalty)
 {
-  n = inData.size();
+  data_x = inData["x"];
+  data_y = inData["y"];
 
-  if (inPenalty.isNull())
-  {
-    penalty = 2 * pow(sdDiff(inData), 2) * std::log(n); //to do
-  }
-  else
-  {
-    penalty = as<double>(inPenalty);
-  }
+  n = data_y.size();
+  penalty = as<double>(inPenalty);
+
+  A = std::vector<double>(n + 1, 0.);
+  B = std::vector<double>(n + 1, 0.);
+  C = std::vector<double>(n + 1, 0.);
+  D = std::vector<double>(n + 1, 0.);
+  E = std::vector<double>(n + 1, 0.);
+  F = std::vector<double>(n + 1, 0.);
 
   changepointRecord = std::vector<int>(n + 1, 0);
+  nb_indices = std::vector<int>(n, 0);
 
-  cumsum = std::vector<double>(n + 1, 0.);
-  cumsum2 = std::vector<double>(n + 1, 0.);
   costRecord = std::vector<double>(n + 1, -penalty);
 
   init_method();
@@ -101,10 +102,13 @@ void DUST_meanVar::init(std::vector<double>& inData, Nullable<double> inPenalty)
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 // --- // Algorithm-specific method // --- //
-void DUST_meanVar::compute(std::vector<double>& inData)
+void DUST_reg::compute()
 {
   // Initialize OP step value
   double lastCost; // temporarily stores the cost for the model with last changepoint at some i
@@ -113,11 +117,18 @@ void DUST_meanVar::compute(std::vector<double>& inData)
   double minCost;
   unsigned int argMin; // stores the optimal last changepoint for the current OP step
 
+
   // First OP step (t = 1)
   unsigned int t = 1;
   unsigned int s = 0;
-  cumsum[1] = inData[0];
-  cumsum2[1] = inData[0] * inData[0];
+  A[1] = data_x[0] * data_x[0];
+  B[1] = data_x[0];
+  C[1] = 1;
+  D[1] = - data_x[0] * data_y[0];
+  E[1] = - data_y[0];
+  F[1] = data_y[0] * data_y[0];
+
+
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
 
@@ -125,8 +136,15 @@ void DUST_meanVar::compute(std::vector<double>& inData)
   for (t = 2; t <= n; t++)
   {
     // update cumsum and cumsum2
-    cumsum[t] = cumsum[t - 1] + inData[t - 1];
-    cumsum2[t] = cumsum2[t - 1] + inData[t - 1] * inData[t - 1];
+    A[t] = A[t - 1] + data_x[t - 1] * data_x[t - 1];
+    B[t] = B[t - 1] + data_x[t - 1];
+    C[t] = t;
+    D[t] = D[t - 1] - data_x[t - 1] * data_y[t - 1];
+    E[t] = E[t - 1] - data_y[t - 1];
+    F[t] = F[t - 1] + data_y[t - 1] * data_y[t - 1];
+
+
+
 
     // OP step
     indices->reset();
@@ -186,7 +204,7 @@ void DUST_meanVar::compute(std::vector<double>& inData)
 }
 
 // --- // Test methods // --- //
-double DUST_meanVar::exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
+double DUST_reg::exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   return dualMax(minCost, t, s, r);
 }
@@ -196,7 +214,7 @@ double DUST_meanVar::exact_test(double minCost, unsigned int t, unsigned int s, 
 //////////////////////////////////////////////////////////////////////////////
 
 
-double DUST_meanVar::random_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
+double DUST_reg::random_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   return dualEval(dist(engine), minCost, t, s, r);
 }
@@ -207,7 +225,7 @@ double DUST_meanVar::random_test(double minCost, unsigned int t, unsigned int s,
 
 
 // --- // Builds changepoints // --- //
-std::forward_list<unsigned int> DUST_meanVar::backtrack_changepoints()
+std::forward_list<unsigned int> DUST_reg::backtrack_changepoints()
 {
   std::forward_list<unsigned int> changepoints {n};
   for (int newChangepoint = changepointRecord[n]; newChangepoint != 0; newChangepoint = changepointRecord[newChangepoint])
@@ -218,7 +236,7 @@ std::forward_list<unsigned int> DUST_meanVar::backtrack_changepoints()
 }
 
 // --- // Retrieves optimal partition // --- //
-List DUST_meanVar::get_partition()
+List DUST_reg::get_partition()
 {
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
   return List::create(
@@ -230,10 +248,10 @@ List DUST_meanVar::get_partition()
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //
-List DUST_meanVar::quick(std::vector<double>& inData, Nullable<double> inPenalty)
+List DUST_reg::quick(DataFrame& inData, Nullable<double> inPenalty)
 {
   init(inData, inPenalty);
-  compute(inData);
+  compute();
   return get_partition();
 }
 
@@ -247,53 +265,67 @@ List DUST_meanVar::quick(std::vector<double>& inData, Nullable<double> inPenalty
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-double DUST_meanVar::Cost(unsigned int t, unsigned int s)
+double DUST_reg::Cost(unsigned int t, unsigned int s) const
 {
-
   if(s + 1 == t){return(std::numeric_limits<double>::infinity());}
-  double m = (cumsum[t] - cumsum[s]) / (t - s);
-  return 0.5 * (t - s) * (1 + std::log((cumsum2[t] - cumsum2[s]) / (t - s) - m * m));
+
+  double Adiff = A[t] - A[s];
+  double Bdiff = B[t] - B[s];
+  double Cdiff = C[t] - C[s];
+  double Ddiff = D[t] - D[s];
+  double Ediff = E[t] - E[s];
+  double Fdiff = F[t] - F[s];
+
+  double num = 2.0 * Bdiff * Ddiff * Ediff - Adiff * Ediff * Ediff - Cdiff * Ddiff * Ddiff;
+  double denom = Adiff * Cdiff - Bdiff * Bdiff;
+
+  return num / denom + Fdiff;
 }
 
 
-double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r)
+double DUST_reg::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
   if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
-  double Mt = (cumsum[t] - cumsum[s]) / (t - s);
-  double Mt2 = (cumsum2[t] - cumsum2[s]) / (t - s);
-  double Ms = (cumsum[s] - cumsum[r]) / (s - r);
-  double Ms2 = (cumsum2[s] - cumsum2[r]) / (s - r);
+  double Mt = (B[t] - B[s]) / (t - s);
+  double Mt2 = (A[t] - A[s]) / (t - s);
+  double Ms = (B[s] - B[r]) / (s - r);
+  double Ms2 = (A[s] - A[r]) / (s - r);
 
   // Compute variance terms
   double Va = Mt2 - std::pow(Mt, 2);
   double Vb = Ms2 - std::pow(Ms, 2);
-
   double u = (Va + Vb) * (1 + std::pow((Mt - Ms) / std::sqrt(Va + Vb), 2));
-  point = point * (u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb);
+  point = point * ((t - s)/ (s - r)) * (u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb);
 
-  //std::cout << point << " ";
-  double A = (Mt2 - point *  Ms2)/(1 - point);
-  double B = (Mt - point *  Ms)/(1 - point);
+  double Adiff = A[t] - A[s] - point * (A[s] - A[r]);
+  double Bdiff = B[t] - B[s] - point * (B[s] - B[r]);
+  double Cdiff = C[t] - C[s] - point * (C[s] - C[r]);
+  double Ddiff = D[t] - D[s] - point * (D[s] - D[r]);
+  double Ediff = E[t] - E[s] - point * (E[s] - E[r]);
+  double Fdiff = F[t] - F[s] - point * (F[s] - F[r]);
 
-  return (costRecord[s] - minCost) / (t - s)
-  + point * (costRecord[s] - costRecord[r]) / (s - r)
-  + 0.5 * (1 - point) * (1 + std::log(A - B*B));
+  double num = 2.0 * Bdiff * Ddiff * Ediff - Adiff * Ediff * Ediff - Cdiff * Ddiff * Ddiff;
+  double denom = Adiff * Cdiff - Bdiff * Bdiff;
+
+  return (costRecord[s] - minCost)
+    + point * (costRecord[s] - costRecord[r])
+    + num / denom + Fdiff;
 }
 
 
-double DUST_meanVar::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r)
+double DUST_reg::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
   if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
-
+  const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
   double a = 0.0;
   double b = 1.0;
   double c = 1 - 1/phi;
   double d = 1/phi;
 
-  double fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
-  double fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+  double fc = DUST_reg::dualEval(c, minCost, t, s, r);
+  double fd = DUST_reg::dualEval(d, minCost, t, s, r);
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -304,7 +336,7 @@ double DUST_meanVar::dualMax(double minCost, unsigned int t, unsigned int s, uns
       d = c;
       fd = fc;
       c = b - (b - a) / phi;
-      fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
+      fc = DUST_reg::dualEval(c, minCost, t, s, r);
     }
     else
     {
@@ -312,7 +344,7 @@ double DUST_meanVar::dualMax(double minCost, unsigned int t, unsigned int s, uns
       c = d;
       fc = fd;
       d = a + (b - a) / phi;
-      fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+      fd = DUST_reg::dualEval(d, minCost, t, s, r);
     }
     max_val = std::max(max_val, std::max(fc, fd));
     if(max_val > 0){break;}
@@ -323,17 +355,17 @@ double DUST_meanVar::dualMax(double minCost, unsigned int t, unsigned int s, uns
 
 
 
-double DUST_meanVar::Dstar(double x) const
+double DUST_reg::Dstar(double x) const
 {
   return 0;
 }
 
-double DUST_meanVar::DstarPrime(double x) const
+double DUST_reg::DstarPrime(double x) const
 {
   return 0;
 }
 
-double DUST_meanVar::DstarSecond(double x) const
+double DUST_reg::DstarSecond(double x) const
 {
   return 0;
 }
