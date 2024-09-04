@@ -45,6 +45,7 @@ public:
 
 protected:
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
+  const double m1 = 0.01;  // Armijo
   std::vector<double> cumsum;
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
@@ -76,6 +77,8 @@ private:
   double dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
   double dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
   double dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   double (DUST_1D::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 

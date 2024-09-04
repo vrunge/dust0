@@ -1,5 +1,15 @@
 
 
+
+tpe <- "poisson"
+n <- 10^2
+beta <- 2*log(n)
+y <- dataGenerator_1D(n, parameters = 1, type = tpe)
+plot_dual_1D(data = y, s1 = 95, s2 = 90, type = tpe, mu = 1:9999/10000, penalty = 3, OP = T)
+
+
+
+
 te <- "randIndex_Eval0"
 
 n <- 10^3

@@ -76,7 +76,14 @@ void DUST_1D::init_method()
   {
     current_test = &DUST_1D::dualMaxAlgo3;
   }
-
+  if(dual_max == 4)
+  {
+    current_test = &DUST_1D::dualMaxAlgo4;
+  }
+  if(dual_max == 5)
+  {
+    current_test = &DUST_1D::dualMaxAlgo5;
+  }
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
@@ -142,8 +149,66 @@ double DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, uns
 
 double DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return(-std::numeric_limits<double>::infinity());
+  double a = (cumsum[t] - cumsum[s]) / (t - s); // m_it
+  double b = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
+  double C = (costRecord[s] - costRecord[r]) / (s - r);
+
+  //std::cout << "c " << C << std::endl;
+  double f_prime;
+  double f_second;
+  double mu_new;
+
+  ////DANGER
+  double mu = 0.01;
+
+  double m;
+  for (int i = 0; i < nb_Loops; ++i)
+  {
+
+    m =  (a - mu*b) / (1.0 - mu);
+    //std::cout << "dualEvaldualEval" << -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s) << std::endl;
+
+    f_prime = Dstar(m) - ((a-b)/(1.0 - mu)) * DstarPrime(m) + C;
+    f_second = - (std::pow(a-b,2)/std::pow(1.0-mu,3)) * DstarSecond(m);
+
+    mu_new = mu - (f_prime / f_second);
+    mu_new = std::max(0.0, std::min(1.0, mu_new));
+    // Check for pruning
+    //if(dualEval(mu_new, minCost, t, s, r) > 0) {break;}
+    //std::cout << "mu " << mu << " munew " << mu_new << " ab " << a << " " << b << std::endl;
+     mu = mu_new;
+     //std::cout <<  " Dstar(m)" << Dstar(m)  << " DstarPrime(m) " << ((a-b)/(1.0 - mu)) * DstarPrime(m)  << " DstarSecond(m) " << DstarSecond(m) << std::endl;
+     //std::cout <<  " --- " << f_prime  << " --- " << f_second << " +++ " << f_prime / f_second << std::endl;
+  }
+  //std::cout << std::endl;
+  return -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s);
+  //return(-std::numeric_limits<double>::infinity());
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+double DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  double a = (cumsum[t] - cumsum[s]) / (t - s); // m_it
+  double b = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
+  double C = (costRecord[s] - costRecord[r]) / (s - r);
+
+  ////DANGER
+  double mu = 0.5*std::min(1.0, a/b);
+  double m = (a - mu*b) / (1.0 - mu);
+  return -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s);
+}
+
+
+double DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

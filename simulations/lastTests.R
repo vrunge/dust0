@@ -1,4 +1,41 @@
 
+tpe <- "poisson"
+n <- 10^5
+beta <- 2*log(n)/5
+y <- dataGenerator_1D(n, parameters = 0, type = tpe)
+res1 <- dust.partitioner.1D(method = "detIndex_Eval4", model = tpe)$quick(data = y, penalty = beta)
+res2 <- dust.partitioner.1D(method = "detIndex_Eval2", model = tpe)$quick(data = y, penalty = beta)
+
+all(res1$changepoints == res2$changepoints)
+res2$changepoints
+plot(res1$nb - res2$nb)
+
+n <- 10^4
+beta <- 2*log(n)
+y <- dataGenerator_1D(n, parameters = 10, type = tpe)
+system.time(dust.partitioner.1D(method = "randIndex_Eval2", model = tpe)$quick(data = y, penalty = beta))
+system.time(dust.partitioner.1D(method = "randIndex_Eval4", model = tpe)$quick(data = y, penalty = beta))
+
+
+n <- 10^3
+beta <- 2*log(n)
+y <- dataGenerator_1D(n, parameters = 0, type = "gauss")
+a <- dust.partitioner.1D(method = "randIndex_Eval2", model = "gauss")$quick(data = y, penalty = beta)
+b <- dust.partitioner.1D(method = "randIndex_Eval4", model = "gauss")$quick(data = y, penalty = beta)
+
+a$changepoints
+b$changepoints
+
+a$lastIndexSet
+b$lastIndexSet
+
+
+
+
+
+####################################################################################
+####################################################################################
+####################################################################################
 
 ###
 ###
@@ -23,6 +60,14 @@ length(res3$lastIndexSet)
 length(res5$lastIndexSet)
 length(res6$lastIndexSet)
 length(res7$lastIndexSet)
+
+res1$nb[n]/n * 100
+res2$nb[n]/n * 100
+
+(n*(n+1)/2) /sum(res1$nb)
+(n*(n+1)/2) /sum(res2$nb)
+
+sum(res1$nb)/sum(res2$nb)
 
 
 
@@ -90,15 +135,15 @@ system.time(dust.partitioner.1D(method = "detIndex_Eval2", model = "poisson")$qu
 ###
 ###
 
-n <- 10^4
+n <- 10^5
 beta <- 2*log(n)
 y <- dataGenerator_Reg(chpts = c(n/4,n), A = c(2,-1),  B = c(-1,2), meansX = c(10,0.1), type = "simple")
 r1 <- dust.partitioner.reg(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
 r2 <- dust.partitioner.reg(method = "randIndex_Eval2")$quick(data = y, penalty = beta)
 r1$changepoints
 r2$changepoints
-r1$nb[n]/n
-r2$nb[n]/n
+r1$nb[n]/n * 100
+r2$nb[n]/n * 100
 
 ####################################################################################
 ####################################################################################
@@ -110,13 +155,14 @@ r2$nb[n]/n
 
 n <- 10^4
 beta <- 2*log(n)
-y <-   dataGenerator_MV(chpts = c(n/4,n/2,n), means = c(0,1,0), sds = c(1,1,2))
+y <-   dataGenerator_MV(chpts = c(n/4,n/2,n), means = c(0,1,0), sds = c(1,1,1.2))
+plot(y)
 r1 <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
 r2 <- dust.partitioner.meanVar(method = "randIndex_Eval2")$quick(data = y, penalty = beta)
 r1$changepoints
 r2$changepoints
-r1$nb[n]/n
-r2$nb[n]/n
+r1$nb[n]/n * 100
+r2$nb[n]/n * 100
 
 
 

@@ -21,7 +21,7 @@ double Gauss_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 {
   return (costRecord[s] - minCost) / (t - s)
     + point * (costRecord[s] - costRecord[r]) / (s - r)
-    - 0.5 * pow((cumsum[t] - cumsum[s]) / (t - s) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
+    - 0.5 * std::pow((cumsum[t] - cumsum[s]) / (t - s) - point * ((cumsum[s] - cumsum[r]) / (s - r)), 2) / (1 - point);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,18 +53,18 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 
 double Gauss_1D::Dstar(double x) const
 {
-  return 0;
+  return 0.5 * x * x;
 }
 
 
 double Gauss_1D::DstarPrime(double x) const
 {
-  return 0;
+  return x;
 }
 
 double Gauss_1D::DstarSecond(double x) const
 {
-  return 0;
+  return 1.0;
 }
 
 

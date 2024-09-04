@@ -77,6 +77,14 @@ void DUST_reg::init_method()
   {
     current_test = &DUST_reg::dualMaxAlgo3;
   }
+  if(dual_max == 4)
+  {
+    current_test = &DUST_reg::dualMaxAlgo4;
+  }
+  if(dual_max == 5)
+  {
+    current_test = &DUST_reg::dualMaxAlgo5;
+  }
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
@@ -145,6 +153,17 @@ double DUST_reg::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, un
 {
   return (-std::numeric_limits<double>::infinity());
 }
+
+double DUST_reg::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+double DUST_reg::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

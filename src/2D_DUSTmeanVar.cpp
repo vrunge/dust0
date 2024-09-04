@@ -77,6 +77,14 @@ void DUST_meanVar::init_method()
   {
     current_test = &DUST_meanVar::dualMaxAlgo3;
   }
+  if(dual_max == 4)
+  {
+    current_test = &DUST_meanVar::dualMaxAlgo4;
+  }
+  if(dual_max == 5)
+  {
+    current_test = &DUST_meanVar::dualMaxAlgo5;
+  }
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
@@ -141,6 +149,18 @@ double DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s
 
 
 double DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+
+
+double DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+double DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   return (-std::numeric_limits<double>::infinity());
 }

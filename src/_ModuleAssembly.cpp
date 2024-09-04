@@ -53,6 +53,18 @@ DUST_1D *newModule1D(const std::string& model,
     dual_max = 3; /// algo3
     random_constraint = true; /// random choice for the unique constraint
   }
+  else if (method == "randIndex_Eval4")
+  {
+    dual_max = 4; /// algo4
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval5")
+  {
+    dual_max = 5; /// algo4
+    random_constraint = true; /// random choice for the unique constraint
+  }
+
+
   else if (method == "detIndex_Eval0")
   {
     dual_max = 0; /// the random Evaluation of the dual
@@ -71,6 +83,16 @@ DUST_1D *newModule1D(const std::string& model,
   else if (method == "detIndex_Eval3")
   {
     dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval4")
+  {
+    dual_max = 4; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval5")
+  {
+    dual_max = 5; /// algo3
     random_constraint = false; /// deterministic choice of constraint
   }
 
@@ -161,6 +183,17 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
     dual_max = 3; /// algo3
     random_constraint = true; /// random choice for the unique constraint
   }
+  else if (method == "randIndex_Eval4")
+  {
+    dual_max = 4; /// algo4
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval5")
+  {
+    dual_max = 5; /// algo5
+    random_constraint = true; /// random choice for the unique constraint
+  }
+
   else if (method == "detIndex_Eval0")
   {
     dual_max = 0; /// the random Evaluation of the dual
@@ -179,6 +212,16 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
   else if (method == "detIndex_Eval3")
   {
     dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval4")
+  {
+    dual_max = 4; /// algo4
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval5")
+  {
+    dual_max = 5; /// algo5
     random_constraint = false; /// deterministic choice of constraint
   }
 
@@ -254,6 +297,17 @@ DUST_reg *newModuleReg(const std::string& method,
     dual_max = 3; /// algo3
     random_constraint = true; /// random choice for the unique constraint
   }
+  else if (method == "randIndex_Eval4")
+  {
+    dual_max = 4; /// algo3
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval5")
+  {
+    dual_max = 5; /// algo3
+    random_constraint = true; /// random choice for the unique constraint
+  }
+
   else if (method == "detIndex_Eval0")
   {
     dual_max = 0; /// the random Evaluation of the dual
@@ -272,6 +326,16 @@ DUST_reg *newModuleReg(const std::string& method,
   else if (method == "detIndex_Eval3")
   {
     dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval4")
+  {
+    dual_max = 4; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval5")
+  {
+    dual_max = 5; /// algo3
     random_constraint = false; /// deterministic choice of constraint
   }
 
