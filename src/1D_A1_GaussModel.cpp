@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Gauss_1D::Gauss_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_1D(use_dual_max, random_constraint, alpha, nbLoops) {}
+Gauss_1D::Gauss_1D(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
+  : DUST_1D(dual_max, random_constraint, alpha, nbLoops) {}
 
 double Gauss_1D::Cost(unsigned int t, unsigned int s) const
 {

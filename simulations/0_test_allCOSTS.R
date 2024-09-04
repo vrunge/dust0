@@ -1,16 +1,38 @@
 
+
+te <- "randIndex_Eval0"
+
+n <- 10^3
+beta <- 2*log(n)
+y <- rnorm(n)
+res1 <- dust.partitioner.1D(method = "detIndex_Eval0")$quick(data = y, penalty = beta)
+res2 <- dust.partitioner.1D(method = "detIndex_Eval1")$quick(data = y, penalty = beta)
+res3 <- dust.partitioner.1D(method = "detIndex_Eval2")$quick(data = y, penalty = beta)
+res4 <- dust.partitioner.1D(method = "detIndex_Eval3")$quick(data = y, penalty = beta)
+
+plot(res1$nb, type = 'l')
+plot(res2$nb, type = 'l')
+plot(res3$nb, type = 'l')
+
+
+
 library(fpopw)
-n = 10^7
+n = 10^6
 beta = 2*log(n)
 
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
-res1 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2))
-res2 <- system.time(fpopw::Fpop(y, beta))
-(res1[[1]] - res2[[1]])/res2[[1]]
+res1 <- system.time(dust.partitioner.1D(model = "gauss", method = "detIndex_Eval1")$quick(data = y, penalty = beta/2))
+res2 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2))
+res3 <- system.time(fpopw::Fpop(y, beta))
+(res1[[1]] - res3[[1]])/res3[[1]]
+(res2[[1]] - res2[[1]])/res3[[1]]
 res1
 res2
+res3
 
-n = 10^7
+
+
+n = 10^6
 beta = 2*log(n)
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 res1 <- dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2)

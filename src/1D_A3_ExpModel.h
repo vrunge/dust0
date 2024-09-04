@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 class Exp_1D : public DUST_1D {
 public:
-  Exp_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
+  Exp_1D(int dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(unsigned int t, unsigned int s) const override;
   double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const override;

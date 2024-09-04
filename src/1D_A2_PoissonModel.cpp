@@ -8,8 +8,8 @@
 
 using namespace Rcpp;
 
-Poisson_1D::Poisson_1D(bool use_dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_1D(use_dual_max, random_constraint, alpha, nbLoops) {}
+Poisson_1D::Poisson_1D(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
+  : DUST_1D(dual_max, random_constraint, alpha, nbLoops) {}
 
 double Poisson_1D::Cost(unsigned int t, unsigned int s) const
 {
@@ -38,42 +38,11 @@ double Poisson_1D::dualEval(double point, double minCost, unsigned int t, unsign
     - (objectiveMean - point * constraintMean) * (std::log((objectiveMean - point * constraintMean) / (1 - point)) - 1);
 }
 
+
 double Poisson_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
-  double a = 0.0;
-  double b = 1.0;
-  double c = 1 - 1/phi;
-  double d = 1/phi;
-
-  double fc = Poisson_1D::dualEval(c, minCost, t, s, r);
-  double fd = Poisson_1D::dualEval(d, minCost, t, s, r);
-  double max_val = std::max(fc, fd);
-
-  for (int i = 0; i < nb_Loops; i++)
-  {
-    if (fc > fd)
-    {
-      b = d;
-      d = c;
-      fd = fc;
-      c = b - (b - a) / phi;
-      fc = Poisson_1D::dualEval(c, minCost, t, s, r);
-    }
-    else
-    {
-      a = c;
-      c = d;
-      fc = fd;
-      d = a + (b - a) / phi;
-      fd = Poisson_1D::dualEval(d, minCost, t, s, r);
-    }
-    max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){break;}
-  }
-  return max_val;
+  return (-std::numeric_limits<double>::infinity());
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

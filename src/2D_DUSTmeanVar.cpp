@@ -14,8 +14,8 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_meanVar::DUST_meanVar(bool use_dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
-  : use_dual_max(use_dual_max),
+DUST_meanVar::DUST_meanVar(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+  : dual_max(dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
 {
@@ -45,6 +45,10 @@ DUST_meanVar::~DUST_meanVar()
 void DUST_meanVar::init_method()
 {
   delete indices;
+
+  /// /// ///
+  /// /// /// index METHOD
+  /// /// ///
   if(random_constraint)
   {
     indices = new RandomIndices(n, alpha);
@@ -54,22 +58,97 @@ void DUST_meanVar::init_method()
     indices = new DeterministicIndices;
   }
 
-  if(use_dual_max)
+  /// /// ///
+  /// /// /// dual_max METHOD
+  /// /// ///
+  if(dual_max == 0)
   {
-    current_test = &DUST_meanVar::exact_test;
+    current_test = &DUST_meanVar::dualMaxAlgo0;
   }
-  else
+  if(dual_max == 1)
   {
-    current_test = &DUST_meanVar::random_test;
+    current_test = &DUST_meanVar::dualMaxAlgo1;
+  }
+  if(dual_max == 2)
+  {
+    current_test = &DUST_meanVar::dualMaxAlgo2;
+  }
+  if(dual_max == 3)
+  {
+    current_test = &DUST_meanVar::dualMaxAlgo3;
   }
 
+  /// /// ///
+  /// /// /// INIT RANDOM GENERATOR
+  /// /// ///
   engine.seed(std::random_device{}());
   dist = std::uniform_real_distribution<double>(0.0, 1.0);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double DUST_meanVar::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return dualEval(dist(engine), minCost, t, s, r);
+}
+
+double DUST_meanVar::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+double DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
+  if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
+
+  double a = 0.0;
+  double b = 1.0;
+  double c = 1 - 1/phi;
+  double d = 1/phi;
+
+  double fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
+  double fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+  double max_val = std::max(fc, fd);
+
+  for (int i = 0; i < nb_Loops; i++)
+  {
+    if (fc > fd)
+    {
+      b = d;
+      d = c;
+      fd = fc;
+      c = b - (b - a) / phi;
+      fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
+    }
+    else
+    {
+      a = c;
+      c = d;
+      fc = fd;
+      d = a + (b - a) / phi;
+      fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+    }
+    max_val = std::max(max_val, std::max(fc, fd));
+    if(max_val > 0){break;}
+  }
+  return max_val;
+}
+
+
+
+double DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
+  return (-std::numeric_limits<double>::infinity());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
@@ -192,21 +271,7 @@ void DUST_meanVar::compute(std::vector<double>& inData)
   }
 }
 
-// --- // Test methods // --- //
-double DUST_meanVar::exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
-{
-  return dualMax(minCost, t, s, r);
-}
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-
-double DUST_meanVar::random_test(double minCost, unsigned int t, unsigned int s, unsigned int r)
-{
-  return dualEval(dist(engine), minCost, t, s, r);
-}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -255,7 +320,7 @@ List DUST_meanVar::quick(std::vector<double>& inData, Nullable<double> inPenalty
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-double DUST_meanVar::Cost(unsigned int t, unsigned int s)
+double DUST_meanVar::Cost(unsigned int t, unsigned int s) const
 {
 
   if(s + 1 == t){return(std::numeric_limits<double>::infinity());}
@@ -264,7 +329,7 @@ double DUST_meanVar::Cost(unsigned int t, unsigned int s)
 }
 
 
-double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r)
+double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
   if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
@@ -290,46 +355,7 @@ double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsi
 }
 
 
-double DUST_meanVar::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r)
-{
-  if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
-  if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
-
-  double a = 0.0;
-  double b = 1.0;
-  double c = 1 - 1/phi;
-  double d = 1/phi;
-
-  double fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
-  double fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
-  double max_val = std::max(fc, fd);
-
-  for (int i = 0; i < nb_Loops; i++)
-  {
-    if (fc > fd)
-    {
-      b = d;
-      d = c;
-      fd = fc;
-      c = b - (b - a) / phi;
-      fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
-    }
-    else
-    {
-      a = c;
-      c = d;
-      fc = fd;
-      d = a + (b - a) / phi;
-      fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
-    }
-    max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){break;}
-  }
-  return max_val;
-}
-
-
-
+/////////////////////////////////////////////////////////////
 
 double DUST_meanVar::Dstar(double x) const
 {

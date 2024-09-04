@@ -17,7 +17,7 @@ class DUST_1D
   ////////////////////////////////
 
 public:
-  DUST_1D(bool use_dual_max,
+  DUST_1D(int dual_max,
           bool random_constraint,
           Nullable<double> alpha = Nullable<double>(),
           Nullable<int> nbLoops = Nullable<int>());
@@ -44,6 +44,7 @@ public:
   ////////////////////////////////
 
 protected:
+  const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
   std::vector<double> cumsum;
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
@@ -69,9 +70,12 @@ private:
   // --- // Test and Indices init // --- //
   void init_method();
 
-  // --- // Test handling // --- //
-  double exact_test(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double random_test(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  // --- // MAX DUAL METHODS // --- //
+  // --- //   // --- //   // --- //   // --- //
+  double dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  double dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   double (DUST_1D::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
@@ -79,7 +83,7 @@ private:
   std::forward_list<unsigned int> backtrack_changepoints();
 
   // --- // Private fields // --- //
-  bool use_dual_max;
+  int dual_max;
   bool random_constraint;
   double alpha;
 

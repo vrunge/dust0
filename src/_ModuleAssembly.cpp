@@ -25,38 +25,70 @@ DUST_1D *newModule1D(const std::string& model,
                      Nullable<double> alpha,
                      Nullable<int> nbLoops)
 {
-  bool use_dual_max;
-  bool random_constraint;
-  if (method == "randIndex_randEval")
+  ///////////////////  DEFAULT CHOICE  /////////////////////////////////
+  ///////////////////  DEFAULT CHOICE  = best choice ///////////////////
+  ///////////////////  DEFAULT CHOICE  /////////////////////////////////
+  int dual_max = 2;
+  bool random_constraint = false;
+  if(model == "gauss"){dual_max = 1;}
+
+
+  if (method == "randIndex_Eval0")
   {
-    use_dual_max = false; /// random evaluation of the dual
+    dual_max = 0; /// the random Evaluation of the dual
     random_constraint = true;  /// random choice for the unique constraint
   }
-  else if (method == "randIndex_detEval")
+  else if (method == "randIndex_Eval1")
   {
-    use_dual_max = true; /// exact evaluation of the dual
+    dual_max = 1; /// the max explicitly or -inf
     random_constraint = true; /// random choice for the unique constraint
   }
-  else
+  else if (method == "randIndex_Eval2")
   {
-    use_dual_max = true;  /// exact evaluation of the dual
-    random_constraint = false;  /// choice of the closest index
+    dual_max = 2; /// algo2
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "detIndex_Eval0")
+  {
+    dual_max = 0; /// the random Evaluation of the dual
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval1")
+  {
+    dual_max = 1; /// the max explicitly or -inf
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval2")
+  {
+    dual_max = 2; /// algo2
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
   }
 
+
   if (model == "gauss")
-    return new Gauss_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Gauss_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "poisson")
-    return new Poisson_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Poisson_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "exp")
-    return new Exp_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Exp_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "geom")
-    return new Geom_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Geom_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "bern")
-    return new Bern_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Bern_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "binom")
-    return new Binom_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Binom_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "negbin")
-    return new Negbin_1D(use_dual_max, random_constraint, alpha, nbLoops);
+    return new Negbin_1D(dual_max, random_constraint, alpha, nbLoops);
   return nullptr;
 }
 
@@ -105,25 +137,52 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
                                Nullable<double> alpha,
                                Nullable<int> nbLoops)
 {
-  bool use_dual_max;
-  bool random_constraint;
-  if (method == "randIndex_randEval")
+  ///////////////////  DEFAULT CHOICE  ///////////////////
+  int dual_max = 2;
+  bool random_constraint = false;
+
+  if (method == "randIndex_Eval0")
   {
-    use_dual_max = false; /// random evaluation of the dual
+    dual_max = 0; /// the random Evaluation of the dual
     random_constraint = true;  /// random choice for the unique constraint
   }
-  else if (method == "randIndex_detEval")
+  else if (method == "randIndex_Eval1")
   {
-    use_dual_max = true; /// exact evaluation of the dual
+    dual_max = 1; /// the max explicitly or -inf
     random_constraint = true; /// random choice for the unique constraint
   }
-  else
+  else if (method == "randIndex_Eval2")
   {
-    use_dual_max = true;  /// exact evaluation of the dual
-    random_constraint = false;  /// choice of the closest index
+    dual_max = 2; /// algo2
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "detIndex_Eval0")
+  {
+    dual_max = 0; /// the random Evaluation of the dual
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval1")
+  {
+    dual_max = 1; /// the max explicitly or -inf
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval2")
+  {
+    dual_max = 2; /// algo2
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
   }
 
-  return new DUST_meanVar(use_dual_max, random_constraint, alpha, nbLoops);
+  return new DUST_meanVar(dual_max, random_constraint, alpha, nbLoops);
 }
 
 
@@ -171,25 +230,52 @@ DUST_reg *newModuleReg(const std::string& method,
                        Nullable<double> alpha,
                        Nullable<int> nbLoops)
 {
-  bool use_dual_max;
-  bool random_constraint;
-  if (method == "randIndex_randEval")
+  ///////////////////  DEFAULT CHOICE  ///////////////////
+  int dual_max = 2;
+  bool random_constraint = false;
+
+  if (method == "randIndex_Eval0")
   {
-    use_dual_max = false; /// random evaluation of the dual
+    dual_max = 0; /// the random Evaluation of the dual
     random_constraint = true;  /// random choice for the unique constraint
   }
-  else if (method == "randIndex_detEval")
+  else if (method == "randIndex_Eval1")
   {
-    use_dual_max = true; /// exact evaluation of the dual
+    dual_max = 1; /// the max explicitly or -inf
     random_constraint = true; /// random choice for the unique constraint
   }
-  else
+  else if (method == "randIndex_Eval2")
   {
-    use_dual_max = true;  /// exact evaluation of the dual
-    random_constraint = false;  /// choice of the closest index
+    dual_max = 2; /// algo2
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "randIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = true; /// random choice for the unique constraint
+  }
+  else if (method == "detIndex_Eval0")
+  {
+    dual_max = 0; /// the random Evaluation of the dual
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval1")
+  {
+    dual_max = 1; /// the max explicitly or -inf
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval2")
+  {
+    dual_max = 2; /// algo2
+    random_constraint = false; /// deterministic choice of constraint
+  }
+  else if (method == "detIndex_Eval3")
+  {
+    dual_max = 3; /// algo3
+    random_constraint = false; /// deterministic choice of constraint
   }
 
-  return new DUST_reg(use_dual_max, random_constraint, alpha, nbLoops);
+  return new DUST_reg(dual_max, random_constraint, alpha, nbLoops);
 }
 
 
