@@ -45,18 +45,18 @@ double Geom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned
 
 double Geom_1D::Dstar(double x) const
 {
-  return 0;
+  return (x - 1.0)*std::log(x - 1.0) - x*std::log(x);
 }
 
 
 double Geom_1D::DstarPrime(double x) const
 {
-  return 0;
+  return std::log(x - 1.0) - std::log(x);
 }
 
 double Geom_1D::DstarSecond(double x) const
 {
-  return 0;
+  return 1.0/(x - 1.0) - 1.0/x;
 }
 
 

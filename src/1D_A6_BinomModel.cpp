@@ -50,19 +50,19 @@ double Binom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 
 double Binom_1D::Dstar(double x) const
 {
-  return 0;
+  return x*std::log(x) + (1.0 - x)*std::log(1.0 - x);
 }
 
 
 double Binom_1D::DstarPrime(double x) const
 {
-  return 0;
+  return std::log(x) - std::log(1.0 - x);
 }
 
 
 double Binom_1D::DstarSecond(double x) const
 {
-  return 0;
+  return 1.0/x + 1.0/(1.0 - x);
 }
 
 

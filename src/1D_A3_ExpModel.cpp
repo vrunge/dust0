@@ -43,18 +43,18 @@ double Exp_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned 
 
 double Exp_1D::Dstar(double x) const
 {
-  return 0;
+  return (-std::log(x) - 1.0);
 }
 
 
 double Exp_1D::DstarPrime(double x) const
 {
-  return 0;
+  return -1.0/x;
 }
 
 double Exp_1D::DstarSecond(double x) const
 {
-  return 0;
+  return 1.0/std::pow(x,2);
 }
 
 
