@@ -98,17 +98,17 @@ void DUST_1D::init_method()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-double DUST_1D::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return dualEval(dist(engine), minCost, t, s, r);
+  return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
-double DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return dualMax(minCost, t, s, r);
+  return (dualMax(minCost, t, s, r) > 0);
 }
 
-double DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   double a = 0.0;
   double b = 1.0;
@@ -117,6 +117,7 @@ double DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, uns
 
   double fc = dualEval(c, minCost, t, s, r);
   double fd = dualEval(d, minCost, t, s, r);
+  if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -138,9 +139,9 @@ double DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, uns
       fd = dualEval(d, minCost, t, s, r);
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){break;}
+    if(max_val > 0){return(true);}
   }
-  return max_val;
+  return (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,26 +149,19 @@ double DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, uns
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  double a = (cumsum[t] - cumsum[s]) / (t - s); // m_it
-  double b = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
-  double C = (costRecord[s] - costRecord[r]) / (s - r);
-
-  ////DANGER
-  double mu = 0.5*std::min(1.0, a/b);
-  double m = (a - mu*b) / (1.0 - mu);
-  return -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s);
+  return (false);
 }
 
-double DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
-double DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
 
@@ -307,7 +301,7 @@ void DUST_1D::compute(std::vector<double>& inData)
     // DUST loop
     while (indices->check_prune())
     {
-      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint()) > 0) // prune as needs pruning
+      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still

@@ -54,6 +54,8 @@ protected:
   virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
   virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
 
+  virtual double muMax(double a, double b) const = 0;
+
   virtual double Dstar(double x) const = 0;
   virtual double DstarPrime(double x) const = 0;
   virtual double DstarSecond(double x) const = 0;
@@ -73,14 +75,14 @@ private:
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
-  double dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
-  double (DUST_1D::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool (DUST_1D::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();

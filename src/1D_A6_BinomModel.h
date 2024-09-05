@@ -15,6 +15,8 @@ protected:
   double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const override;
   double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const override;
 
+  double muMax(double a, double b) const override;
+
   double Dstar(double x) const override;
   double DstarPrime(double x) const override;
   double DstarSecond(double x) const override;

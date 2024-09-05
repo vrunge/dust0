@@ -44,6 +44,13 @@ double Negbin_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsign
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+double Negbin_1D::muMax(double a, double b) const
+{
+  double res = 1;
+  if(b != 0){res = std::min(1.0, a/b);}
+  return res;
+}
+
 double Negbin_1D::Dstar(double x) const
 {
   return x*std::log(x) - (1.0 + x)*std::log(1.0 + x);

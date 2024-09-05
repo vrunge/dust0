@@ -51,6 +51,11 @@ double Gauss_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+double Gauss_1D::muMax(double a, double b) const
+{
+  return 1;
+}
+
 double Gauss_1D::Dstar(double x) const
 {
   return 0.5 * x * x;

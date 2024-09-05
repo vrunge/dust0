@@ -48,6 +48,17 @@ double Binom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigne
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
+double Binom_1D::muMax(double a, double b) const
+{
+  double res = 1;
+  if(b != 0 && b != 1){res = std::min(a/b, (1 - a)/(1 - b));}
+  else{
+    if(b == 0){res = 1 - a;}else{res = a;}
+  }
+  return res;
+}
+
 double Binom_1D::Dstar(double x) const
 {
   return x*std::log(x) + (1.0 - x)*std::log(1.0 - x);

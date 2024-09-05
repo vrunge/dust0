@@ -377,6 +377,12 @@ double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsi
 
 /////////////////////////////////////////////////////////////
 
+double DUST_meanVar::muMax(double a, double b) const
+{
+  return 0;
+}
+
+
 double DUST_meanVar::Dstar(double x) const
 {
   return 0;

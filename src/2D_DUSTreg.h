@@ -60,6 +60,8 @@ public:
   double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const;
   double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const;
 
+  double muMax(double a, double b) const;
+
   double Dstar(double x) const;
   double DstarPrime(double x) const;
   double DstarSecond(double x) const;

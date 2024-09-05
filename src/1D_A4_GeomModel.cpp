@@ -24,7 +24,7 @@ double Geom_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
 
   ///
   /// point in the right interval:
-  if(constraintMean != 1){point = point * std::min(1.0, (objectiveMean - 1)/(constraintMean - 1));;}
+  if(constraintMean != 1){point = point * std::min(1.0, (objectiveMean - 1)/(constraintMean - 1));}
   ///
   ///
   double R = (objectiveMean - point * constraintMean) / (1 - point);
@@ -42,6 +42,13 @@ double Geom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+double Geom_1D::muMax(double a, double b) const
+{
+  double res = 1;
+  if(b != 1){res = std::min(1.0, (a-1)/(b-1));}
+  return res;
+}
 
 double Geom_1D::Dstar(double x) const
 {

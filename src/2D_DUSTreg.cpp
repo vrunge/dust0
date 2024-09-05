@@ -401,6 +401,10 @@ double DUST_reg::dualEval(double point, double minCost, unsigned int t, unsigned
 }
 
 
+double DUST_reg::muMax(double a, double b) const
+{
+  return 0;
+}
 
 
 double DUST_reg::Dstar(double x) const
