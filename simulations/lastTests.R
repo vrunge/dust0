@@ -77,19 +77,25 @@ sum(res1$nb)/sum(res2$nb)
 ###
 ###
 n <- 10^5
-beta <- 4*log(n)
+beta <- 4*log(n)/6
 y <- dataGenerator_1D(n, parameters = 4, type = "poisson")
-res1 <- dust.partitioner.1D(method = "randIndex_Eval0", model = "poisson")$quick(data = y, penalty = beta)
-res3 <- dust.partitioner.1D(method = "randIndex_Eval2", model = "poisson", nbLoops = 20)$quick(data = y, penalty = beta)
+res0 <- dust.partitioner.1D(method = "randIndex_Eval0", model = "poisson")$quick(data = y, penalty = beta)
+res2 <- dust.partitioner.1D(method = "randIndex_Eval2", model = "poisson")$quick(data = y, penalty = beta)
+res4 <- dust.partitioner.1D(method = "randIndex_Eval2", model = "poisson")$quick(data = y, penalty = beta)
 
 res5 <- dust.partitioner.1D(method = "detIndex_Eval0", model = "poisson")$quick(data = y, penalty = beta)
-res7 <- dust.partitioner.1D(method = "detIndex_Eval2", model = "poisson", nbLoops = 20)$quick(data = y, penalty = beta)
+res7 <- dust.partitioner.1D(method = "detIndex_Eval2", model = "poisson")$quick(data = y, penalty = beta)
+res9 <- dust.partitioner.1D(method = "detIndex_Eval4", model = "poisson")$quick(data = y, penalty = beta)
 
-length(res1$lastIndexSet)
-length(res3$lastIndexSet)
+length(res0$lastIndexSet)
+length(res2$lastIndexSet)
+length(res4$lastIndexSet)
 
 length(res5$lastIndexSet)
 length(res7$lastIndexSet)
+length(res9$lastIndexSet)
+
+sum(res7$costQ - res0$costQ)
 
 
 ####################################################################################
@@ -106,11 +112,13 @@ y <- rnorm(n)
 system.time(dust.partitioner.1D(method = "randIndex_Eval0")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "randIndex_Eval1")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "randIndex_Eval2")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.1D(method = "randIndex_Eval4")$quick(data = y, penalty = beta))
+
 
 system.time(dust.partitioner.1D(method = "detIndex_Eval0")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "detIndex_Eval1")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "detIndex_Eval2")$quick(data = y, penalty = beta))
-
+system.time(dust.partitioner.1D(method = "detIndex_Eval4")$quick(data = y, penalty = beta))
 
 ###
 ###
@@ -122,9 +130,11 @@ beta <- 2*log(n)
 y <- dataGenerator_1D(n, parameters = 4, type = "poisson")
 system.time(dust.partitioner.1D(method = "randIndex_Eval0", model = "poisson")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "randIndex_Eval2", model = "poisson")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.1D(method = "randIndex_Eval4", model = "poisson")$quick(data = y, penalty = beta))
 
 system.time(dust.partitioner.1D(method = "detIndex_Eval0", model = "poisson")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.1D(method = "detIndex_Eval2", model = "poisson")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.1D(method = "detIndex_Eval4", model = "poisson")$quick(data = y, penalty = beta))
 
 
 ####################################################################################
