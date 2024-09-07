@@ -45,6 +45,7 @@ public:
 
   private:
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
+  const double m1 = 0.01;  // Armijo
 
   std::vector<double> cumsum;
   std::vector<double> cumsum2;
@@ -55,11 +56,8 @@ public:
   double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const;
   double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const;
 
-  double muMax(double a, double b) const;
+  double muMax(double a, double b, double a2, double b2) const;
 
-  double Dstar(double x) const;
-  double DstarPrime(double x) const;
-  double DstarSecond(double x) const;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 
@@ -75,14 +73,14 @@ public:
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
-  double dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
-  double (DUST_meanVar::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool (DUST_meanVar::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();

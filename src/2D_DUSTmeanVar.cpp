@@ -98,20 +98,22 @@ void DUST_meanVar::init_method()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-double DUST_meanVar::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_meanVar::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return dualEval(dist(engine), minCost, t, s, r);
+  if(s + 1 == t){return(false);}
+  if(r + 1 == s){return(false);}
+  return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
-double DUST_meanVar::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_meanVar::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
-double DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
-  if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
+  if(s + 1 == t){return(false);}
+  if(r + 1 == s){return(false);}
 
   double a = 0.0;
   double b = 1.0;
@@ -120,6 +122,7 @@ double DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s
 
   double fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
   double fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+  if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -141,28 +144,131 @@ double DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s
       fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){break;}
+    if(max_val > 0){return(true);}
   }
-  return max_val;
+  return (false);
 }
 
 
 
-double DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
 
 
-double DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  if(s + 1 == t){return(false);}
+  if(r + 1 == s){return(false);}
+
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double a2 = (cumsum2[t] - cumsum2[s]) / (t - s);
+
+  double constantTerm = (costRecord[s] - minCost) / (t - s);
+  double nonLinear = 0.5 * (1 + std::log(a2 - a*a));
+  double test_value = nonLinear + constantTerm;  //dual in mu = 0
+
+  if (test_value > 0) {return true;} // PELT test (eval dual in 0)
+
+  /// /// ///
+
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
+  double b2 = (cumsum2[s] - cumsum2[r]) / (s - r);
+
+  double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+  double term = a2 - b2 - 2 * a * (a - b);
+
+  double grad = - nonLinear + term *  0.5 / (a2 - a*a) + linearTerm; //dual prime in mu = 0
+  double mu_max = muMax(a, b, a2, b2);
+
+  /////////
+  /////////
+
+  // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
+  if (test_value + mu_max * grad <= 0) {return false;}
+  double mu = 0;
+  double direction;
+  double mu_diff;
+  double m_value;
+  double m_value2;
+  double grad_diff = -grad; // stores grad difference between two steps, initialized each step as g_k, then once g_{k+1} is computed, y += g_{k+1}
+  double inverseHessian = -1;
+
+  auto updateDirection = [&] () // update and clip direction
+  {
+    direction = - inverseHessian * grad;
+    if (mu + direction > mu_max) { direction = mu_max - 1e-9 - mu; } // clip ascent direction, as dual may increase beyond the bound
+    else if (mu + direction < 0) { direction = -mu + 1e-9; }
+  };
+
+  auto updateTestValue = [&] ()
+  {
+    double gradCondition = m1 * grad;
+    // Initialize all values
+    mu_diff = direction;
+    mu += mu_diff;
+    m_value = pow(1 - mu, -1) * (a - mu * b);
+    m_value2 = pow(1 - mu, -1) * (a2 - mu * b2);
+    nonLinear = 0.5 * (1 + std::log(m_value2 - m_value*m_value));
+    double new_test = (1 - mu) * nonLinear + mu * linearTerm + constantTerm; ///eval dual at mu
+
+    int i = 0;
+    while(new_test < test_value + mu_diff * gradCondition)
+    {
+      mu_diff *= .5; // shrink if unsuitable stepsize
+      mu -= mu_diff; // relay shrinking
+      m_value = pow(1 - mu, -1) * (a - mu * b);
+      m_value2 = pow(1 - mu, -1) * (a2 - mu * b2);
+      nonLinear = 0.5 * (1 + std::log(m_value2 - m_value*m_value)); // update values
+      new_test = (1 - mu) * nonLinear + mu * linearTerm + constantTerm; // update values
+      i++;
+      if (i == 10) { break; }
+   }
+    test_value = new_test;
+  };
+
+  auto updateGrad = [&] ()
+  {
+    grad = - nonLinear +
+      ((a2 - b2)*pow(1 - mu, -1) - 2*(a - mu*b)*(a - b)*pow(1 - mu, -2))*  0.5 / (m_value2 - m_value*m_value) + linearTerm;
+  };
+
+  auto updateHessian = [&] () // uses BFGS formula (in 1D, the formula simplifies to s / y)
+  {
+    grad_diff += grad;
+    if(grad_diff == 0) { grad_diff = 1e-9; }
+
+    inverseHessian = mu_diff / grad_diff;
+    grad_diff = - grad; // setting up y for next step
+  };
+
+  int i = 0;
+  do
+  {
+    updateDirection();
+    updateTestValue();
+    if(test_value > 0) {return true;} // index s is pruned
+    updateGrad();
+
+    if (grad > 0) // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
+    {
+      if (test_value + (mu_max - mu) * grad <= 0) {return false;}
+    }
+    else if (test_value - mu * grad <= 0) {return false;}
+    updateHessian();
+    i++;
+  } while (i < 100);
+  return false;
 }
 
-double DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
+
+
+
+bool DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +365,7 @@ void DUST_meanVar::compute(std::vector<double>& inData)
     // DUST loop
     while (indices->check_prune())
     {
-      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint()) > 0) // prune as needs pruning
+      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still
@@ -377,26 +483,19 @@ double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsi
 
 /////////////////////////////////////////////////////////////
 
-double DUST_meanVar::muMax(double a, double b) const
+double DUST_meanVar::muMax(double a, double b, double a2, double b2) const
 {
-  return 0;
+  double Va = a2 - std::pow(a, 2);
+  double Vb = b2 - std::pow(b, 2);
+  double u = (Va + Vb) * (1 + std::pow((a - b) / std::sqrt(Va + Vb), 2));
+
+  if(Vb > 0){return((u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb));}
+  else{return((u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb));}
 }
 
 
-double DUST_meanVar::Dstar(double x) const
-{
-  return 0;
-}
 
-double DUST_meanVar::DstarPrime(double x) const
-{
-  return 0;
-}
 
-double DUST_meanVar::DstarSecond(double x) const
-{
-  return 0;
-}
 
 
 

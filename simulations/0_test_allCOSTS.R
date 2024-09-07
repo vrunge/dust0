@@ -32,12 +32,9 @@ beta = 2*log(n)
 
 y <- dataGenerator_1D(chpts = n, parameters = 0, type = "gauss")
 res1 <- system.time(dust.partitioner.1D(model = "gauss", method = "detIndex_Eval1")$quick(data = y, penalty = beta/2))
-res2 <- system.time(dust.partitioner.1D(model = "gauss", method = "fastest")$quick(data = y, penalty = beta/2))
 res3 <- system.time(fpopw::Fpop(y, beta))
 (res1[[1]] - res3[[1]])/res3[[1]]
-(res2[[1]] - res2[[1]])/res3[[1]]
 res1
-res2
 res3
 
 

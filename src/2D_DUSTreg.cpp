@@ -99,20 +99,20 @@ void DUST_reg::init_method()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-double DUST_reg::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return dualEval(dist(engine), minCost, t, s, r);
+  return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
-double DUST_reg::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
-double DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
-  if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
+  if(s + 1 == t){return(false);}
+  if(r + 1 == s){return(false);}
 
   double a = 0.0;
   double b = 1.0;
@@ -121,6 +121,7 @@ double DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, un
 
   double fc = dualEval(c, minCost, t, s, r);
   double fd = dualEval(d, minCost, t, s, r);
+  if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -142,26 +143,26 @@ double DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, un
       fd = dualEval(d, minCost, t, s, r);
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){break;}
+    if(max_val > 0){return(true);}
   }
-  return max_val;
+  return (false);
 }
 
 
 
-double DUST_reg::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
-double DUST_reg::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
-double DUST_reg::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
+bool DUST_reg::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (-std::numeric_limits<double>::infinity());
+  return (false);
 }
 
 
@@ -273,7 +274,7 @@ void DUST_reg::compute()
     // DUST loop
     while (indices->check_prune())
     {
-      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint()) > 0) // prune as needs pruning
+      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still

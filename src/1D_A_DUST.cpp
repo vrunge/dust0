@@ -108,6 +108,17 @@ bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsig
   return (dualMax(minCost, t, s, r) > 0);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/// TO DO
+/// TO DO
+/// TO DO
+/// dualMaxAlgo2 not using dualEval
+
 bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   double a = 0.0;
@@ -144,6 +155,7 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
   return (false);
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,14 +163,61 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+  double a = (cumsum[t] - cumsum[s]) * pow(t - s, -1);
+  double cst = (costRecord[s] - minCost) * pow(t - s, -1);
+  double nonLinear = Dstar(a);
+  double test_value = - nonLinear + cst; // dual value in 0
+
+  if (test_value > 0) {return true;} // PELT test
+
+  double b = (cumsum[s] - cumsum[r]) * pow(s - r, -1);
+  double linear = (costRecord[s] - costRecord[r]) * pow(s - r, -1);
+  double meanGap = a - b;
+  double grad = nonLinear - meanGap * DstarPrime(a) + linear;
+  double mu_max = muMax(a, b);
+
+  if (test_value + mu_max * grad <= 0) {return false;} //check value in mu = mu_max
+
+  /// iterative algo
+  /// iterative algo
+  /// iterative algo
+  double lt = 0; // left interval value
+  double rt = mu_max; // right interval value
+  double mu = 0.5 * mu_max; // center interval value
+  double m;
+
+  for (int i = 0; i < nb_Loops; ++i)
+  {
+    m = (a - mu * b) * pow(1 - mu, -1);
+    test_value = - (1 - mu) * Dstar(m) + mu * linear + cst; // test value
+    if (test_value > 0) {return true;} // pruning
+    grad = Dstar(m) - (a - b) * pow(1 - mu, -1)*DstarPrime(m) + linear; // gradiant value
+    if(grad > 0)
+    {
+      if (test_value + (rt - mu) * grad <= 0) {return false;} //check value in rt
+      lt = mu; // left interval value
+      mu = mu + 0.5 * (rt - lt); // center interval value
+    }
+    else
+    {
+      if (test_value + (lt - mu) * grad <= 0) {return false;} //check value in lt
+      rt = mu; // left interval value
+      mu = lt + 0.5 * (rt - lt); // center interval value
+    }
+  }
   return (false);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
-
   double constantTerm = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(objectiveMean);
   double test_value = - nonLinear + constantTerm;

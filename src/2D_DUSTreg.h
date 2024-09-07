@@ -46,6 +46,7 @@ public:
   private:
 
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
+  const double m1 = 0.01;  // Armijo
   std::vector<double> A;
   std::vector<double> B;
   std::vector<double> C;
@@ -80,14 +81,14 @@ public:
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
-  double dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
-  double dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
-  double (DUST_reg::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool (DUST_reg::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();

@@ -12,16 +12,19 @@ dust.partitioner.1D(
 )
 }
 \arguments{
-\item{model}{the underlying model of the data. defaults is "gauss". available models: c("gauss", "poisson", "exp", "geom", "bern", "binom", "negbin")}
+\item{model}{the underlying model of the data. default is "gauss".
+available models: c("gauss", "poisson", "exp", "geom", "bern", "binom", "negbin")}
 
-\item{method}{the method for handling the indices and pruning tests in the algorithm. defaults to "fastest", which returns the fastest method available on input model.}
+\item{method}{the method for handling the indices and pruning tests in the algorithm.
+default is "fastest", which returns the fastest method available on input model. Others are: randIndex_Eval0 to 5 and detIndex_Eval0 to 5}
 
-\item{alpha}{controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object. the lower the value of alpha, the larger this vector, meaning a selection of indices closer to "true" randomness.}
+\item{alpha}{controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.
+the lower the value of alpha, the larger this vector, meaning a selection of indices closer to "true" randomness.}
 
 \item{nbLoops}{number of iterations in the optimization algorithm for maximizing the dual function}
 }
 \value{
-a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the other 3 methods.
+a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the 3 methods.
 }
 \description{
 Generates a DUST partitioner
