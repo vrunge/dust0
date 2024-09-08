@@ -198,10 +198,10 @@ dataGenerator_MultiD <- function(chpts = 100,
 
 
 ######################################################
-#############     dataGenerator_MV   #################
+###########     dataGenerator_meanVar   ##############
 ######################################################
 
-#' dataGenerator_MV
+#' dataGenerator_meanVar
 #'
 #' @description Generating data for detecting changes in mean and variance with Gaussian model
 #' @param chpts a vector of increasing change-point indices
@@ -209,10 +209,10 @@ dataGenerator_MultiD <- function(chpts = 100,
 #' @param sds vector of successive segment standard deviation
 #' @return a vector of (univariate) simulated data with changes in mean and variance
 #' @examples
-#' dataGenerator_MV(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
-dataGenerator_MV <- function(chpts = 100,
-                             means = 0,
-                             sds = 1)
+#' dataGenerator_meanVar(chpts = c(30,100,120), means = c(0,1,0), sds = c(1,1,2))
+dataGenerator_meanVar <- function(chpts = 100,
+                                  means = 0,
+                                  sds = 1)
 {
   ############
   ### STOP ###

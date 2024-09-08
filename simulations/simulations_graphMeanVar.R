@@ -4,7 +4,7 @@ library(dust)
 
 n <- 10^3
 beta <- 2*log(n)
-y <-  dataGenerator_MV(chpts = c(n))
+y <-  dataGenerator_meanVar(chpts = c(n))
 y <- c(rep(0, n), rep(10, n))
 plot(y)
 r1 <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
@@ -50,7 +50,7 @@ ggplot(df_long, aes(x = x, y = value, color = variable)) +
 ############################################################################
 n <- 10^5
 beta <- 2*log(n)
-y <-   dataGenerator_MV(chpts = c(n))
+y <-   dataGenerator_meanVar(chpts = c(n))
 plot(y)
 system.time(dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.meanVar(method = "randIndex_Eval4")$quick(data = y, penalty = beta))

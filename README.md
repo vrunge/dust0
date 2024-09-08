@@ -127,7 +127,7 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 
 ### Data Generators in 2D and multiD
 
-**dataGenerator_MV** is used for change in mean and variance for the Gaussian problem
+**dataGenerator_meanVar** is used for change in mean and variance for the Gaussian problem
 
 **dataGenerator_Reg** generates 2-dimensional data frame `(x,y)` following a simple linear regression link (`y = Ax + B + noise`) with `A` and `B` changing over time (after each change-point)
 

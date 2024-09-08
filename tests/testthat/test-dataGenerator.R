@@ -11,7 +11,7 @@ test_that("return is a matrix",
           {expect_equal(is.matrix(dataGenerator_MultiD()), TRUE)
           })
 test_that("returns is a vector",
-          {expect_equal(is.vector(dataGenerator_MV()), TRUE)
+          {expect_equal(is.vector(dataGenerator_meanVar()), TRUE)
           })
 test_that("returns is a dataframe",
           {expect_equal(is.data.frame(dataGenerator_Reg()), TRUE)

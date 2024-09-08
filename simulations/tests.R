@@ -227,7 +227,7 @@ abs((op1D$costQ - opMD2$costQ/p)/op1D$costQ) < 10^(-13)
 
 ######################################################################
 
-data <- dataGenerator_MV(c(500,1000), c(0,0.1), c(0.5,0.3))
+data <- dataGenerator_meanVar(c(500,1000), c(0,0.1), c(0.5,0.3))
 res0 <- OP_R_2param(data, 4*log(100), type = "meanVar")
 res1 <- dust_R_2param(data, 4*log(100), type = "meanVar", pruningOpt = 1)
 res2 <- dust_R_2param(data, 4*log(100), type = "meanVar", pruningOpt = 3)

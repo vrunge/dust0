@@ -174,7 +174,7 @@ r2$nb[n]/n * 100
 
 n <- 10^3
 beta <- 2*log(n)
-y <-   dataGenerator_MV(chpts = c(n/4,n/2,n), means = c(0,1,0), sds = c(1,1,1.2))
+y <-   dataGenerator_meanVar(chpts = c(n/4,n/2,n), means = c(0,1,0), sds = c(1,1,1.2))
 plot(y)
 r1 <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
 r2 <- dust.partitioner.meanVar(method = "randIndex_Eval2")$quick(data = y, penalty = beta)
@@ -190,11 +190,9 @@ r2$nb[n]/n * 100
 r3$nb[n]/n * 100
 
 
-
-
-n <- 10^5
+n <- 10^6
 beta <- 2*log(n)
-y <-   dataGenerator_MV(chpts =n)
+y <-   dataGenerator_meanVar(chpts = n)
 plot(y)
 system.time(dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta))
 system.time(dust.partitioner.meanVar(method = "randIndex_Eval2")$quick(data = y, penalty = beta))

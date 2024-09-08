@@ -27,7 +27,7 @@ library(dust) #our package
 
 ```r
 n <- 10^4
-data <- dataGenerator_MV(chpts = n, 0, 1)
+data <- dataGenerator_meanVar(chpts = n, 0, 1)
 res2 <- dust_R_2param(data, 4*log(n), type = "meanVar", pruningOpt = 3)
 plot(res2$nb)
 ```
