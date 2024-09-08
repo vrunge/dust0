@@ -92,7 +92,7 @@ private:
   bool random_constraint;
   double alpha;
 
-  Indices* indices;
+  Indices_1D* indices;
   std::vector<int> nb_indices;
 
   unsigned int n; // number of observations

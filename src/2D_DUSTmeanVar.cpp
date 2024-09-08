@@ -51,11 +51,11 @@ void DUST_meanVar::init_method()
   /// /// ///
   if(random_constraint)
   {
-    indices = new RandomIndices(n, alpha);
+    indices = new RandomIndices_2D(n, alpha);
   }
   else
   {
-    indices = new DeterministicIndices;
+    indices = new DeterministicIndices_2D;
   }
 
   /// /// ///
@@ -101,7 +101,7 @@ void DUST_meanVar::init_method()
 bool DUST_meanVar::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   if(s + 1 == t){return(false);}
-  if(r + 1 == s){return(false);}
+  //if(r + 1 == s){return(false);} // => Vb = 0
   return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
@@ -113,7 +113,7 @@ bool DUST_meanVar::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, 
 bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   if(s + 1 == t){return(false);}
-  if(r + 1 == s){return(false);}
+ // if(r + 1 == s){return(false);} // => Vb = 0
   double Mt = (cumsum[t] - cumsum[s]) / (t - s);
   double Mt2 = (cumsum2[t] - cumsum2[s]) / (t - s);
   double Ms = (cumsum[s] - cumsum[r]) / (s - r);
@@ -129,11 +129,11 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
 
   double A = (Mt2 - c *  Ms2)/(1 - c);
   double B = (Mt - c *  Ms)/(1 - c);
-  double fc =  0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
+  double fc =  0.5 * (1 - c) * (1 + std::log(A - B*B)) + c * linear + cst;
 
-  A = (Mt2 - d * Ms2)/(1.0 - d);
-  B = (Mt - d * Ms)/(1.0 - d);
-  double fd = 0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
+  A = (Mt2 - d * Ms2)/(1 - d);
+  B = (Mt - d * Ms)/(1 - d);
+  double fd = 0.5 * (1 - d) * (1 + std::log(A - B*B)) + d * linear + cst;
   if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
@@ -145,9 +145,9 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
       d = c;
       fd = fc;
       c = rt - (rt - lt) / phi;
-      A = (Mt2 - c * Ms2)/(1.0 - c);
-      B = (Mt - c * Ms)/(1.0 - c);
-      fc =  0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
+      A = (Mt2 - c * Ms2)/(1 - c);
+      B = (Mt - c * Ms)/(1 - c);
+      fc =  0.5 * (1 - c) * (1 + std::log(A - B*B)) + c * linear + cst;
     }
     else
     {
@@ -155,9 +155,9 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
       c = d;
       fc = fd;
       d = lt + (rt - lt) / phi;
-      A = (Mt2 - d * Ms2)/(1.0 - d);
-      B = (Mt - d * Ms)/(1.0 - d);
-      fd = 0.5 * (1.0 - d) * (1.0 + std::log(A - B*B)) + d * linear + cst;
+      A = (Mt2 - d * Ms2)/(1 - d);
+      B = (Mt - d * Ms)/(1 - d);
+      fd = 0.5 * (1 - d) * (1 + std::log(A - B*B)) + d * linear + cst;
     }
     max_val = std::max(max_val, std::max(fc, fd));
     if(max_val > 0){return(true);}
@@ -177,7 +177,7 @@ bool DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, 
 bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   if(s + 1 == t){return(false);}
-  if(r + 1 == s){return(false);}
+  //if(r + 1 == s){return(false);} // => Vb = 0
 
   double a = (cumsum[t] - cumsum[s]) / (t - s);
   double a2 = (cumsum2[t] - cumsum2[s]) / (t - s);
@@ -359,7 +359,7 @@ void DUST_meanVar::compute(std::vector<double>& inData)
     {
       s = indices->get_current();
       lastCost = costRecord[s] + Cost(t, s);
-      if (lastCost < minCost)
+      if (lastCost <= minCost) ////// <=
       {
         minCost = lastCost;
         argMin = s;
@@ -464,16 +464,18 @@ List DUST_meanVar::quick(std::vector<double>& inData, Nullable<double> inPenalty
 double DUST_meanVar::Cost(unsigned int t, unsigned int s) const
 {
 
-  if(s + 1 == t){return(std::numeric_limits<double>::infinity());}
+  if(s + 1 == t){return(std::numeric_limits<double>::infinity());} // infinite cost segment if one data point only
   double m = (cumsum[t] - cumsum[s]) / (t - s);
-  return 0.5 * (t - s) * (1 + std::log((cumsum2[t] - cumsum2[s]) / (t - s) - m * m));
+  double var = (cumsum2[t] - cumsum2[s]) / (t - s) - m * m;
+  //if(var <= 0){return(-std::numeric_limits<double>::infinity());}
+  return 0.5 * (t - s) * (1 + std::log(var));
 }
 
 
 double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   if(s + 1 == t){return(-std::numeric_limits<double>::infinity());}
-  if(r + 1 == s){return(-std::numeric_limits<double>::infinity());}
+  //if(r + 1 == s){return(-std::numeric_limits<double>::infinity());} // => Vb = 0
   double Mt = (cumsum[t] - cumsum[s]) / (t - s);
   double Mt2 = (cumsum2[t] - cumsum2[s]) / (t - s);
   double Ms = (cumsum[s] - cumsum[r]) / (s - r);
@@ -483,8 +485,13 @@ double DUST_meanVar::dualEval(double point, double minCost, unsigned int t, unsi
   double Va = Mt2 - std::pow(Mt, 2);
   double Vb = Ms2 - std::pow(Ms, 2);
 
+  /// pruning if same mean and same variance
+  //if(Mt == Ms && Va == Vb){return(std::numeric_limits<double>::infinity());}
+
   double u = (Va + Vb) * (1 + std::pow((Mt - Ms) / std::sqrt(Va + Vb), 2));
-  point = point * (u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb);
+
+  if(Vb > 0){point = point * ((u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb));}
+  else{point = point * (Va / (Va + pow(Mt - Ms, 2)));}
 
   //std::cout << point << " ";
   double A = (Mt2 - point *  Ms2)/(1 - point);
@@ -505,7 +512,7 @@ double DUST_meanVar::muMax(double a, double b, double a2, double b2) const
   double u = (Va + Vb) * (1 + std::pow((a - b) / std::sqrt(Va + Vb), 2));
 
   if(Vb > 0){return((u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb));}
-  else{return((u - std::sqrt(std::pow(u, 2) - 4.0 * Va * Vb)) / (2.0 * Vb));}
+  else{return(Va / (Va + pow(a - b, 2)));}
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef INDICES1C_H
-#define INDICES1C_H
+#ifndef INDICES2C_H
+#define INDICES2C_H
 
 #include <Rcpp.h>
 
@@ -9,10 +9,10 @@
 
 using namespace Rcpp;
 
-class Indices_1D
+class Indices_2D
 {
 public:
-  virtual ~Indices_1D();
+  virtual ~Indices_2D();
 
   // --- // Methods // --- //
   virtual void add(unsigned int value) = 0;
@@ -39,10 +39,10 @@ public:
   std::forward_list<unsigned int>::iterator before;
 };
 
-class RandomIndices_1D : public Indices_1D
+class RandomIndices_2D : public Indices_2D
 {
 public:
-  RandomIndices_1D(unsigned int size, double alpha = 1e-9);
+  RandomIndices_2D(unsigned int size, double alpha = 1e-9);
   // ~I_Random() override;
 
   void add(unsigned int value) override;
@@ -71,7 +71,7 @@ private:
 };
 
 
-class DeterministicIndices_1D : public Indices_1D
+class DeterministicIndices_2D : public Indices_2D
 {
 public:
   void add(unsigned int value) override;

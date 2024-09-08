@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 
-#include "1D_B_Indices.h"
+#include "2D_B_Indices.h"
 
 using namespace Rcpp;
 
@@ -11,29 +11,29 @@ using namespace Rcpp;
 // --- /////////////////// --- //
 // --------------------------- //
 
-Indices_1D::~Indices_1D() {}
+Indices_2D::~Indices_2D() {}
 
-void Indices_1D::reset()
+void Indices_2D::reset()
 {
   current = list.begin();
 }
 
-void Indices_1D::next()
+void Indices_2D::next()
 {
   ++current;
 }
 
-bool Indices_1D::check()
+bool Indices_2D::check()
 {
   return current != list.end();
 }
 
-unsigned int Indices_1D::get_current()
+unsigned int Indices_2D::get_current()
 {
   return *current;
 }
 
-std::forward_list<unsigned int> Indices_1D::get_list()
+std::forward_list<unsigned int> Indices_2D::get_list()
 {
   return list;
 }
@@ -45,7 +45,7 @@ std::forward_list<unsigned int> Indices_1D::get_list()
 // --- /////////////////// --- //
 // --------------------------- //
 
-RandomIndices_1D::RandomIndices_1D(unsigned int size, double alpha)
+RandomIndices_2D::RandomIndices_2D(unsigned int size, double alpha)
 {
 
   // length of the random vector
@@ -62,14 +62,14 @@ RandomIndices_1D::RandomIndices_1D(unsigned int size, double alpha)
   u = randomU.begin();
 }
 
-void RandomIndices_1D::add(unsigned int value)
+void RandomIndices_2D::add(unsigned int value)
 {
   list.push_front(value);
   pointers.push_back(&list.front());
   nb++;
 }
 
-void RandomIndices_1D::reset_prune()
+void RandomIndices_2D::reset_prune()
 {
   current = list.begin();
   before = list.before_begin();
@@ -78,7 +78,7 @@ void RandomIndices_1D::reset_prune()
   nbC = nb - 1;
 }
 
-void RandomIndices_1D::next_prune()
+void RandomIndices_2D::next_prune()
 {
   before = current;
   ++current;
@@ -86,7 +86,7 @@ void RandomIndices_1D::next_prune()
   new_constraint();
 }
 
-void RandomIndices_1D::prune_current()
+void RandomIndices_2D::prune_current()
 {
   current = list.erase_after(before);
   pointersCurrent = std::vector<unsigned int*>::reverse_iterator(pointers.erase(std::next(pointersCurrent).base()));
@@ -95,12 +95,12 @@ void RandomIndices_1D::prune_current()
 }
 
 // --- // If no constraint can be selected, exit loop // --- //
-bool RandomIndices_1D::check_prune()
+bool RandomIndices_2D::check_prune()
 {
   return nbC > 0;
 }
 
-void RandomIndices_1D::prune_last()
+void RandomIndices_2D::prune_last()
 {
   list.erase_after(before);
   pointers.erase(std::next(pointersCurrent).base());
@@ -109,12 +109,12 @@ void RandomIndices_1D::prune_last()
 
 // --- // Select new constraint // --- //
 // Optimisation possible, car dans le cas random on sélectionne une nouvelle contrainte avant de vérifier qu'elle sera utilisée
-void RandomIndices_1D::new_constraint()
+void RandomIndices_2D::new_constraint()
 {
   nbC--;
 }
 
-unsigned int RandomIndices_1D::get_constraint()
+unsigned int RandomIndices_2D::get_constraint()
 {
   constraint = pointers[floor(nbC * (*u))];
 
@@ -134,47 +134,47 @@ unsigned int RandomIndices_1D::get_constraint()
 // --- ////////////////////////// --- //
 // ---------------------------------- //
 
-void DeterministicIndices_1D::add(unsigned int value)
+void DeterministicIndices_2D::add(unsigned int value)
 {
   list.push_front(value);
 }
 
-void DeterministicIndices_1D::reset_prune()
+void DeterministicIndices_2D::reset_prune()
 {
   before = list.before_begin();
   current = std::next(before);
   constraint = std::next(current);
 }
 
-void DeterministicIndices_1D::next_prune()
+void DeterministicIndices_2D::next_prune()
 {
   before = current;
   current = constraint;
   new_constraint();
 }
 
-void DeterministicIndices_1D::prune_current()
+void DeterministicIndices_2D::prune_current()
 {
   current = list.erase_after(before);
   new_constraint();
 }
 
-bool DeterministicIndices_1D::check_prune()
+bool DeterministicIndices_2D::check_prune()
 {
   return constraint != list.end();
 }
 
-void DeterministicIndices_1D::prune_last()
+void DeterministicIndices_2D::prune_last()
 {
   list.erase_after(before);
 }
 
-void DeterministicIndices_1D::new_constraint()
+void DeterministicIndices_2D::new_constraint()
 {
   ++constraint;
 }
 
-unsigned int DeterministicIndices_1D::get_constraint()
+unsigned int DeterministicIndices_2D::get_constraint()
 {
   return *constraint;
 }

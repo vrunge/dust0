@@ -51,11 +51,11 @@ void DUST_reg::init_method()
   /// /// ///
   if(random_constraint)
   {
-    indices = new RandomIndices(n, alpha);
+    indices = new RandomIndices_2D(n, alpha);
   }
   else
   {
-    indices = new DeterministicIndices;
+    indices = new DeterministicIndices_2D;
   }
 
   /// /// ///

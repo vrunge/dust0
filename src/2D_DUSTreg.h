@@ -4,7 +4,7 @@
 #include <Rcpp.h>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 
-#include "1D_B_Indices.h"
+#include "2D_B_Indices.h"
 
 using namespace Rcpp;
 
@@ -98,7 +98,7 @@ public:
   bool random_constraint;
   double alpha;
 
-  Indices* indices;
+  Indices_2D* indices;
   std::vector<int> nb_indices;
 
   unsigned int n; // number of observations

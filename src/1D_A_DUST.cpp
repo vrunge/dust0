@@ -50,11 +50,11 @@ void DUST_1D::init_method()
   /// /// ///
   if(random_constraint)
   {
-    indices = new RandomIndices(n, alpha);
+    indices = new RandomIndices_1D(n, alpha);
   }
   else
   {
-    indices = new DeterministicIndices;
+    indices = new DeterministicIndices_1D;
   }
 
   /// /// ///
