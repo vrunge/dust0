@@ -114,20 +114,22 @@ bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsig
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-/// TO DO
-/// TO DO
-/// TO DO
-/// dualMaxAlgo2 not using dualEval
 
 bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  double a = 0.0;
-  double b = 1.0;
-  double c = 1 - 1/phi;
+  double a = (cumsum[t] - cumsum[s])/(t - s);
+  double b = (cumsum[s] - cumsum[r])/(s - r);
+
+  double lt = 0.0;
+  double rt = muMax(a, b);
+  double c = (1 - 1/phi) * rt;
   double d = 1/phi;
 
-  double fc = dualEval(c, minCost, t, s, r);
-  double fd = dualEval(d, minCost, t, s, r);
+  double linear = (costRecord[s] - costRecord[r])/(s - r);
+  double cst = (costRecord[s] - minCost)/(t - s);
+
+  double fc = - (1.0 - c) * Dstar((a - c*b)/(1 - c)) + c * linear + cst;
+  double fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
   if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
@@ -135,19 +137,19 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
   {
     if (fc > fd)
     {
-      b = d;
+      rt = d;
       d = c;
       fd = fc;
-      c = b - (b - a) / phi;
-      fc = dualEval(c, minCost, t, s, r);
+      c = rt - (rt - lt) / phi;
+      fc = - (1.0 - c) * Dstar((a - c*b)/(1 - c)) + c * linear + cst;
     }
     else
     {
-      a = c;
+      lt = c;
       c = d;
       fc = fd;
-      d = a + (b - a) / phi;
-      fd = dualEval(d, minCost, t, s, r);
+      d = lt + (rt - lt) / phi;
+      fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
     }
     max_val = std::max(max_val, std::max(fc, fd));
     if(max_val > 0){return(true);}
@@ -309,6 +311,11 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
   return false;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)

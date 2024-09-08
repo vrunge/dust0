@@ -114,14 +114,26 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
 {
   if(s + 1 == t){return(false);}
   if(r + 1 == s){return(false);}
+  double Mt = (cumsum[t] - cumsum[s]) / (t - s);
+  double Mt2 = (cumsum2[t] - cumsum2[s]) / (t - s);
+  double Ms = (cumsum[s] - cumsum[r]) / (s - r);
+  double Ms2 = (cumsum2[s] - cumsum2[r]) / (s - r);
 
-  double a = 0.0;
-  double b = 1.0;
-  double c = 1 - 1/phi;
+  double lt = 0.0;
+  double rt = muMax(Mt, Ms, Mt2, Ms2);
+  double c = (1 - 1/phi) * rt;
   double d = 1/phi;
 
-  double fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
-  double fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+  double linear = (costRecord[s] - costRecord[r])/(s - r);
+  double cst = (costRecord[s] - minCost)/(t - s);
+
+  double A = (Mt2 - c *  Ms2)/(1 - c);
+  double B = (Mt - c *  Ms)/(1 - c);
+  double fc =  0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
+
+  A = (Mt2 - d * Ms2)/(1.0 - d);
+  B = (Mt - d * Ms)/(1.0 - d);
+  double fd = 0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
   if(fc > 0 || fd > 0){return(true);}
   double max_val = std::max(fc, fd);
 
@@ -129,19 +141,23 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
   {
     if (fc > fd)
     {
-      b = d;
+      rt = d;
       d = c;
       fd = fc;
-      c = b - (b - a) / phi;
-      fc = DUST_meanVar::dualEval(c, minCost, t, s, r);
+      c = rt - (rt - lt) / phi;
+      A = (Mt2 - c * Ms2)/(1.0 - c);
+      B = (Mt - c * Ms)/(1.0 - c);
+      fc =  0.5 * (1.0 - c) * (1.0 + std::log(A - B*B)) + c * linear + cst;
     }
     else
     {
-      a = c;
+      lt = c;
       c = d;
       fc = fd;
-      d = a + (b - a) / phi;
-      fd = DUST_meanVar::dualEval(d, minCost, t, s, r);
+      d = lt + (rt - lt) / phi;
+      A = (Mt2 - d * Ms2)/(1.0 - d);
+      B = (Mt - d * Ms)/(1.0 - d);
+      fd = 0.5 * (1.0 - d) * (1.0 + std::log(A - B*B)) + d * linear + cst;
     }
     max_val = std::max(max_val, std::max(fc, fd));
     if(max_val > 0){return(true);}
@@ -262,7 +278,6 @@ bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, 
   } while (i < 100);
   return false;
 }
-
 
 
 
