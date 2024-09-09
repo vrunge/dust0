@@ -29,14 +29,14 @@ Rcpp::loadModule("DUSTMODULE1D", TRUE)
 #' @return a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the 3 methods.
 #' @examples
 #' dust.partitioner.1D()
-dust.partitioner.1D = function(
+dust.partitioner.1D <- function(
     model = "gauss"
     , method = "fastest"
     , alpha = 1e-9
     , nbLoops = 10
 )
 {
-  partitioner = new(DUST_1D, model, method, alpha, nbLoops)
+  partitioner <- new(DUST_1D, model, method, alpha, nbLoops)
 
   assign(
     "init",
@@ -89,13 +89,13 @@ Rcpp::loadModule("DUSTMODULEMeanVar", TRUE)
 #' @return a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the other 3 methods.
 #' @examples
 #' dust.partitioner.meanVar()
-dust.partitioner.meanVar = function(
+dust.partitioner.meanVar <- function(
      method = "fastest"
     , alpha = 1e-9
     , nbLoops = 10
 )
 {
-  partitioner = new(DUST_meanVar, method, alpha, nbLoops)
+  partitioner <- new(DUST_meanVar, method, alpha, nbLoops)
 
   assign(
     "init",
@@ -152,13 +152,13 @@ Rcpp::loadModule("DUSTMODULEreg", TRUE)
 #' @return a DUST partitioner object that provides methods : fit, for fitting the data; compute, once fit has been called, for computing the optimal partition of the data; get_partition, for retrieving the optimal partition once it has been computed; and quick, a wrapper for the other 3 methods.
 #' @examples
 #' dust.partitioner.reg()
-dust.partitioner.reg = function(
+dust.partitioner.reg <- function(
     method = "fastest"
     , alpha = 1e-9
     , nbLoops = 10
 )
 {
-  partitioner = new(DUST_reg, method, alpha, nbLoops)
+  partitioner <- new(DUST_reg, method, alpha, nbLoops)
 
   assign(
     "init",

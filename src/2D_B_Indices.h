@@ -19,6 +19,7 @@ public:
 
   void reset();
   void next();
+  void remove_first();
   bool check();
 
   virtual void reset_prune() = 0;

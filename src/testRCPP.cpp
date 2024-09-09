@@ -1,9 +1,20 @@
 #include <Rcpp.h>
 using namespace Rcpp;
+#include <Rcpp.h>
+using namespace Rcpp;
 
-
-//// x sans copie +  std::vector pour CUMSUM
-
+//' Cumulative Sum (cs1): No Copy of Input Vector
+//'
+//' Computes the cumulative sum of the input vector \code{x} without copying the data into a new container.
+//'
+//' @param x A numeric vector.
+//' @return A double value (currently always returns 0, but the cumulative sum is computed).
+//' @examples
+//' \dontrun{
+//'   x <- c(1, 2, 3, 4, 5)
+//'   cs1(x)  # Returns 0, but the cumulative sum is computed internally
+//' }
+//' @export
 // [[Rcpp::export]]
 double cs1(NumericVector& x)
 {
@@ -18,9 +29,18 @@ double cs1(NumericVector& x)
   return 0;
 }
 
-
-//// x copie dans vector data +  std::vector pour CUMSUM
-
+//' Cumulative Sum (cs2): Copy Input Vector to std::vector
+//'
+//' Computes the cumulative sum of the input vector \code{x} after copying it into a \code{std::vector}.
+//'
+//' @param x A numeric vector.
+//' @return A double value (currently always returns 0, but the cumulative sum is computed internally).
+//' @examples
+//' \dontrun{
+//'   x <- c(1, 2, 3, 4, 5)
+//'   cs2(x)  # Returns 0, but the cumulative sum is computed internally
+//' }
+//' @export
 // [[Rcpp::export]]
 double cs2(NumericVector& x)
 {
@@ -37,9 +57,18 @@ double cs2(NumericVector& x)
   return 0;
 }
 
-
-//// x sans copie  + NumericVector pour CUMSUM
-
+//' Cumulative Sum (cs3): No Copy of Input Vector to NumericVector
+//'
+//' Computes the cumulative sum of the input vector \code{x} without copying the data into a new container.
+//'
+//' @param x A numeric vector.
+//' @return A double value (currently always returns 0, but the cumulative sum is computed internally).
+//' @examples
+//' \dontrun{
+//'   x <- c(1, 2, 3, 4, 5)
+//'   cs3(x)  # Returns 0, but the cumulative sum is computed internally
+//' }
+//' @export
 // [[Rcpp::export]]
 double cs3(NumericVector& x)
 {
@@ -54,11 +83,18 @@ double cs3(NumericVector& x)
   return 0;
 }
 
-
-
-
-//// x avec copie dans NumericVector + NumericVector pour CUMSUM
-
+//' Cumulative Sum (cs4): Copy Input Vector to NumericVector
+//'
+//' Computes the cumulative sum of the input vector \code{x} after copying it into a \code{NumericVector}.
+//'
+//' @param x A numeric vector.
+//' @return A double value (currently always returns 0, but the cumulative sum is computed internally).
+//' @examples
+//' \dontrun{
+//'   x <- c(1, 2, 3, 4, 5)
+//'   cs4(x)  # Returns 0, but the cumulative sum is computed internally
+//' }
+//' @export
 // [[Rcpp::export]]
 double cs4(NumericVector& x)
 {
@@ -75,8 +111,18 @@ double cs4(NumericVector& x)
   return 0;
 }
 
-//// x avec copie dans NumericVector avec move + NumericVector pour CUMSUM
-
+//' Cumulative Sum (cs5): Move Input Vector to NumericVector
+//'
+//' Computes the cumulative sum of the input vector \code{x} after moving it into a \code{NumericVector}.
+//'
+//' @param x A numeric vector.
+//' @return A double value (currently always returns 0, but the cumulative sum is computed internally).
+//' @examples
+//' \dontrun{
+//'   x <- c(1, 2, 3, 4, 5)
+//'   cs5(x)  # Returns 0, but the cumulative sum is computed internally
+//' }
+//' @export
 // [[Rcpp::export]]
 double cs5(NumericVector& x)
 {
@@ -92,5 +138,3 @@ double cs5(NumericVector& x)
   }
   return 0;
 }
-
-

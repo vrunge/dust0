@@ -278,8 +278,8 @@ void DUST_reg::compute()
 
     // update the available indices
     indices->add(t);
-    nbt++;
     nb_indices[t - 1] = nbt;
+    nbt++;
   }
 }
 
@@ -303,6 +303,7 @@ std::forward_list<unsigned int> DUST_reg::backtrack_changepoints()
 List DUST_reg::get_partition()
 {
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
+  indices->remove_first();
   return List::create(
     _["changepoints"] = backtrack_changepoints(),
     _["lastIndexSet"] = indices->get_list(),

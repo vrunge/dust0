@@ -6,6 +6,8 @@ y <- dataGenerator_1D(n, parameters = 0, type = tpe)
 res1 <- dust.partitioner.1D(method = "detIndex_Eval4", model = tpe)$quick(data = y, penalty = beta)
 res2 <- dust.partitioner.1D(method = "detIndex_Eval2", model = tpe)$quick(data = y, penalty = beta)
 
+
+
 all(res1$changepoints == res2$changepoints)
 res2$changepoints
 plot(res1$nb - res2$nb)
@@ -17,10 +19,13 @@ system.time(dust.partitioner.1D(method = "randIndex_Eval2", model = tpe)$quick(d
 system.time(dust.partitioner.1D(method = "randIndex_Eval4", model = tpe)$quick(data = y, penalty = beta))
 
 
-n <- 10^3
+n <- 10^2
 beta <- 2*log(n)
 y <- dataGenerator_1D(n, parameters = 0, type = "gauss")
-a <- dust.partitioner.1D(method = "randIndex_Eval2", model = "gauss")$quick(data = y, penalty = beta)
+a <- dust.partitioner.1D(method = "randIndex_Eval5", model = "gauss")$quick(data = y, penalty = beta)
+
+a$nb
+
 b <- dust.partitioner.1D(method = "randIndex_Eval4", model = "gauss")$quick(data = y, penalty = beta)
 
 a$changepoints

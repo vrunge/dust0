@@ -23,6 +23,11 @@ void Indices_2D::next()
   ++current;
 }
 
+void Indices_2D::remove_first()
+{
+  list.pop_front();
+}
+
 bool Indices_2D::check()
 {
   return current != list.end();
