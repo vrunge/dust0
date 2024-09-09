@@ -63,7 +63,7 @@ lower_bound <- down
 # Create a data frame for plotting
 time <- 1:n_steps
 df <- data.frame(time = time,
-                 exemplarOP = c(1,res$nb),  # Pick the first simulation as the exemplar
+                 exemplarOP = c(res$nb),  # Pick the first simulation as the exemplar
                  exemplar = dust_simus[,2],  # Pick the first simulation as the exemplar
                  mean = means,
                  lower = lower_bound,

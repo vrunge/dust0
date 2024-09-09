@@ -18,7 +18,7 @@ class DUST_reg
 
 public:
   DUST_reg(int dual_max,
-           bool random_constraint,
+           int constraint_indices,
            Nullable<double> alpha = Nullable<double>(),
            Nullable<int> nbLoops = Nullable<int>());
 
@@ -95,7 +95,7 @@ public:
 
   // --- // Private fields // --- //
   int dual_max;
-  bool random_constraint;
+  int constraint_indices;
   double alpha;
 
   Indices_2D* indices;

@@ -22,6 +22,21 @@ DUST_1D *newModule1D(const std::string& model,
                      Nullable<double> alpha,
                      Nullable<int> nbLoops)
 {
+  ///////////////////  method separation into 2 ///////////////////
+  std::vector<std::string> indices_max;
+  size_t pos = method.find('_');  // Find the position of the underscore
+
+  if (pos != std::string::npos)
+  {
+    indices_max.push_back(method.substr(0, pos));        // First part before the underscore
+    indices_max.push_back(method.substr(pos + 1));       // Second part after the underscore
+  }
+  else
+  {
+    indices_max.push_back(method);
+    indices_max.push_back(method);
+  }
+
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
   ///////////////////  DEFAULT CHOICE  = best choice ///////////////////
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
@@ -29,70 +44,16 @@ DUST_1D *newModule1D(const std::string& model,
   bool random_constraint = false;
   if(model == "gauss"){dual_max = 1;}
 
-
-  if (method == "randIndex_Eval0")
-  {
-    dual_max = 0; /// the random Evaluation of the dual
-    random_constraint = true;  /// random choice for the unique constraint
-  }
-  else if (method == "randIndex_Eval1")
-  {
-    dual_max = 1; /// the max explicitly or -inf
-    random_constraint = true; /// random choice for the unique constraint
-  }
-  else if (method == "randIndex_Eval2")
-  {
-    dual_max = 2; /// algo2
-    random_constraint = true; /// random choice for the unique constraint
-  }
-  else if (method == "randIndex_Eval3")
-  {
-    dual_max = 3; /// algo3
-    random_constraint = true; /// random choice for the unique constraint
-  }
-  else if (method == "randIndex_Eval4")
-  {
-    dual_max = 4; /// algo4
-    random_constraint = true; /// random choice for the unique constraint
-  }
-  else if (method == "randIndex_Eval5")
-  {
-    dual_max = 5; /// algo4
-    random_constraint = true; /// random choice for the unique constraint
-  }
+  if (indices_max[0] == "randIndex"){random_constraint = true;}
+  if (indices_max[0] == "detIndex"){random_constraint = false;}
 
 
-  else if (method == "detIndex_Eval0")
-  {
-    dual_max = 0; /// the random Evaluation of the dual
-    random_constraint = false; /// deterministic choice of constraint
-  }
-  else if (method == "detIndex_Eval1")
-  {
-    dual_max = 1; /// the max explicitly or -inf
-    random_constraint = false; /// deterministic choice of constraint
-  }
-  else if (method == "detIndex_Eval2")
-  {
-    dual_max = 2; /// algo2
-    random_constraint = false; /// deterministic choice of constraint
-  }
-  else if (method == "detIndex_Eval3")
-  {
-    dual_max = 3; /// algo3
-    random_constraint = false; /// deterministic choice of constraint
-  }
-  else if (method == "detIndex_Eval4")
-  {
-    dual_max = 4; /// algo3
-    random_constraint = false; /// deterministic choice of constraint
-  }
-  else if (method == "detIndex_Eval5")
-  {
-    dual_max = 5; /// algo3
-    random_constraint = false; /// deterministic choice of constraint
-  }
-
+  if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
+  if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
+  if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
+  if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
+  if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
+  if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
 
   if (model == "gauss")
     return new Gauss_1D(dual_max, random_constraint, alpha, nbLoops);

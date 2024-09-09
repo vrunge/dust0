@@ -172,40 +172,40 @@ r2$nb[n]/n * 100
 ###
 ###
 
-n <- 10^4
+n <- 10^3
 beta <- 2*log(n)
 y <- c(dataGenerator_meanVar(chpts = c(n/4,n/2,n), means = c(0,1,0), sds = c(1,1,1.2)),rep(0, n))
 y <-   dataGenerator_meanVar(chpts = n)
 plot(y)
 r1 <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
 r2 <- dust.partitioner.meanVar(method = "randIndex_Eval2")$quick(data = y, penalty = beta)
-#r3 <- dust.partitioner.meanVar(method = "randIndex_Eval4")$quick(data = y, penalty = beta)
+r3 <- dust.partitioner.meanVar(method = "randIndex_Eval4")$quick(data = y, penalty = beta)
 r4 <- dust.partitioner.meanVar(method = "detIndex_Eval0")$quick(data = y, penalty = beta)
 r5 <- dust.partitioner.meanVar(method = "detIndex_Eval2")$quick(data = y, penalty = beta)
-#r6 <- dust.partitioner.meanVar(method = "detIndex_Eval4")$quick(data = y, penalty = beta)
+r6 <- dust.partitioner.meanVar(method = "detIndex_Eval4")$quick(data = y, penalty = beta)
 r1$changepoints
 r2$changepoints
-#r3$changepoints
+r3$changepoints
 r4$changepoints
 r5$changepoints
-#r6$changepoints
+r6$changepoints
 r1$nb[n]
 r2$nb[n]
-#r3$nb[n]
+r3$nb[n]
 r4$nb[n]
 r5$nb[n]
-#r6$nb[n]
+r6$nb[n]
 r1$nb[n]/n * 100
 r2$nb[n]/n * 100
-#r3$nb[n]/n * 100
+r3$nb[n]/n * 100
 r4$nb[n]/n * 100
 r5$nb[n]/n * 100
-#r6$nb[n]/n * 100
+r6$nb[n]/n * 100
 
 
 
 
-n <- 10^3
+n <- 10^5
 beta <- 2*log(n)
 y <-   dataGenerator_meanVar(chpts = n)
 plot(y)

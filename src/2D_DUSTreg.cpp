@@ -14,9 +14,9 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_reg::DUST_reg(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_reg::DUST_reg(int dual_max, int constraint_indices, Nullable<double> alpha_, Nullable<int> nbLoops)
   : dual_max(dual_max),
-    random_constraint(random_constraint),
+    constraint_indices(constraint_indices),
     indices(nullptr)
 {
   if(alpha_.isNull())
@@ -49,13 +49,21 @@ void DUST_reg::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint)
+  if(constraint_indices == 10)
   {
     indices = new RandomIndices_2D(n, alpha);
   }
-  else
+  if(constraint_indices == 11)
   {
     indices = new DeterministicIndices_2D;
+  }
+  if(constraint_indices == 20)
+  {
+    indices = new Random2Indices_2D(n, alpha);
+  }
+  if(constraint_indices == 21)
+  {
+    indices = new Deterministic2Indices_2D;
   }
 
   /// /// ///
