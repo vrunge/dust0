@@ -60,30 +60,12 @@ void DUST_1D::init_method()
   /// /// ///
   /// /// /// dual_max METHOD
   /// /// ///
-  if(dual_max == 0)
-  {
-    current_test = &DUST_1D::dualMaxAlgo0;
-  }
-  if(dual_max == 1)
-  {
-    current_test = &DUST_1D::dualMaxAlgo1;
-  }
-  if(dual_max == 2)
-  {
-    current_test = &DUST_1D::dualMaxAlgo2;
-  }
-  if(dual_max == 3)
-  {
-    current_test = &DUST_1D::dualMaxAlgo3;
-  }
-  if(dual_max == 4)
-  {
-    current_test = &DUST_1D::dualMaxAlgo4;
-  }
-  if(dual_max == 5)
-  {
-    current_test = &DUST_1D::dualMaxAlgo5;
-  }
+  if(dual_max == 0){current_test = &DUST_1D::dualMaxAlgo0;}
+  if(dual_max == 1){current_test = &DUST_1D::dualMaxAlgo1;}
+  if(dual_max == 2){current_test = &DUST_1D::dualMaxAlgo2;}
+  if(dual_max == 3){current_test = &DUST_1D::dualMaxAlgo3;}
+  if(dual_max == 4){current_test = &DUST_1D::dualMaxAlgo4;}
+  if(dual_max == 5){current_test = &DUST_1D::dualMaxAlgo5;}
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
@@ -320,6 +302,12 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
+  double constantTerm = (costRecord[s] - minCost) / (t - s);
+  double nonLinear = Dstar(objectiveMean);
+  double test_value = - nonLinear + constantTerm;
+
+  if (test_value > 0) {return true;} // PELT test
   return (false);
 }
 

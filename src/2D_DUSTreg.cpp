@@ -49,50 +49,20 @@ void DUST_reg::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(constraint_indices == 10)
-  {
-    indices = new RandomIndices_2D(n, alpha);
-  }
-  if(constraint_indices == 11)
-  {
-    indices = new DeterministicIndices_2D;
-  }
-  if(constraint_indices == 20)
-  {
-    indices = new Random2Indices_2D(n, alpha);
-  }
-  if(constraint_indices == 21)
-  {
-    indices = new Deterministic2Indices_2D;
-  }
+  if(constraint_indices == 10){indices = new RandomIndices_2D(n, alpha);}
+  if(constraint_indices == 11){indices = new DeterministicIndices_2D;}
+  if(constraint_indices == 20){indices = new Random2Indices_2D(n, alpha);}
+  if(constraint_indices == 21){indices = new Deterministic2Indices_2D;}
 
   /// /// ///
   /// /// /// dual_max METHOD
   /// /// ///
-  if(dual_max == 0)
-  {
-    current_test = &DUST_reg::dualMaxAlgo0;
-  }
-  if(dual_max == 1)
-  {
-    current_test = &DUST_reg::dualMaxAlgo1;
-  }
-  if(dual_max == 2)
-  {
-    current_test = &DUST_reg::dualMaxAlgo2;
-  }
-  if(dual_max == 3)
-  {
-    current_test = &DUST_reg::dualMaxAlgo3;
-  }
-  if(dual_max == 4)
-  {
-    current_test = &DUST_reg::dualMaxAlgo4;
-  }
-  if(dual_max == 5)
-  {
-    current_test = &DUST_reg::dualMaxAlgo5;
-  }
+  if(dual_max == 0){current_test = &DUST_reg::dualMaxAlgo0;}
+  if(dual_max == 1){current_test = &DUST_reg::dualMaxAlgo1;}
+  if(dual_max == 2){current_test = &DUST_reg::dualMaxAlgo2;}
+  if(dual_max == 3){current_test = &DUST_reg::dualMaxAlgo3;}
+  if(dual_max == 4){current_test = &DUST_reg::dualMaxAlgo4;}
+  if(dual_max == 5){current_test = &DUST_reg::dualMaxAlgo5;}
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
@@ -100,7 +70,6 @@ void DUST_reg::init_method()
   engine.seed(std::random_device{}());
   dist = std::uniform_real_distribution<double>(0.0, 1.0);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

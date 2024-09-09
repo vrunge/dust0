@@ -49,50 +49,20 @@ void DUST_meanVar::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(constraint_indices == 10)
-  {
-    indices = new RandomIndices_2D(n, alpha);
-  }
-  if(constraint_indices == 11)
-  {
-    indices = new DeterministicIndices_2D;
-  }
-  if(constraint_indices == 20)
-  {
-    indices = new Random2Indices_2D(n, alpha);
-  }
-  if(constraint_indices == 21)
-  {
-    indices = new Deterministic2Indices_2D;
-  }
+  if(constraint_indices == 10){indices = new RandomIndices_2D(n, alpha);}
+  if(constraint_indices == 11){indices = new DeterministicIndices_2D;}
+  if(constraint_indices == 20){indices = new Random2Indices_2D(n, alpha);}
+  if(constraint_indices == 21){indices = new Deterministic2Indices_2D;}
 
   /// /// ///
   /// /// /// dual_max METHOD
   /// /// ///
-  if(dual_max == 0)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo0;
-  }
-  if(dual_max == 1)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo1;
-  }
-  if(dual_max == 2)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo2;
-  }
-  if(dual_max == 3)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo3;
-  }
-  if(dual_max == 4)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo4;
-  }
-  if(dual_max == 5)
-  {
-    current_test = &DUST_meanVar::dualMaxAlgo5;
-  }
+  if(dual_max == 0){current_test = &DUST_meanVar::dualMaxAlgo0;}
+  if(dual_max == 1){current_test = &DUST_meanVar::dualMaxAlgo1;}
+  if(dual_max == 2){current_test = &DUST_meanVar::dualMaxAlgo2;}
+  if(dual_max == 3){current_test = &DUST_meanVar::dualMaxAlgo3;}
+  if(dual_max == 4){current_test = &DUST_meanVar::dualMaxAlgo4;}
+  if(dual_max == 5){current_test = &DUST_meanVar::dualMaxAlgo5;}
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
@@ -291,7 +261,18 @@ bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, 
 
 bool DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  if(s + 1 == t){return(false);}
+  //if(r + 1 == s){return(false);} // => Vb = 0
+
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double a2 = (cumsum2[t] - cumsum2[s]) / (t - s);
+
+  double constantTerm = (costRecord[s] - minCost) / (t - s);
+  double nonLinear = 0.5 * (1 + std::log(a2 - a*a));
+  double test_value = nonLinear + constantTerm;  //dual in mu = 0
+
+  if (test_value > 0) {return true;} // PELT test (eval dual in 0)
+  return(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
