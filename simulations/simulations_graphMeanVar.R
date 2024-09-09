@@ -1,5 +1,4 @@
 
-
 library(dust)
 
 n <- 10^3
@@ -16,44 +15,90 @@ r1$nb[n]/n * 100
 n*(n+1)/2 / sum(r1$nb)
 plot(r1$nb)
 
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+############################################################################
 
-############################################################################
-############################################################################
-# Load ggplot2 library
+oneSimu <- function(n)
+{
+  beta <- 2*log(n)
+  #y <-  dataGenerator_meanVar(chpts = c(round(1/3*n), round(2/3*n),n),
+  #                            means = c(0,0,1),
+  #                            sds = c(1, 2, 2))
+  y <-  dataGenerator_meanVar(chpts = n)
+  res <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
+  return(res$nb)
+}
+
+# Load required libraries
 library(ggplot2)
 
-# Example data: two vectors of the same length
-x <- 1:n # X-axis (e.g., time or indices)
-y1 <- r1$nb                        # First vector (e.g., sine wave)
-y2 <- r2$nb                    # Second vector (e.g., cosine wave)
+# Parameters
+n_steps <- 1000  # Number of time steps
+n_simulations <- 500  # Number of random walks
 
-# Create a data frame
-df <- data.frame(x = x, y1 = y1, y2 = y2)
+# Simulate 100 random walks with 1000 time steps
+dust_simus <- replicate(n_simulations, oneSimu(n_steps))
 
-# Reshape the data to long format for ggplot
-df_long <- reshape2::melt(df, id.vars = "x")
+beta <- 2*log(n_steps)
+y <-  dataGenerator_meanVar(chpts = n_steps)
+res <- dust.partitioner.meanVar(method = "randIndex_Eval3")$quick(data = y, penalty = beta)
+
+
+# Calculate the mean and confidence intervals for each time step
+means <- apply(dust_simus, 1, mean)
+std_devs <- apply(dust_simus, 1, sd)
+up <- apply(dust_simus, 1, function(x) quantile(x,0.95))
+down <- apply(dust_simus, 1, function(x) quantile(x,0.05))
+
+# 95% Confidence intervals (mean ± 1.96 * standard error)
+#upper_bound <- means + 1.96 * std_devs / sqrt(n_simulations)
+#lower_bound <- means - 1.96 * std_devs / sqrt(n_simulations)
+
+upper_bound <- up
+lower_bound <- down
+
+# Create a data frame for plotting
+time <- 1:n_steps
+df <- data.frame(time = time,
+                 exemplarOP = c(1,res$nb),  # Pick the first simulation as the exemplar
+                 exemplar = dust_simus[,2],  # Pick the first simulation as the exemplar
+                 mean = means,
+                 lower = lower_bound,
+                 upper = upper_bound)
 
 # Plot using ggplot2
-ggplot(df_long, aes(x = x, y = value, color = variable)) +
-  geom_line(size = 1) +
-  labs(title = "Plot of Two Vectors",
-       x = "",
-       y = "number of indices",
-       color = "Vectors") +        # Legend title
+ggplot(df, aes(x = time)) +
+  geom_line(aes(y = exemplarOP), color = "green", size = 0.5) +  # Exemplar random walk
+  geom_line(aes(y = exemplar), color = "blue", size = 0.5) +  # Exemplar random walk
+  geom_line(aes(y = mean), color = "red", size = 1) +  # Mean curve
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "grey80", alpha = 0.5) +  # Confidence interval
+  labs(title = "Random Walk Simulation with Mean and Confidence Interval",
+       x = "Time Steps",
+       y = "Position",
+       caption = "Exemplar random walk (blue, dashed)\nMean curve (red) with 95% confidence interval (grey)") +
   theme_minimal()
 
 
-
-
-
 ############################################################################
 ############################################################################
-n <- 10^5
+############################################################################
+############################################################################
+############################################################################
+
+n <- 10^4
 beta <- 2*log(n)
 y <-   dataGenerator_meanVar(chpts = c(n))
 plot(y)
 system.time(dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta))
-system.time(dust.partitioner.meanVar(method = "randIndex_Eval4")$quick(data = y, penalty = beta))
-system.time(dust.partitioner.meanVar(method = "randIndex_Eval3")$quick(data = y, penalty = beta))
+system.time(dust.partitioner.meanVar(method = "randIndex_Eval2")$quick(data = y, penalty = beta))
+#system.time(dust.partitioner.meanVar(method = "randIndex_Eval3")$quick(data = y, penalty = beta))
 ### OP = randIndex_Eval3
+
+
+
+
+
 
