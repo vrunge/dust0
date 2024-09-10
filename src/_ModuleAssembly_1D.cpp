@@ -101,7 +101,3 @@ RCPP_MODULE(DUSTMODULE1D)
   ;
 }
 
-
-
-
-
