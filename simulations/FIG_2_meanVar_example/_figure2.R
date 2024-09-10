@@ -44,9 +44,6 @@ system.time(dust.partitioner.meanVar(method = "randIndex_Eval5")$quick(data = y,
 oneSimu <- function(n)
 {
   beta <- 4*log(n)
-  #y <-  dataGenerator_meanVar(chpts = c(round(1/3*n), round(2/3*n),n),
-  #                            means = c(0,0,1),
-  #                            sds = c(1, 2, 2))
   y <-  dataGenerator_meanVar(chpts = n)
   res <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
   cat("0" )
