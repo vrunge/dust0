@@ -26,6 +26,5 @@ dust.1D <- function(
 )
 {
   partitioner <- new(DUST_1D, model, method, alpha, nbLoops)
-  partitioner$init_raw(data, penalty)
   return(partitioner$quick_raw(data, penalty))
 }
