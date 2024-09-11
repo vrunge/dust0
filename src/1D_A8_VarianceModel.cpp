@@ -50,7 +50,7 @@ double Variance_1D::muMax(double a, double b) const
 
 double Variance_1D::Dstar(double x) const
 {
-  return 0.5 * (-std::log(x) - 1.0);
+  return -0.5 * (std::log(x) + 1.0);
 }
 
 
