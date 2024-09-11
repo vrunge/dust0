@@ -10,7 +10,7 @@ data_normalization(y, type = "gauss")
 \item{y}{A numeric vector representing the time series to be normalized and then segmented.}
 
 \item{type}{A string specifying the model type for normalization.
-The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", and "negbin".
+The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin", "variance".
 The default is "gauss".}
 }
 \value{
@@ -21,8 +21,9 @@ Normalizes the input time series data `y` according to the specified `type`.
 The normalization process depends on the statistical model type, which can be one of the following:
 "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
 "poisson" (Poisson distribution), "geom" (geometric distribution),
-"bern" (Bernoulli distribution), "binom" (binomial distribution), or
-"negbin" (negative binomial distribution).
+"bern" (Bernoulli distribution), "binom" (binomial distribution),
+"negbin" (negative binomial distribution), or
+"variance"
 }
 \examples{
 # Normalize a random time series using the Gaussian model

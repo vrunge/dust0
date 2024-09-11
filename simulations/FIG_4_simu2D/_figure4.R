@@ -12,7 +12,7 @@ library(dust)
 
 ## different cost
 ## different beta
-##different max dual methods
+## different max dual methods
 ## different signals
 ## different data size
 

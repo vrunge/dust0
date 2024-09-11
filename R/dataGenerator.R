@@ -43,7 +43,7 @@ dataGenerator_1D <- function(chpts = 100,
   if(!is.numeric(parameters)){stop('parameters values are not all numeric')}
   if(length(chpts) != length(parameters)){stop('chpts and parameters vectors are of different size')}
 
-  allowed.types <- c("gauss", "exp", "poisson", "geom", "bern", "binom", "negbin")
+  allowed.types <- c("gauss", "exp", "poisson", "geom", "bern", "binom", "negbin", "variance")
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   ###################################
@@ -78,6 +78,7 @@ dataGenerator_1D <- function(chpts = 100,
   ### parameter constraints ###
   #############################
 
+  if(type == "variance"){if(min(parameters) < 0){stop('no negative parameters (variances) possible for Variance model')}}
   if(type == "exp"){if(min(parameters) <= 0){stop('no negative mean allowed for Poisson model')}}
   if(type == "poisson"){if(min(parameters) <= 0){stop('no negative mean allowed for Poisson model')}}
 
@@ -94,6 +95,8 @@ dataGenerator_1D <- function(chpts = 100,
   mu <- rep(parameters, repetition)
 
   if(type == "gauss" && all(gamma == 1)){y <- rnorm(n, mean = mu, sd = sdNoise)}
+
+  if(type == "variance"){y <- rnorm(n, mean = 0, sd = mu)}
 
   if(type == "exp"){y <- rexp(n = n, rate = mu)}
   if(type == "poisson"){y <- rpois(n = n, lambda = mu)}

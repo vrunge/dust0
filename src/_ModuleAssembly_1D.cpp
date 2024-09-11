@@ -8,6 +8,7 @@
 #include "1D_A5_BernModel.h"
 #include "1D_A6_BinomModel.h"
 #include "1D_A7_NegbinModel.h"
+#include "1D_A8_VarianceModel.h"
 
 using namespace Rcpp;
 
@@ -69,6 +70,8 @@ DUST_1D *newModule1D(const std::string& model,
     return new Binom_1D(dual_max, random_constraint, alpha, nbLoops);
   if (model == "negbin")
     return new Negbin_1D(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "variance")
+    return new Variance_1D(dual_max, random_constraint, alpha, nbLoops);
   return nullptr;
 }
 

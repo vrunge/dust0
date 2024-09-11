@@ -18,7 +18,7 @@ dust.1D(
 
 \item{penalty}{A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{2 * log(length(data))}.}
 
-\item{model}{A character string. Specifies the model used for change point detection. Default is "gauss". Possible values could include "gauss", "poisson", "exp", "geom", "binom", "negbin".}
+\item{model}{A character string. Specifies the model used for change point detection. Default is "gauss". Possible values could include "gauss", "poisson", "exp", "geom", "binom", "negbin", "variance".}
 
 \item{method}{A character string. Specifies the method to be used in the detection. Default is "fastest". Different segmentation methods may be specified.}
 

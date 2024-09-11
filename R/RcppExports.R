@@ -76,12 +76,13 @@ sdDiff <- function(y, method = "HALL") {
 #' The normalization process depends on the statistical model type, which can be one of the following:
 #' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
 #' "poisson" (Poisson distribution), "geom" (geometric distribution),
-#' "bern" (Bernoulli distribution), "binom" (binomial distribution), or
-#' "negbin" (negative binomial distribution).
+#' "bern" (Bernoulli distribution), "binom" (binomial distribution),
+#' "negbin" (negative binomial distribution), or
+#' "variance"
 #'
 #' @param y A numeric vector representing the time series to be normalized and then segmented.
 #' @param type A string specifying the model type for normalization.
-#' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", and "negbin".
+#' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin", "variance".
 #' The default is "gauss".
 #' @return A numeric vector that is the normalized version of the input time series `y`.
 #' @examples

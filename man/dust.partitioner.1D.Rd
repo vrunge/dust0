@@ -14,13 +14,14 @@ dust.partitioner.1D(
 \arguments{
 \item{model}{A character string specifying the model for the data. The default is \code{gauss}. Available models are:
 \itemize{
-  \item \code{"gauss"}: Assumes the data follows a Gaussian distribution.
+  \item \code{"gauss"}: Assumes the data follows a Gaussian distribution with known variance
   \item \code{"poisson"}: Assumes the data follows a Poisson distribution, typically for count data.
   \item \code{"exp"}: Assumes the data follows an exponential distribution.
   \item \code{"geom"}: Assumes the data follows a geometric distribution.
   \item \code{"bern"}: Assumes the data follows a Bernoulli distribution, typically for binary data.
   \item \code{"binom"}: Assumes the data follows a Binomial distribution, for experiments with a fixed number of trials.
   \item \code{"negbin"}: Assumes the data follows a Negative Binomial distribution, for overdispersed count data.
+  \item \code{"variance"}: Assumes the data follows a Gaussian distribution with unknown variance and null mean.
 }}
 
 \item{method}{A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{fastest}, which automatically selects the quickest method for the chosen model. Other available methods are:

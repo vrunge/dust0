@@ -46,7 +46,7 @@ oneSimu <- function(n)
   beta <- 4*log(n)
   y <-  dataGenerator_meanVar(chpts = n)
   res <- dust.partitioner.meanVar(method = "randIndex_Eval0")$quick(data = y, penalty = beta)
-  cat("0" )
+  cat("0")
   return(res$nb)
 }
 
