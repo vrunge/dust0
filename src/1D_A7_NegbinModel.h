@@ -12,6 +12,8 @@ public:
   Negbin_1D(int dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(unsigned int t, unsigned int s) const override;
+  double statistic(double& data) const override;
+
   double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const override;
   double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const override;
 

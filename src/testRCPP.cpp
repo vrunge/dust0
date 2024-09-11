@@ -138,3 +138,26 @@ double cs5(NumericVector& x)
   }
   return 0;
 }
+
+
+void myFunction(){}
+
+// [[Rcpp::export]]
+int main1()
+{
+  for (int i = 0; i < 1000000; ++i) {
+    myFunction();
+  }
+  return 0;
+}
+// [[Rcpp::export]]
+int main2()
+{
+  for (int i = 0; i < 1000000; ++i) {
+    myFunction();
+  }
+  return 0;
+}
+
+
+

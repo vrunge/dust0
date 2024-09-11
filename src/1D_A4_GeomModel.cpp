@@ -17,6 +17,9 @@ double Geom_1D::Cost(unsigned int t, unsigned int s) const
   return res;
 }
 
+double Geom_1D::statistic(double& data) const
+{return(data);}
+
 double Geom_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it

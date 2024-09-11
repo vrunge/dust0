@@ -51,6 +51,7 @@ protected:
   int nb_Loops; // number of loops in optimization step (For dual max)
 
   virtual double Cost(unsigned int t, unsigned int s) const = 0;
+  virtual double statistic(double& data) const = 0;
   virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
   virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
 

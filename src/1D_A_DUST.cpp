@@ -418,7 +418,7 @@ void DUST_1D::compute(std::vector<double>& inData)
   {
     // update cumsum
     cumsum[t] =
-      cumsum[t - 1] + inData[t - 1];
+      cumsum[t - 1] + statistic(inData[t - 1]);
 
     // OP step
     indices->reset();
@@ -518,3 +518,15 @@ List DUST_1D::quick(std::vector<double>& inData, Nullable<double> inPenalty)
   compute(inData);
   return get_partition();
 }
+
+////
+//// IDEA : propose a new quick method with a loop of "compute (K)"
+//// solving the K fixed (number of change) problem.
+//// new 3 functions : ini, comute and get_partition
+////
+
+
+
+
+
+

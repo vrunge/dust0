@@ -89,6 +89,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// main1
+int main1();
+RcppExport SEXP _dust_main1() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(main1());
+    return rcpp_result_gen;
+END_RCPP
+}
+// main2
+int main2();
+RcppExport SEXP _dust_main2() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(main2());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULEMeanVar();
@@ -102,6 +122,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dust_cs3", (DL_FUNC) &_dust_cs3, 1},
     {"_dust_cs4", (DL_FUNC) &_dust_cs4, 1},
     {"_dust_cs5", (DL_FUNC) &_dust_cs5, 1},
+    {"_dust_main1", (DL_FUNC) &_dust_main1, 0},
+    {"_dust_main2", (DL_FUNC) &_dust_main2, 0},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {"_rcpp_module_boot_DUSTMODULEMeanVar", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMeanVar, 0},
     {"_rcpp_module_boot_DUSTMODULEreg", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEreg, 0},

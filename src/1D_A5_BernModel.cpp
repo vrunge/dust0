@@ -17,6 +17,9 @@ double Bern_1D::Cost(unsigned int t, unsigned int s) const
   return res;
 }
 
+double Bern_1D::statistic(double& data) const
+{return(data);}
+
 double Bern_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it

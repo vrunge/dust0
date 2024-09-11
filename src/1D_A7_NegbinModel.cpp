@@ -17,6 +17,9 @@ double Negbin_1D::Cost(unsigned int t, unsigned int s) const
   return res;
 }
 
+double Negbin_1D::statistic(double& data) const
+{return(data);}
+
 double Negbin_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it

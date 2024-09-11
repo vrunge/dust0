@@ -15,6 +15,10 @@ double Variance_1D::Cost(unsigned int t, unsigned int s) const
   return 0.5 * delta_t * (1.0 + std::log(diff_cumsum / delta_t));
 }
 
+double Variance_1D::statistic(double& data) const
+{return(data * data);}
+
+
 double Variance_1D::dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s); // m_it

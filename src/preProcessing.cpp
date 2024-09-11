@@ -199,7 +199,7 @@ std::vector<double> data_normalization(std::vector<double>& y,
   if (type == "variance")
   {
     double mean_y = std::accumulate(y.begin(), y.end(), 0.0) / n;
-    for (int i = 0; i < n; ++i){y[i] = y[i] - mean_y; y[i] = y[i] * y[i];}
+    for (int i = 0; i < n; ++i){y[i] = y[i] - mean_y;}
     return y;
   }
 

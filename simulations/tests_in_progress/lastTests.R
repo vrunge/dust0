@@ -1,4 +1,23 @@
 
+
+n <- 10^7
+beta <- 2*log(n)
+y <- rnorm(n)
+system.time(dust.partitioner.1D(method = "randIndex_Eval4")$quick(data = y, penalty = beta))
+
+
+library(microbenchmark)
+n <- 10^7
+beta <- 2*log(n)
+microbenchmark::microbenchmark(
+  dust.partitioner.1D(method = "randIndex_Eval4")$quick(data = rnorm(n), penalty = beta)
+, times = 100)
+
+
+
+
+
+
 tpe <- "poisson"
 n <- 10^5
 beta <- 2*log(n)/5
