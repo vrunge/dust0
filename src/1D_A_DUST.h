@@ -52,6 +52,7 @@ protected:
 
   virtual double Cost(unsigned int t, unsigned int s) const = 0;
   virtual double statistic(double& data) const = 0;
+
   virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
   virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
 
@@ -87,6 +88,7 @@ private:
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();
+  double segmentation_Cost(std::forward_list<unsigned int>& chpts) const;
 
   // --- // Private fields // --- //
   int dual_max;

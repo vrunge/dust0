@@ -180,11 +180,11 @@ cs5 <- function(x) {
     .Call(`_dust_cs5`, x)
 }
 
-main1 <- function() {
-    .Call(`_dust_main1`)
+main1 <- function(n) {
+    .Call(`_dust_main1`, n)
 }
 
-main2 <- function() {
-    .Call(`_dust_main2`)
+main2 <- function(n) {
+    .Call(`_dust_main2`, n)
 }
 

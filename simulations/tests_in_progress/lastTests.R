@@ -1,8 +1,22 @@
 
 
-n <- 10^7
-beta <- 2*log(n)
-y <- rnorm(n)
+n <- 10^3
+beta <- log(n)
+y <- c(rnorm(n,2), rnorm(n,2.2), rnorm(n,2.3))
+res <- dust.partitioner.1D(method = "randIndex_Eval4")$quick(data = y, penalty = beta)
+res$changepoints
+res$segmentation_cost
+val <- 0
+res$changepoints <- c(0, res$changepoints)
+for(i in 1:(length(res$changepoints)-1))
+{
+  print(i)
+  val <- val - (res$changepoints[i+1] - res$changepoints[i])*mean(y[(res$changepoints[i]+1):res$changepoints[i+1]])^2/2
+}
+res$segmentation_cost
+val
+res$changepoints
+
 system.time(dust.partitioner.1D(method = "randIndex_Eval4")$quick(data = y, penalty = beta))
 
 

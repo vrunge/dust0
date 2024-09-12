@@ -140,23 +140,28 @@ double cs5(NumericVector& x)
 }
 
 
-void myFunction(){}
+double myFunction(double& x){return(x);}
 
 // [[Rcpp::export]]
-int main1()
+int main1(int n)
 {
-  for (int i = 0; i < 1000000; ++i) {
-    myFunction();
+  double y = 1;
+  for (int i = 0; i < n; ++i)
+  {
+    y = y + myFunction(y) * myFunction(y);
   }
-  return 0;
+  return y;
 }
+
 // [[Rcpp::export]]
-int main2()
+int main2(int n)
 {
-  for (int i = 0; i < 1000000; ++i) {
-    myFunction();
+  double y = 1;
+  for (int i = 0; i < n; ++i)
+  {
+    y = y + y * y;
   }
-  return 0;
+  return y;
 }
 
 

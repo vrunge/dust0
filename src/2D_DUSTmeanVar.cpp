@@ -419,13 +419,37 @@ std::forward_list<unsigned int> DUST_meanVar::backtrack_changepoints()
   return changepoints;
 }
 
+
+double DUST_meanVar::segmentation_Cost(std::forward_list<unsigned int>& chpts) const
+{
+  chpts.push_front(0);
+
+  double totalCost = 0;
+  auto it = chpts.begin();     // Iterator to the current element
+  auto next_it = std::next(it); // Iterator to the next element
+
+  while (next_it != chpts.end())
+  {
+    totalCost += Cost(*next_it, *it);  // Apply cost function to consecutive elements
+    it = next_it;  // Move to the next element
+    ++next_it;     // Advance the next iterator
+  }
+
+  chpts.pop_front();
+  return totalCost;
+}
+
 // --- // Retrieves optimal partition // --- //
 List DUST_meanVar::get_partition()
 {
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
-  indices->remove_first();
+  indices->remove_first(); ///// REMOVE FIRST ELEMENT /////
+
+  std::forward_list<unsigned int> chpts = backtrack_changepoints();
+
   return List::create(
-    _["changepoints"] = backtrack_changepoints(),
+    _["changepoints"] = chpts,
+    _["segmentation_cost"] = segmentation_Cost(chpts),
     _["lastIndexSet"] = indices->get_list(),
     _["nb"] = nb_indices,
     _["costQ"] = costRecord
