@@ -34,6 +34,9 @@ NULL
 #' @export
 NULL
 
+#' @title MyModule: Exposing DUST_MD to R
+NULL
+
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 #'
 #' The `sdDiff` function calculates a measure of variability (standard deviation or MAD)

@@ -16,6 +16,6 @@ Suggests:
     ggplot2,
     knitr
 VignetteBuilder: knitr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppArmadillo, dqrng
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
