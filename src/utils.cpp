@@ -3,10 +3,14 @@
 using namespace Rcpp;
 
 
-
-// ######### // FINDBOUNDARYK // ######### //
+// ######### // FINDBOUNDARY // ######### //
 // -> clip direction to restrict optimization within the simplex / distorted simplex (i.e. if mu_max not 1)
-double FindBoundaryCoef(const arma::rowvec& x, const arma::rowvec& dk, const arma::rowvec& weights, bool& shrink, std::vector<unsigned int>& shrink_indices)
+
+double FindBoundaryCoef(const arma::rowvec& x,
+                        const arma::rowvec& dk,
+                        const arma::rowvec& weights,
+                        bool& shrink,
+                        std::vector<unsigned int>& shrink_indices)
 {
   unsigned int size = x.n_elem;
   double min_coef = std::numeric_limits<double>::infinity(); // record current min
@@ -43,7 +47,14 @@ double FindBoundaryCoef(const arma::rowvec& x, const arma::rowvec& dk, const arm
   return 1.;
 };
 
-void updateHessian(arma::dmat& inverseHessian, const arma::rowvec& mu_diff, const arma::rowvec& grad_diff, const arma::dmat& I)
+/////////////// ///////////////
+/////////////// ///////////////
+/////////////// ///////////////
+
+void updateHessian(arma::dmat& inverseHessian,
+                   const arma::rowvec& mu_diff,
+                   const arma::rowvec& grad_diff,
+                   const arma::dmat& I)
 {
   double rho = pow(arma::dot(grad_diff, mu_diff), -1);
   arma::dmat mult = I - mu_diff.t() * (grad_diff * rho);

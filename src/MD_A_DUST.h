@@ -42,7 +42,7 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>());
+  List quick(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>(), Nullable<unsigned int> inNbMax = Nullable<unsigned int>());
 
   ////////////////////////////////
   ////////////////////////////////

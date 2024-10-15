@@ -204,6 +204,13 @@ dust.partitioner.reg <- function(
   return(partitioner)
 }
 
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
 
 ## ----------------------------------- ##
 ## --- /////////////////////////// --- ##
@@ -261,7 +268,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #'   \item \code{quick}, a wrapper for the 3 methods.
 #' }
 #' @examples
-#' dust.partitioner.1D()
+#' dust.partitioner.MD()
 dust.partitioner.MD <- function(
     model = "gauss"
     , method = "fastest"
@@ -281,10 +288,9 @@ dust.partitioner.MD <- function(
   assign(
     "quick",
     function(data, penalty = NULL, nb_max = NULL)
-      partitioner$quick_raw(data, penalty),
+      partitioner$quick_raw(data, penalty, nb_max),
     envir = partitioner
   )
 
   return(partitioner)
 }
-

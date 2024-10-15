@@ -63,24 +63,24 @@ DUST_MD *newModuleMD(const std::string& model,
 // --------------------------------- //
 
 //' @title MyModule: Exposing DUST_MD to R
- //'
- //' @name DUST_MD
- //'
- //' @description
- //' This module exposes the \code{DUST_MD} C++ class to R, allowing you to create
- //' instances of \code{DUST_MD} and call its methods directly from R.
- //'
- //' @export
- RCPP_MODULE(DUSTMODULEMD)
- {
-   class_<DUST_MD>("DUST_MD")
+//'
+//' @name DUST_MD
+//'
+//' @description
+//' This module exposes the \code{DUST_MD} C++ class to R, allowing you to create
+//' instances of \code{DUST_MD} and call its methods directly from R.
+//'
+//' @export
+RCPP_MODULE(DUSTMODULEMD)
+{
+  class_<DUST_MD>("DUST_MD")
 
-   .factory<const std::string&, const std::string&, Nullable<double>, Nullable<int>>(newModuleMD)
+  .factory<const std::string&, const std::string&, Nullable<double>, Nullable<int>>(newModuleMD)
 
-   .method("init_raw", &DUST_MD::init)
-   .method("compute", &DUST_MD::compute)
-   .method("get_partition", &DUST_MD::get_partition)
-   .method("quick_raw", &DUST_MD::quick)
-   ;
- }
+  .method("init_raw", &DUST_MD::init)
+  .method("compute", &DUST_MD::compute)
+  .method("get_partition", &DUST_MD::get_partition)
+  .method("quick_raw", &DUST_MD::quick)
+  ;
+}
 

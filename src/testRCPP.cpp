@@ -139,30 +139,3 @@ double cs5(NumericVector& x)
   return 0;
 }
 
-
-double myFunction(double& x){return(x);}
-
-// [[Rcpp::export]]
-int main1(int n)
-{
-  double y = 1;
-  for (int i = 0; i < n; ++i)
-  {
-    y = y + myFunction(y) * myFunction(y);
-  }
-  return y;
-}
-
-// [[Rcpp::export]]
-int main2(int n)
-{
-  double y = 1;
-  for (int i = 0; i < n; ++i)
-  {
-    y = y + y * y;
-  }
-  return y;
-}
-
-
-

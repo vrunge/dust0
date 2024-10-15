@@ -35,6 +35,14 @@ NULL
 NULL
 
 #' @title MyModule: Exposing DUST_MD to R
+#'
+#' @name DUST_MD
+#'
+#' @description
+#' This module exposes the \code{DUST_MD} C++ class to R, allowing you to create
+#' instances of \code{DUST_MD} and call its methods directly from R.
+#'
+#' @export
 NULL
 
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
@@ -181,13 +189,5 @@ cs4 <- function(x) {
 #' @export
 cs5 <- function(x) {
     .Call(`_dust_cs5`, x)
-}
-
-main1 <- function(n) {
-    .Call(`_dust_main1`, n)
-}
-
-main2 <- function(n) {
-    .Call(`_dust_main2`, n)
 }
 

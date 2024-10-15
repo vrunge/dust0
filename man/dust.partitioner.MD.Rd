@@ -57,5 +57,5 @@ a DUST partitioner object that provides methods:
 Generates a DUST partitioner
 }
 \examples{
-dust.partitioner.1D()
+dust.partitioner.MD()
 }

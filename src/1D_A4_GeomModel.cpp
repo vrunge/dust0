@@ -17,6 +17,7 @@ double Geom_1D::Cost(unsigned int t, unsigned int s) const
   return res;
 }
 
+
 double Geom_1D::statistic(double& data) const
 {return(data);}
 

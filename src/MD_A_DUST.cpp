@@ -55,7 +55,7 @@ void DUST_MD::init_method()
   /// /// /// dual_max METHOD
   /// /// ///
   if(dual_max == 0){current_test = &DUST_MD::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_MD::dualMaxAlgo4;}
+  if(dual_max == 1){current_test = &DUST_MD::dualMaxAlgo1;}
   if(dual_max == 2){current_test = &DUST_MD::dualMaxAlgo4;}
   if(dual_max == 3){current_test = &DUST_MD::dualMaxAlgo4;}
   if(dual_max == 4){current_test = &DUST_MD::dualMaxAlgo4;}
@@ -157,7 +157,6 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
   constraintMean.resize(d, r_size);
 
   mu_max.resize(r_size);
-  inv_max.resize(r_size);
 
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.);
 
@@ -174,7 +173,6 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
     }
 
     mu_max(j) = muMax(mean_sum, constraint_mean_sum);
-    inv_max(j) = pow(mu_max(j), -1);
     j++;
   }
 
@@ -186,11 +184,9 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
     mu(i) = mu_max(i) * x;
     mu_sum += mu(i);
   }
-  double inv_sum = pow(mu_sum, -1);
+  double inv_sum = pow(1 - mu_sum, -1);
 
-  double linDot = 0;
-  for (unsigned int col = 0; col < r_size; col++)
-    linDot += mu(col) * linearTerm(col);
+  double linDot = arma::dot(mu, linearTerm);
 
   double nonLinear = 0;
   for (unsigned int row = 0; row < d; row++)
@@ -782,9 +778,9 @@ List DUST_MD::get_partition()
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //
-List DUST_MD::quick(const arma::dmat& inData, Nullable<double> inPenalty)
+List DUST_MD::quick(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbMax)
 {
-  init(inData, inPenalty);
+  init(inData, inPenalty, inNbMax);
   compute(inData);
   return get_partition();
 }
