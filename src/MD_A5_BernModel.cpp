@@ -10,19 +10,18 @@ Bern_MD::Bern_MD(int dual_max, bool random_constraint, Nullable<double> alpha, N
 double Bern_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
   double res = 0;
-  double inv_delta = pow(t - s, -1);
-  double diff;
   double ratio;
   for (unsigned int row = 0; row < d; row++)
   {
-    diff = cumsum(row, t) - cumsum(row, s);
-    ratio = diff * inv_delta;
-    if (ratio == 0 || ratio == 1)
+    ratio = (cumsum(row, t) - cumsum(row, s)) / (t - s);
+    if (ratio == 0 | ratio == 1)
       continue;
-    res += ratio * std::log(ratio) + (1. - ratio) * std::log(1. - ratio);
+    res += - double(t - s) * (ratio * std::log(ratio) + (1 - ratio) * std::log(1 - ratio));
   }
-  return double(t - s) * res;
+  return res;
 }
+
+
 
 double Bern_MD::statistic(const double& data) const
 {return(data);}
