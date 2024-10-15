@@ -152,7 +152,7 @@ rM$changepoints
 data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.6), type = "bern")
 dataMD <- matrix(rep(data, d), nrow = d, length(data), byrow = T)
 r1 <- dust.1D(data, penalty = 0.1*log(100), model = "bern")
-rM <- dust.MD(dataMD, penalty =  0.1*d*log(100), model = "bern", method = "detIndex_Eval0")
+rM <- dust.MD(dataMD, penalty =  0.1*d*log(100), model = "bern", method = "detIndex_Eval1")
 rM$costQ/r1$costQ
 r1$changepoints
 rM$changepoints

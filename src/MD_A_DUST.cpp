@@ -90,7 +90,7 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t, const u
   mu_max.resize(r_size);
   inv_max.resize(r_size);
 
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.);
+  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
   // Compute constraintMean matrix and mu_max
   unsigned int j = 0;
@@ -105,7 +105,7 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t, const u
       constraint_mean_sum += constraintMean(row, j);
     }
 
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum);
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
     inv_max(j) = pow(mu_max(j), -1);
     j++;
   }
@@ -158,7 +158,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
 
   mu_max.resize(r_size);
 
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.);
+  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
   unsigned int j = 0;
   for (auto k: r)
@@ -172,7 +172,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
       constraint_mean_sum += constraintMean(row, j);
     }
 
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum);
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
     j++;
   }
 
@@ -243,7 +243,8 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t, const u
   mu_max.resize(r_size);
   inv_max.resize(r_size);
 
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.);
+  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0);
+
 
   // Initialize the constraint mean matrix, which contains the mean-vectors associated with each constraint as columns
   // + Initialize mu_max, which is based on the value of the value of each mean-vector compared to the value of the "objective" mean-vector
