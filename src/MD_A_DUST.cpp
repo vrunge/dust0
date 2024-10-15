@@ -580,13 +580,12 @@ void DUST_MD::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullabl
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * d * std::log(n); //to do
+    penalty = 2 * d * std::log(n);
   }
   else
   {
     penalty = as<double>(inPenalty);
   }
-
   if (inNbMax.isNull())
   {
     nb_max = d;
@@ -739,25 +738,6 @@ std::forward_list<unsigned int> DUST_MD::backtrack_changepoints()
   return changepoints;
 }
 
-double DUST_MD::segmentation_Cost(std::forward_list<unsigned int>& chpts) const
-{
-  chpts.push_front(0);
-
-  double totalCost = 0;
-  auto it = chpts.begin();     // Iterator to the current element
-  auto next_it = std::next(it); // Iterator to the next element
-
-  while (next_it != chpts.end())
-  {
-    totalCost += Cost(*next_it, *it);  // Apply cost function to consecutive elements
-    it = next_it;  // Move to the next element
-    ++next_it;     // Advance the next iterator
-  }
-
-  chpts.pop_front();
-  return totalCost;
-}
-
 
 // --- // Retrieves optimal partition // --- //
 List DUST_MD::get_partition()
@@ -766,15 +746,17 @@ List DUST_MD::get_partition()
   indices->remove_last(); ///// REMOVE FIRST ELEMENT /////
 
   std::forward_list<unsigned int> chpts = backtrack_changepoints();
+  std::vector<unsigned int> lastIndexSet = indices->get_list();
+  std::reverse(lastIndexSet.begin(), lastIndexSet.end());
 
   return List::create(
     _["changepoints"] = chpts,
-    _["segmentation_cost"] = segmentation_Cost(chpts),
-    _["lastIndexSet"] = indices->get_list(),
+    _["lastIndexSet"] = lastIndexSet,
     _["nb"] = nb_indices,
     _["costQ"] = costRecord
   );
 }
+
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //

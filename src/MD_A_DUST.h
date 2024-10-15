@@ -96,7 +96,6 @@ private:
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();
-  double segmentation_Cost(std::forward_list<unsigned int>& chpts) const;
 
   // --- // Private fields // --- //
   int dual_max;

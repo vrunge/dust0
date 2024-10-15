@@ -58,9 +58,8 @@ double Poisson_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsig
 
 double Poisson_1D::muMax(double a, double b) const
 {
-  double res = 1;
-  if(b != 0){res = std::min(1.0, a/b);}
-  return res;
+  if (b != 0) return std::min(1., a/b);
+  return 1.;
 }
 
 double Poisson_1D::Dstar(double x) const
@@ -76,9 +75,6 @@ double Poisson_1D::DstarPrime(double x) const
 
 double Poisson_1D::DstarSecond(double x) const
 {
-  return (1.0/x);
+  return pow(x, -1);
 }
-
-
-
 

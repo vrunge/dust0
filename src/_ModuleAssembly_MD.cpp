@@ -1,6 +1,12 @@
 // --- // Models // --- //
 #include "MD_A1_GaussModel.h"
 #include "MD_A2_PoissonModel.h"
+#include "MD_A3_ExpModel.h"
+#include "MD_A4_GeomModel.h"
+#include "MD_A5_BernModel.h"
+#include "MD_A6_BinomModel.h"
+#include "MD_A7_NegbinModel.h"
+#include "MD_A8_VarianceModel.h"
 
 using namespace Rcpp;
 
@@ -52,6 +58,18 @@ DUST_MD *newModuleMD(const std::string& model,
     return new Gauss_MD(dual_max, random_constraint, alpha, nbLoops);
   if (model == "poisson")
     return new Poisson_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "exp")
+    return new Exp_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "geom")
+    return new Geom_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "bern")
+    return new Bern_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "binom")
+    return new Binom_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "negbin")
+    return new Negbin_MD(dual_max, random_constraint, alpha, nbLoops);
+  if (model == "variance")
+    return new Variance_MD(dual_max, random_constraint, alpha, nbLoops);
   return nullptr;
 }
 

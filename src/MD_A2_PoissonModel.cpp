@@ -7,12 +7,15 @@ Poisson_MD::Poisson_MD(int dual_max, bool random_constraint, Nullable<double> al
 
 double Poisson_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
+  double diff;
   double res = 0;
-  double inv_diff = pow(t - s, -1);
+  double inv_delta = pow(t - s, -1);
   for (unsigned int row = 0; row < d; row++)
   {
-    double diff = cumsum(row, t) - cumsum(row, s);
-    res += diff * (1. - std::log(diff * inv_diff));
+    diff = cumsum(row, t) - cumsum(row, s);
+    if (diff == 0)
+      continue;
+    res += diff * (1. - std::log(diff * inv_delta));
   }
   return res;
 }

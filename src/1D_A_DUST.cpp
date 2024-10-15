@@ -368,7 +368,7 @@ void DUST_1D::init(std::vector<double>& inData, Nullable<double> inPenalty)
 
   if (inPenalty.isNull())
   {
-    penalty = 2 * pow(sdDiff(inData), 2) * std::log(n); //to do
+    penalty = 2 * pow(sdDiff(inData), 2) * std::log(n);
   }
   else
   {
