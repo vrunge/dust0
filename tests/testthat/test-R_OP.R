@@ -8,8 +8,8 @@ library(dust)
 
 test_that("test gauss model data = 0 constant size 100",
           {
-            res <- dataGenerator_1D(chpts = 100, sdNoise = 0)
-            op <- OP_R_1D(data = res)
+            res <- dataGenerator_1D(chpts = 100, parameters = 0, sdNoise = 0)
+            op <- OP_R_1D(data = res, type = "gauss")
             expect_equal(op$changepoints, 100)
             expect_equal(op$costQ, rep(0,100))
           })

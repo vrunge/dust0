@@ -88,8 +88,7 @@ sdDiff <- function(y, method = "HALL") {
 #' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
 #' "poisson" (Poisson distribution), "geom" (geometric distribution),
 #' "bern" (Bernoulli distribution), "binom" (binomial distribution),
-#' "negbin" (negative binomial distribution), or
-#' "variance"
+#' "negbin" (negative binomial distribution), or "variance"
 #'
 #' @param y A numeric vector representing the time series to be normalized and then segmented.
 #' @param type A string specifying the model type for normalization.

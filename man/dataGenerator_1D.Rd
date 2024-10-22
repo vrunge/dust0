@@ -6,7 +6,7 @@
 \usage{
 dataGenerator_1D(
   chpts = 100,
-  parameters = 0,
+  parameters = 0.5,
   sdNoise = 1,
   gamma = 1,
   nbTrials = 10,

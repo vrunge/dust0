@@ -15,10 +15,9 @@ double Poisson_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0.0;
   double diff = cumsum[t] - cumsum[s];
-  if(diff != 0.0) {
-    double inv_diff = 1.0 / (t - s);
-    double log_term = std::log(diff * inv_diff);
-    res = diff * (1.0 - log_term);
+  if(diff > 0.0) /// should be != 0, we use > for robustness
+  {
+    res = diff * (1.0 - std::log(diff / (t - s)));
   }
   return res;
 }

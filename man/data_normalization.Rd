@@ -22,8 +22,7 @@ The normalization process depends on the statistical model type, which can be on
 "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
 "poisson" (Poisson distribution), "geom" (geometric distribution),
 "bern" (Bernoulli distribution), "binom" (binomial distribution),
-"negbin" (negative binomial distribution), or
-"variance"
+"negbin" (negative binomial distribution), or "variance"
 }
 \examples{
 # Normalize a random time series using the Gaussian model

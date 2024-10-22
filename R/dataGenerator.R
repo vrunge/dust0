@@ -25,7 +25,7 @@
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, type = "negbin")
 #' dataGenerator_1D(chpts = c(50,70, 120, 200), parameter = c(0,3,-1,1), type = "gauss")
 dataGenerator_1D <- function(chpts = 100,
-                             parameters = 0,
+                             parameters = 0.5, # as 0 is not available for costs exp, poisson, geom, negbin
                              sdNoise = 1,
                              gamma = 1,
                              nbTrials = 10,

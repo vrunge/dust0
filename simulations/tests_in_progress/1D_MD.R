@@ -1,6 +1,4 @@
 
-
-
 ####
 
 set.seed(45)
@@ -12,8 +10,6 @@ r1 <- dust.1D(data, penalty = 0.1*log(100))
 rM <- dust.MD(dataMD, penalty =  0.1*d*log(100))
 rM$costQ/r1$costQ
 all(r1$changepoints == rM$changepoints)
-
-
 
 
 d <- 5
@@ -116,10 +112,11 @@ rM$changepoints
 
 
 
-data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.6), type = "bern")
+data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.6), type = "binom")
+data <- data_normalization(data, type = "binom")
 dataMD <- matrix(rep(data, d), nrow = d, length(data), byrow = T)
-r1 <- dust.1D(data, penalty = 0.1*log(100), model = "bern")
-rM <- dust.MD(dataMD, penalty =  0.1*d*log(100), model = "bern", method = "detIndex_Eval0")
+r1 <- dust.1D(data, penalty = 0.1*log(100), model = "binom")
+rM <- dust.MD(dataMD, penalty =  0.1*d*log(100), model = "binom", method = "detIndex_Eval0")
 rM$costQ/r1$costQ
 r1$changepoints
 rM$changepoints

@@ -168,8 +168,7 @@ double sdDiff(std::vector<double>& y, std::string method = "HALL")
 //' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
 //' "poisson" (Poisson distribution), "geom" (geometric distribution),
 //' "bern" (Bernoulli distribution), "binom" (binomial distribution),
-//' "negbin" (negative binomial distribution), or
-//' "variance"
+//' "negbin" (negative binomial distribution), or "variance"
 //'
 //' @param y A numeric vector representing the time series to be normalized and then segmented.
 //' @param type A string specifying the model type for normalization.
@@ -220,7 +219,7 @@ std::vector<double> data_normalization(std::vector<double>& y,
   {
     for(int i = 0; i < n; i++){if(y[i] < 0){throw std::range_error("negative data not compatible with poisson model");}}
     double mean_y = std::accumulate(y.begin(), y.end(), 0.0) / n;
-    for(int i = 0; i < n; ++i) {y[i] = y[i] / mean_y;}
+    for(int i = 0; i < n; ++i){y[i] = y[i] / mean_y;}
     return y;
   }
 
@@ -274,7 +273,10 @@ std::vector<double> data_normalization(std::vector<double>& y,
     return y;
   }
 
-  // Additional models can be added here (exp, geom, bern, binom, negbin)
+  if(type == "geom" || type == "bern")
+  {
+    return y;
+  }
 
   Rcpp::stop("Unsupported type specified.");
 }
