@@ -19,6 +19,7 @@
 #'   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
 #'   \item \code{"Eval4"}: auasi-Newton method with armijo condition
 #'   \item \code{"Eval5"}: PELT rule
+#'   \item \code{"Eval6"}: OP rule
 #' }
 #' @param alpha A numeric value. For randomness level. Default is \code{1e-9}.
 #' @param nbLoops An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.

@@ -55,6 +55,7 @@ DUST_1D *newModule1D(const std::string& model,
   if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
   if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
   if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
+  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   if (model == "gauss")
     return new Gauss_1D(dual_max, random_constraint, alpha, nbLoops);

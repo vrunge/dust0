@@ -66,6 +66,7 @@ void DUST_1D::init_method()
   if(dual_max == 3){current_test = &DUST_1D::dualMaxAlgo3;}
   if(dual_max == 4){current_test = &DUST_1D::dualMaxAlgo4;}
   if(dual_max == 5){current_test = &DUST_1D::dualMaxAlgo5;}
+  if(dual_max == 6){current_test = &DUST_1D::dualMaxAlgo6;}
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
@@ -308,6 +309,13 @@ bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsig
   double test_value = - nonLinear + constantTerm;
 
   if (test_value > 0) {return true;} // PELT test
+  return (false);
+}
+
+
+
+bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
+{
   return (false);
 }
 

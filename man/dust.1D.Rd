@@ -33,6 +33,7 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
   \item \code{"Eval4"}: auasi-Newton method with armijo condition
   \item \code{"Eval5"}: PELT rule
+  \item \code{"Eval6"}: OP rule
 }}
 
 \item{alpha}{A numeric value. For randomness level. Default is \code{1e-9}.}
