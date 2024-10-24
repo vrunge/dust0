@@ -414,7 +414,7 @@ void DUST_1D::compute(std::vector<double>& inData)
   // First OP step (t = 1)
   unsigned int t = 1;
   unsigned int s = 0;
-  cumsum[1] = inData[0];
+  cumsum[1] =  statistic(inData[0]);
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
 
