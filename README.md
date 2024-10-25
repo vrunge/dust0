@@ -15,15 +15,13 @@
 
 > [Models And Data Generators](#Models)
 
-> [Rcpp Structure](#rcpp)
-
 > [dust 1D and MD Algorithms](#dust1D)
 
 > [dust 2D Algorithms](#dust2D)
 
-> [Pruning Capacity](#pruning)
+> [Rcpp Structure](#rcpp)
 
-> [Hidden Functions and Parameters (Package Development)](#hidden)
+> [Pruning Capacity](#pruning)
 
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
@@ -180,6 +178,7 @@ Additional information and examples are easily accessible in the help of these f
 [(Back to Top)](#top)
 
 
+
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>
@@ -188,7 +187,18 @@ Additional information and examples are easily accessible in the help of these f
 
 ## Pruning Capacity
 
+Analysis of the pruning capacity (return field `nb`) for some of our algorithms. We explore in particular the impact of the different choices for the dual max evaluation.
 
+
+[(Back to Top)](#top)
+
+
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
+
+
+## Hidden Functions and Parameters (Package Development)
 
 ### OP in R
 
@@ -204,7 +214,6 @@ Example: `OP_R_1D(dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss"))`
 - `type = "meanVar"` change in Gaussian data in mean and variance
 
 - `type = regression` change in simple regression model
-
 
 
 ### Dual Functions
@@ -285,17 +294,6 @@ We add the values in the bar plot only if at the final time step `n`, the index 
 
 [(Back to Top)](#top)
 
-
-<center>
-<img src="man/figures/sep.png" alt="" style="width:100%;"/>
-</center>
-
-<a id="hidden"></a>
-
-## Hidden Functions and Parameters (Package Development)
-
-
-[(Back to Top)](#top)
 
 
 

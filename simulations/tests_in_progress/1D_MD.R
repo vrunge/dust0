@@ -38,8 +38,8 @@ d <- 5
 data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0,1))
 dataMD <- matrix(rep(data,5), nrow = d, length(data), byrow = T)
 
-r1 <- dust.1D(data)
-rM <- dust.MD(dataMD)
+r1 <- dust.1D(data, penalty = 1)
+rM <- dust.MD(dataMD,penalty = d)
 
 r1$changepoints
 rM$changepoints
