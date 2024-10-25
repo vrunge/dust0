@@ -19,7 +19,7 @@
 
 > [dust 2D Algorithms](#dust2D)
 
-> [Rcpp Structure](#rcpp)
+> [Rcpp Structure and new cost integration](#rcpp)
 
 > [Pruning Capacity](#pruning)
 
@@ -173,7 +173,7 @@ Additional information and examples are easily accessible in the help of these f
 
 <a id="rcpp"></a>
 
-## Rcpp Structure
+## Rcpp Structure and new cost integration
 
 [(Back to Top)](#top)
 
