@@ -8,7 +8,7 @@ test_that("return is a vector",
           {expect_equal(is.vector(dataGenerator_1D()), TRUE)
           })
 test_that("return is a matrix",
-          {expect_equal(is.matrix(dataGenerator_MultiD()), TRUE)
+          {expect_equal(is.matrix(dataGenerator_MD()), TRUE)
           })
 test_that("returns is a vector",
           {expect_equal(is.vector(dataGenerator_meanVar()), TRUE)

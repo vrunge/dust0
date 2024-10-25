@@ -19,9 +19,9 @@ double Binom_MD::Cost(const unsigned int& t, const unsigned int& s) const
     ratio = diff * inv_delta;
     if (ratio == 0 || ratio == 1)
       continue;
-    res += ratio * std::log(ratio) + (1. - ratio) * std::log(1. - ratio);
+    res +=  ratio * std::log(ratio) + (1. - ratio) * std::log(1. - ratio);
   }
-  return double(t - s) * res;
+  return(-double(t - s) * res);
 }
 
 double Binom_MD::statistic(const double& data) const

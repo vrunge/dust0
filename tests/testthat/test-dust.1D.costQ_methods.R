@@ -7,13 +7,13 @@ library(dust)
 ############## all methods  - all costs as OP ################
 ##############################################################
 
-test_that("costQ size = nb size = data size",
+test_that("costQ all the same, for all types and methods",
           {
-            types <- c( "gauss", "poisson", "exp", "geom", "bern","binom", "negbin", "variance")
+            types <- c( "gauss", "poisson", "exp", "geom", "bern", "binom", "negbin", "variance")
             for(i in types)
             {
             data <- dataGenerator_1D(parameters = 0.5, type = i)
-            data <- data_normalization(data, type = i)
+            data <- data_normalization_1D(data, type = i)
             res0 <- dust.1D(data, model = i, method = "randIndex_Eval0")
             res1 <- dust.1D(data, model = i, method = "randIndex_Eval1")
             res2 <- dust.1D(data, model = i, method = "randIndex_Eval2")

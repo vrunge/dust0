@@ -53,7 +53,7 @@ ggplot(dat, aes(x, y)) +
 n <- 10^4
 pen <- 2*log(n)
 p <- 2
-dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+dataM <- dataGenerator_MD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
 res3 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
 
 cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
@@ -64,7 +64,7 @@ regIndices(res3$nb, remove = 5000)
 n <- 10^4
 pen <- 2*log(n)
 p <- 5
-dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+dataM <- dataGenerator_MD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
 res3 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
 
 cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))

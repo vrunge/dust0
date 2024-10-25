@@ -133,9 +133,9 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 
 
 
-**dataGenerator_MultiD** concatenates `p` copies of `dataGenerator_1D` function.
+**dataGenerator_MD** concatenates `p` copies of `dataGenerator_1D` function.
 
-Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MultiD`).
+Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MD`).
 
 
 [(Back to Top)](#top)

@@ -71,7 +71,7 @@ data
 
 data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0,1))
 data
-data_normalization(data, type = "gauss")
+data_normalization_1D(data, type = "gauss")
 
 
 d <- 5
@@ -113,7 +113,7 @@ rM$changepoints
 
 
 data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.6), type = "binom")
-data <- data_normalization(data, type = "binom")
+data <- data_normalization_1D(data, type = "binom")
 dataMD <- matrix(rep(data, d), nrow = d, length(data), byrow = T)
 r1 <- dust.1D(data, penalty = 0.1*log(100), model = "binom")
 rM <- dust.MD(dataMD, penalty =  0.1*d*log(100), model = "binom", method = "detIndex_Eval0")

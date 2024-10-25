@@ -160,7 +160,7 @@ double sdDiff(std::vector<double>& y, std::string method = "HALL")
 
 //' Data Normalization Function
 //'
-//' @name data_normalization
+//' @name data_normalization_1D
 //'
 //' @description
 //' Normalizes the input time series data `y` according to the specified `type`.
@@ -177,18 +177,18 @@ double sdDiff(std::vector<double>& y, std::string method = "HALL")
 //' @return A numeric vector that is the normalized version of the input time series `y`.
 //' @examples
 //' # Normalize a random time series using the Gaussian model
-//' normalized_y <- data_normalization(rnorm(100), type = "gauss")
+//' normalized_y <- data_normalization_1D(rnorm(100), type = "gauss")
 //'
 //' # Normalize using the Poisson model
-//' normalized_y <- data_normalization(rpois(100, lambda = 3), type = "poisson")
+//' normalized_y <- data_normalization_1D(rpois(100, lambda = 3), type = "poisson")
 //'
 //' # Normalize using the Exponential model
-//' normalized_y <- data_normalization(rexp(100), type = "exp")
+//' normalized_y <- data_normalization_1D(rexp(100), type = "exp")
 //'
 //' @export
 // [[Rcpp::export]]
-std::vector<double> data_normalization(std::vector<double>& y,
-                                       std::string type = "gauss")
+std::vector<double> data_normalization_1D(std::vector<double>& y,
+                                          std::string type = "gauss")
 {
   int n = y.size();
 
@@ -282,4 +282,50 @@ std::vector<double> data_normalization(std::vector<double>& y,
 }
 
 
+//' Data Normalization Function
+//'
+//' @name data_normalization_MD
+//'
+//' @description
+//' Normalizes the input time series data `y` according to the specified `type`.
+//' The normalization process depends on the statistical model type, which can be one of the following:
+//' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
+//' "poisson" (Poisson distribution), "geom" (geometric distribution),
+//' "bern" (Bernoulli distribution), "binom" (binomial distribution),
+//' "negbin" (negative binomial distribution), or "variance"
+//'
+//' @param y A numeric matrix representing the time series to be normalized and then segmented.
+//' @param type A string specifying the model type for normalization.
+//' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin", "variance".
+//' The default is "gauss".
+//' @return A numeric matrix that is the normalized version of the input time series `y`, normalized row by row.
+//' @examples
+//' # Normalize a random time series using the Gaussian model
+//' normalized_y <- data_normalization_MD(matrix(rnorm(100), nrow = 2), type = "gauss")
+//' @export
+// [[Rcpp::export]]
+NumericMatrix data_normalization_MD(NumericMatrix& y,
+                                std::string type = "gauss")
+{
+  int nCols = y.ncol();
+  int nRows = y.nrow();
+  NumericMatrix y_normalized = clone(y);
+  std::vector<double> currentRow(nCols);
+  std::vector<double> currentRowNEW(nCols);
+
+  // Fill the vector with the first row of the matrix
+  for (int i = 0; i < nRows; i++)
+  {
+    for (int j = 0; j < nCols; j++)
+    {
+      currentRow[j] = y(i, j);
+    }
+    currentRowNEW = data_normalization_1D(currentRow, type);
+    for (int j = 0; j < nCols; j++)
+    {
+      y_normalized(i, j) = currentRowNEW[j];
+    }
+  }
+  return y_normalized;
+}
 

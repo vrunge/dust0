@@ -23,15 +23,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// data_normalization
-std::vector<double> data_normalization(std::vector<double>& y, std::string type);
-RcppExport SEXP _dust_data_normalization(SEXP ySEXP, SEXP typeSEXP) {
+// data_normalization_1D
+std::vector<double> data_normalization_1D(std::vector<double>& y, std::string type);
+RcppExport SEXP _dust_data_normalization_1D(SEXP ySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<double>& >::type y(ySEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(data_normalization(y, type));
+    rcpp_result_gen = Rcpp::wrap(data_normalization_1D(y, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// data_normalization_MD
+NumericMatrix data_normalization_MD(NumericMatrix& y, std::string type);
+RcppExport SEXP _dust_data_normalization_MD(SEXP ySEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(data_normalization_MD(y, type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -98,7 +110,8 @@ RcppExport SEXP _rcpp_module_boot_DUSTMODULEMD();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
-    {"_dust_data_normalization", (DL_FUNC) &_dust_data_normalization, 2},
+    {"_dust_data_normalization_1D", (DL_FUNC) &_dust_data_normalization_1D, 2},
+    {"_dust_data_normalization_MD", (DL_FUNC) &_dust_data_normalization_MD, 2},
     {"_dust_cs1", (DL_FUNC) &_dust_cs1, 1},
     {"_dust_cs2", (DL_FUNC) &_dust_cs2, 1},
     {"_dust_cs3", (DL_FUNC) &_dust_cs3, 1},

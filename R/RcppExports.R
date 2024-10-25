@@ -80,7 +80,7 @@ sdDiff <- function(y, method = "HALL") {
 
 #' Data Normalization Function
 #'
-#' @name data_normalization
+#' @name data_normalization_1D
 #'
 #' @description
 #' Normalizes the input time series data `y` according to the specified `type`.
@@ -97,17 +97,42 @@ sdDiff <- function(y, method = "HALL") {
 #' @return A numeric vector that is the normalized version of the input time series `y`.
 #' @examples
 #' # Normalize a random time series using the Gaussian model
-#' normalized_y <- data_normalization(rnorm(100), type = "gauss")
+#' normalized_y <- data_normalization_1D(rnorm(100), type = "gauss")
 #'
 #' # Normalize using the Poisson model
-#' normalized_y <- data_normalization(rpois(100, lambda = 3), type = "poisson")
+#' normalized_y <- data_normalization_1D(rpois(100, lambda = 3), type = "poisson")
 #'
 #' # Normalize using the Exponential model
-#' normalized_y <- data_normalization(rexp(100), type = "exp")
+#' normalized_y <- data_normalization_1D(rexp(100), type = "exp")
 #'
 #' @export
-data_normalization <- function(y, type = "gauss") {
-    .Call(`_dust_data_normalization`, y, type)
+data_normalization_1D <- function(y, type = "gauss") {
+    .Call(`_dust_data_normalization_1D`, y, type)
+}
+
+#' Data Normalization Function
+#'
+#' @name data_normalization_MD
+#'
+#' @description
+#' Normalizes the input time series data `y` according to the specified `type`.
+#' The normalization process depends on the statistical model type, which can be one of the following:
+#' "gauss" (Gaussian/normal distribution), "exp" (exponential distribution),
+#' "poisson" (Poisson distribution), "geom" (geometric distribution),
+#' "bern" (Bernoulli distribution), "binom" (binomial distribution),
+#' "negbin" (negative binomial distribution), or "variance"
+#'
+#' @param y A numeric matrix representing the time series to be normalized and then segmented.
+#' @param type A string specifying the model type for normalization.
+#' The available options are "gauss", "exp", "poisson", "geom", "bern", "binom", "negbin", "variance".
+#' The default is "gauss".
+#' @return A numeric matrix that is the normalized version of the input time series `y`, normalized row by row.
+#' @examples
+#' # Normalize a random time series using the Gaussian model
+#' normalized_y <- data_normalization_MD(matrix(rnorm(100), nrow = 2), type = "gauss")
+#' @export
+data_normalization_MD <- function(y, type = "gauss") {
+    .Call(`_dust_data_normalization_MD`, y, type)
 }
 
 #' Cumulative Sum (cs1): No Copy of Input Vector
