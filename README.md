@@ -3,11 +3,8 @@
 # dust Vignette
 
 
-
-
 ### Vincent Runge and Simon Querné
 #### LaMME, Evry University, August 31, 2024
-
 
 <center>
 <img src="man/figures/dust.png" alt="" style="width:30%;"/>
@@ -41,11 +38,11 @@
 
 The `dust` package contains methods **for detecting multiple change-points within time-series** based on the optimal partitioning algorithm, which is a dynamic programming (DP) algorithm. Our algorithms optimize a penalized likelihood and the DP algorithm is encoded with pruning rules for reducing execution time. The novelty of the `dust` package consists in its pruning step. We use a **new pruning rule**, different from the two standard ones: [PELT rule (2012)](https://doi.org/10.1080/01621459.2012.737745) and [FPOP rule  (2017)](https://doi.org/10.1007/s11222-016-9636-3).  
 
-We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est. This method is based on considering some constrained optimization problems and its dual for discarding indices in the search for the last change-point index.
+We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est. This method is based on considering some optimization problems under inequality constraints and its dual for discarding indices in the search for the last change-point index.
 
-Data are modeled by a cost derived from the **exponential family** (Gauss, Poisson, Exponential...). We provide a polymorphic structure in Rcpp **allowing any User to easily add a new cost** of their own choice. The steps to follow are described in details [in this Section](#rcpp). The User only have to provide two Rcpp functions: the (primal) cost function and its dual, in addition with the expression for min (for primal) and max (for dual) values.
+Data are modeled by a cost derived from the **exponential family** (Gauss, Poisson, Exponential...). We provide a polymorphic structure in Rcpp **allowing any User to easily add a new cost** of their own choice. The steps to follow are described in details [in this Section](#rcpp). The User only have to provide few Rcpp functions: the minimal cost function, the dual function and its derivative. In addition we need some information on the domain of the dual.
 
-Various tests and simulations are provided in this **readme file** and in the **simulation folder** and show that the dust dual approach is **highly efficient in all regimes** (many or few changes) with improved time efficient comparing to PELT and FPOP. Furthermore, unlike these 2 methods, the DUST method is capable of reducing time for multivariate cost functions (See Section [pruning](#pruning)).
+Various tests and simulations are provided in this **readme file** and in the **simulations folder** and show that the dust dual approach is **highly efficient in all regimes** (many or few changes) with improved time efficient comparing to PELT and FPOP. Furthermore, unlike these 2 methods, the DUST method is capable of reducing time for multivariate cost functions (See Section [pruning](#pruning)).
 
 
 ### Installing the dust Rcpp package
@@ -65,19 +62,23 @@ and imported with:
 
 ### A simple example
 
-We generate some 1D time series from the Gaussian model and one change in the middle of the sequence.
+We generate some 1D time series of length `400` from the Gaussian model and one change in the middle of the sequence.
 
 `data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
 
-We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"` (additional parameter `nbSuccess`). See next [Section](#Models).
+We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"` (additional parameter `nbSuccess`) and `variance`. See next [Section](#Models).
 
-`dust_1D(data, penalty = 2*log(length(data)), type = "gauss")`
+`dust.1D(data, penalty = 2*log(length(data)), model = "gauss")`
 
 The result is a list whose elements are:
 
-- `chpts `A vector of change points (the index ending each of the segments)
+- `changepoints `A vector of change points (the index ending each of the segments)
 
-- `cost` The global cost of the segmentation: the sum of each of the segment cost.
+- `lastIndexSet`The list of non-pruned indices at the end of the analysis 
+
+- `nb` The number of indices to consider at each time step (its length is equal to data length) 
+
+- `costQ` The minimal cost of the optimization problem at each time step.
 
 
 [(Back to Top)](#top)
@@ -92,7 +93,7 @@ The result is a list whose elements are:
 ## Models And Data Generators
 
 
-### Data Generators in 1D
+### Data Generators in 1D and MultiD
 
 **dataGenerator_1D** is used to generate data with a given vector of change-point (e.g. `chpts = c(50,100)` for one change at position `50` and data length `100`), parameter vector (e.g. `parameters = c(0,1)`) and a type of probability distribution (from the exponential family) in `type`. The following types are available in the current package version:
   
@@ -110,6 +111,7 @@ The result is a list whose elements are:
 
 - `type = "negbin"` (additional parameter `nbSuccess`)
 
+- `type = "variance"`
 
 We show two data examples with Gaussian and Exponential models (`"gauss"` and `"exp"`)
 
@@ -123,9 +125,13 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 </center>
 
 
+**dataGenerator_MD** concatenates `p` copies of `dataGenerator_1D` function.
+
+Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MD`).
 
 
-### Data Generators in 2D and multiD
+
+### Data Generators in 2D
 
 **dataGenerator_meanVar** is used for change in mean and variance for the Gaussian problem
 
@@ -133,23 +139,8 @@ and some other examples with integer-valued cost (`"poisson"`,`"geom"`, `"binom"
 
 
 
-**dataGenerator_MD** concatenates `p` copies of `dataGenerator_1D` function.
-
-Additional information and examples are easily accessible in the help of these functions (e.g. run `?dataGenerator_MD`).
-
-
 [(Back to Top)](#top)
 
-
-<center>
-<img src="man/figures/sep.png" alt="" style="width:100%;"/>
-</center>
-
-<a id="rcpp"></a>
-
-## Rcpp Structure
-
-[(Back to Top)](#top)
 
 
 
@@ -159,7 +150,7 @@ Additional information and examples are easily accessible in the help of these f
 
 <a id="dust1D"></a>
 
-## dust 1D (and MD) Algorithms
+## dust 1D and MD Algorithms
 
 
 
@@ -177,6 +168,16 @@ Additional information and examples are easily accessible in the help of these f
 
 [(Back to Top)](#top)
 
+
+<center>
+<img src="man/figures/sep.png" alt="" style="width:100%;"/>
+</center>
+
+<a id="rcpp"></a>
+
+## Rcpp Structure
+
+[(Back to Top)](#top)
 
 
 <center>
