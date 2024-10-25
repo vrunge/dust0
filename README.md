@@ -17,7 +17,7 @@
 
 > [Rcpp Structure](#rcpp)
 
-> [dust 1D (and MD) Algorithms](#dust1D)
+> [dust 1D and MD Algorithms](#dust1D)
 
 > [dust 2D Algorithms](#dust2D)
 
