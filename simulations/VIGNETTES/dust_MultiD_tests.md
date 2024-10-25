@@ -1,5 +1,5 @@
 ---
-title: "Pruning Capacity of dust multiD"
+title: "Pruning Capacity of dust MD"
 subtitle: "Examples in exponential family"
 author: "Vincent Runge"
 date: "01/11/2023"
@@ -17,7 +17,7 @@ output:
 
 
 
-```r
+``` r
 library(dust) #our package
 ```
 
@@ -30,28 +30,28 @@ library(dust) #our package
 ## Gauss
 
 
-```r
-n <- 10^4
+``` r
+n <- 10^3
 pen <- 2*log(n)
 p <- 2
-dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
-res3 <- dust_R_multiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+dataM <- dataGenerator_MD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+res3 <- dust_R_MD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
 
 cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
 ```
 
 ```
-## 1.397674 %. Nb indices left at n:  88
+## 4.831568 %. Nb indices left at n:  33
 ```
 
-```r
-regIndices(res3$nb, remove = 5000)
+``` r
+regIndices(res3$nb, remove = 500)
 ```
 
 ```
-##              Estimate  Std. Error  t value Pr(>|t|)
-## (Intercept) -1.359543 0.010348489 -131.376        0
-## x            1.613324 0.001162001 1388.402        0
+##              Estimate  Std. Error    t value   Pr(>|t|)
+## (Intercept) 0.0521807 0.029819096   1.749909 0.08074992
+## x           1.4487553 0.004514931 320.880932 0.00000000
 ```
 
 ```
@@ -61,28 +61,28 @@ regIndices(res3$nb, remove = 5000)
 ![](dust_MultiD_tests_files/figure-html/gauss 1-1.png)<!-- -->
 
 
-```r
-n <- 10^4
+``` r
+n <- 10^3
 pen <- 2*log(n)
 p <- 5
-dataM <- dataGenerator_MultiD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
-res3 <- dust_R_multiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+dataM <- dataGenerator_MD(n, parameters = data.frame(matrix(0, ncol = p, nrow = 1)), type = "gauss")
+res3 <- dust_R_MD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
 
 cat(sum(res3$nb)/sum(1:n)*100, "%. Nb indices left at n: ", length(res3$lastIndexSet))
 ```
 
 ```
-## 1.345449 %. Nb indices left at n:  148
+## 4.784416 %. Nb indices left at n:  76
 ```
 
-```r
-regIndices(res3$nb, remove = 5000)
+``` r
+regIndices(res3$nb, remove = 500)
 ```
 
 ```
-##              Estimate  Std. Error   t value Pr(>|t|)
-## (Intercept) -3.308873 0.019039287 -173.7918        0
-## x            1.820845 0.002137864  851.7122        0
+##              Estimate  Std. Error   t value      Pr(>|t|)
+## (Intercept) -3.526368 0.038620333 -91.30859 3.691152e-313
+## x            1.963246 0.005847533 335.73926  0.000000e+00
 ```
 
 ```

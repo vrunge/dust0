@@ -20,7 +20,7 @@
 
 > [Rcpp Structure](#rcpp)
 
-> [dust 1D (and multiD) Algorithms](#dust1D)
+> [dust 1D (and MD) Algorithms](#dust1D)
 
 > [dust 2D Algorithms](#dust2D)
 
@@ -159,7 +159,7 @@ Additional information and examples are easily accessible in the help of these f
 
 <a id="dust1D"></a>
 
-## dust 1D (and multiD) Algorithms
+## dust 1D (and MD) Algorithms
 
 
 
@@ -191,7 +191,7 @@ Additional information and examples are easily accessible in the help of these f
 
 ### OP in R
 
-The base function `OP_R` is used to compute the change-point vector with the simplest dynamic programming algorithm with no pruning. This method is of quadratic time complexity. We propose 3 such functions:`OP_R_1D`, `OP_R_MultiD`, `OP_R_2param`.
+The base function `OP_R` is used to compute the change-point vector with the simplest dynamic programming algorithm with no pruning. This method is of quadratic time complexity. We propose 3 such functions:`OP_R_1D`, `OP_R_MD`, `OP_R_2param`.
 
 `OP_R_1D <- function(data, penalty = 2*log(length(data)), type = "gauss")`
 
@@ -224,7 +224,7 @@ Function `dual_1D` allows us to study the shape of the dual.
 
 ### dust_R 
 
-We propose a few R functions computing the change-point location with dust method: `dust_R_1D`, `dust_R_MultiD`, `dust_R_2Dquad`.
+We propose a few R functions computing the change-point location with dust method: `dust_R_1D`, `dust_R_MD`, `dust_R_2Dquad`.
 
 The function `dust_R_1D` has the following parameters:
 

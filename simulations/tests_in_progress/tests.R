@@ -192,9 +192,9 @@ data <- dataGenerator_1D(100, sdNoise = 2) # noise != 1 to generate changes at r
 pen <- 2*log(100)
 op1D <- OP_R_1D(data = data, penalty = pen, type = "gauss")
 dataM <- matrix(data, p, 100, byrow = T)
-opMD <- OP_R_MultiD(data = dataM, penalty = p*pen, type = "gauss")
+opMD <- OP_R_MD(data = dataM, penalty = p*pen, type = "gauss")
 
-opMD2 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
+opMD2 <- dust_R_MD(data = dataM, penalty = p*pen, type = "gauss", pruningOpt = 2)
 
 
 op1D$changepoints
@@ -213,8 +213,8 @@ pen <- 1
 op1D <- OP_R_1D(data = data, penalty = pen, type = "poisson")
 
 dataM <- matrix(data, p, 100, byrow = T)
-opMD <- OP_R_MultiD(data = dataM, penalty = p*pen, type = "poisson")
-opMD2 <- dust_R_MultiD(data = dataM, penalty = p*pen, type = "poisson", pruningOpt = 2)
+opMD <- OP_R_MD(data = dataM, penalty = p*pen, type = "poisson")
+opMD2 <- dust_R_MD(data = dataM, penalty = p*pen, type = "poisson", pruningOpt = 2)
 
 
 op1D$changepoints
