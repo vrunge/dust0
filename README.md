@@ -178,7 +178,6 @@ Additional information and examples are easily accessible in the help of these f
 [(Back to Top)](#top)
 
 
-
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>

@@ -1,4 +1,4 @@
-
+library(dust)
 
 
 tpe <- "poisson"
