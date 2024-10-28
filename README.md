@@ -34,7 +34,7 @@
 
 ### Introduction
 
-The `dust` package contains methods **for detecting multiple change-points within time-series** based on the optimal partitioning algorithm, which is a dynamic programming (DP) algorithm. Our algorithms optimize a penalized likelihood and the DP algorithm is encoded with pruning rules for reducing execution time. The novelty of the `dust` package consists in its pruning step. We use a **new pruning rule**, different from the two standard ones: [PELT rule (2012)](https://doi.org/10.1080/01621459.2012.737745) and [FPOP rule  (2017)](https://doi.org/10.1007/s11222-016-9636-3).  
+The `dust` package contains methods **for detecting multiple change-points within time-series** based on the optimal partitioning algorithm, which is a dynamic programming (DP) algorithm. Our algorithms optimize a penalized likelihood and the DP algorithm is encoded with pruning rules for reducing execution time. The novelty of the `dust` package consists in its pruning step. We use a **new pruning rule**, different from the two standard ones: [PELT rule (2012)](\doi{10.1080/01621459.2012.737745}) and [FPOP rule  (2017)](\doi{10.1007/s11222-016-9636-3}).
 
 We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est. This method is based on considering some optimization problems under inequality constraints and its dual for discarding indices in the search for the last change-point index.
 
