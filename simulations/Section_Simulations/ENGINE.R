@@ -81,9 +81,9 @@ cpt.generators = function(density = 0) function(model = "gauss")
 # ----------------------------- #
 
 setClass(
-  
+
   "simulation.engine",
-  
+
   slots = c(
     algo = "character"
     , model = "character"
@@ -95,7 +95,7 @@ setClass(
     , nbLoops = "numeric"
     , m1 = "numeric"
   )
-  
+
   , prototype = list(
     algo = "dust"
     , model = "gauss"
@@ -107,7 +107,7 @@ setClass(
     , nbLoops = 10
     , m1 = 1e-2
   )
-  
+
 )
 
 setGeneric("compute", function(x, data) standardGeneric("compute"))
@@ -115,80 +115,80 @@ setGeneric("get_param", function(x) standardGeneric("get_param"))
 setGeneric("copy_engine", function(x) standardGeneric("copy_engine"))
 
 setMethod(
-  
+
   "compute"
-  
+
   , signature = c(x = "simulation.engine", data = "numeric")
-  
+
   , function(x, data)
   {
-    
+
     beta = x@beta
     if (x@algo == "dust") {
-      
+
       model = x@model
-      
+
       if (x@method %in% c("", "fastest")) {
-        
+
         method = ifelse(model == "gauss", "detIndex_Eval1", "detIndex_Eval4")
-        
+
       }
-      
+
       else method = method
-      
+
       beta = beta * model.mult[[model]]
-      
+
       return(dust.1D(data, beta, model = model, method = method, x@nbLoops, x@alpha))
-      
+
     } else if (x@algo == "fpop") {
-      
+
       if (x@model %in% c("", "gauss")) {
-        
+
         return(fpopw::Fpop(data, beta))
-        
+
       } else if (!(x@model %in% model.compare)) {
-        
+
         stop(x@model, " model invalid for FPOP comparison")
-        
+
       } else {
-        
+
         model = x@model
-        
+
         beta = beta * model.mult[[model]]
-        
+
         myGraph = gfpop::graph(type = "std", penalty = 2 * beta)
-        
+
         return(gfpop::gfpop(data, myGraph, type = model))
-        
+
       }
-      
+
     }
-    
+
   }
-  
+
 )
 
 setMethod(
-  
+
   "get_param"
-  
+
   , signature = c(x = "simulation.engine")
-  
+
   , function(x)
   {
-    
+
     model = ifelse(x@model == "", "gauss", x@model)
     method = x@method
-    
+
     if (x@algo == "dust") {
-      
+
       if (method %in% c("", "fastest"))
         method = ifelse(model == "gauss", "detIndex_Eval1", "detIndex_Eval4")
-      
+
     }
-    
+
     else method = ""
-    
+
     list(
       algo = x@algo
       , model = model
@@ -200,17 +200,17 @@ setMethod(
       , nbLoops = x@nbLoops
       , m1 = x@m1
     )
-    
+
   }
-  
+
 )
 
 setMethod(
-  
+
   "copy_engine"
-  
+
   , signature = c(x = "simulation.engine")
-  
+
   , function(x)
   {
     out = new("simulation.engine")
@@ -225,7 +225,7 @@ setMethod(
     out@nbLoops = x@nbLoops
     return(out)
   }
-  
+
 )
 
 
@@ -234,16 +234,16 @@ setMethod(
 simulate = function(engine, job.generator, models, method, sizes, beta.generator, data.generators, n.cores, n.jobs, fname = "simu")
 {
   print(paste("Executions per setup:", n.jobs))
-  
+
   do.call(
     rbind
     , lapply(
       models,
       function(name)
       {
-        
+
         print(paste("generating simulations for", name, "model"))
-        
+
         engine@model = name
         generator = data.generators(name)
         out = do.call(
@@ -260,9 +260,9 @@ simulate = function(engine, job.generator, models, method, sizes, beta.generator
             , mc.preschedule = FALSE
           )
         )
-        
-        write.csv(out, paste0(paste(fname, name, sep = "_"), '.csv'))
-        
+        path <- "Simulations/Section_Simulations/"
+        write.csv(out, paste0(path, paste(fname, name, sep = "_"), '.csv'))
+
         return(out)
       }
     )

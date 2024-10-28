@@ -1,4 +1,4 @@
-source("scripts/ENGINE.R")
+source("Simulations/Section_Simulations/ENGINE.R")
 
 SIMULATION.PARAMETERS = list(
   MODELS = model.compare,
@@ -25,10 +25,10 @@ nb.plot = function(i, engine, sizes, data.generator, beta.generator)
       {
         engine@size = size
         engine@beta = beta.generator(size)
-        
+
         if (size > 1e4) { ftr = rep(c(FALSE, TRUE), c(size %/% 1e4 - 1, 1)) }
         else { ftr = TRUE }
-        
+
         d = get_param(engine)
         d[['exec']] = i
         d[['time']] = (1:size)[ftr]

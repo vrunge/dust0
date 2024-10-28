@@ -1,4 +1,4 @@
-source("scripts/ENGINE.R")
+source("Simulations/Section_Simulations/ENGINE.R")
 
 SIMULATION.PARAMETERS = list(
   MODELS = model.compare,
@@ -26,33 +26,33 @@ beta.time = function(i, engine, sizes, data.generator, beta.generator)
       function(size)
       {
         beta.v = beta.generator(size)
-        
+
         do.call(
           rbind,
           lapply(
             beta.v,
             function(beta)
             {
-              
+
               engine@beta = beta
-              
+
               y = data.generator(size)
-              
+
               dust = get_param(engine)
               dust[['exec']] = i
               dust[['size']] = size
               dust[['exec.time']] = microbenchmark::microbenchmark(ex <- compute(engine, y), times = 1)$time[1]
               dust[['nb.cpts']] = length(ex$changepoints)
               dust[['nb']] = tail(ex$nb, 1)
-              
+
               rm(ex)
-              
+
               as.data.frame.list(dust)
-              
+
             }
           )
         )
-        
+
       }
     )
   )
