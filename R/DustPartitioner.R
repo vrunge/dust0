@@ -6,7 +6,8 @@
 ## ----------------------------------- ##
 
 Rcpp::loadModule("DUSTMODULE1D", TRUE)
-
+Rcpp::loadModule("FLATDUST1D", TRUE)
+Rcpp::loadModule("FLAT2DUST1D", TRUE)
 
 ## --------------------------------- ##
 ## ----///////////////////////// --- ##

@@ -45,6 +45,14 @@ NULL
 #' @export
 NULL
 
+flat_OP_1D <- function(inData, inPenalty = NULL) {
+    .Call(`_dust_flat_OP_1D`, inData, inPenalty)
+}
+
+flat_OP_MD <- function(inData, inPenalty = NULL) {
+    .Call(`_dust_flat_OP_MD`, inData, inPenalty)
+}
+
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 #'
 #' The `sdDiff` function calculates a measure of variability (standard deviation or MAD)

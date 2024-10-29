@@ -1,7 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
-#include <Rcpp.h>
-using namespace Rcpp;
+
 
 //' Cumulative Sum (cs1): No Copy of Input Vector
 //'
