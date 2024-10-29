@@ -8,6 +8,8 @@
 Rcpp::loadModule("DUSTMODULE1D", TRUE)
 Rcpp::loadModule("FLATDUST1D", TRUE)
 Rcpp::loadModule("FLAT2DUST1D", TRUE)
+Rcpp::loadModule("FLATOP1D", TRUE)
+Rcpp::loadModule("FLATOPMD", TRUE)
 
 ## --------------------------------- ##
 ## ----///////////////////////// --- ##
@@ -41,7 +43,7 @@ Rcpp::loadModule("FLAT2DUST1D", TRUE)
 #'   \item \code{"Eval1"}: max value with closed formula (gauss model only), otherwise no pruning performed and we get the (slow) OP algorithm
 #'   \item \code{"Eval2"}: golden-section search.
 #'   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
-#'   \item \code{"Eval4"}: auasi-Newton method with armijo condition
+#'   \item \code{"Eval4"}: quasi-Newton method with armijo condition
 #'   \item \code{"Eval5"}: PELT rule
 #' }
 #' @param alpha controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.

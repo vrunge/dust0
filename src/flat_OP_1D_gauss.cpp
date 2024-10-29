@@ -1,5 +1,4 @@
-#include "flat_Gauss_1D.h"
-
+#include <Rcpp.h>
 #include <forward_list>
 
 using namespace Rcpp;
@@ -47,8 +46,9 @@ List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty = 
   unsigned int t = 1;
   unsigned int s = 0;
 
-  cumsum.push_back(statistic_1D(inData[0]));
-  costRecord.push_back(Cost_1D(t, s, cumsum));
+
+  cumsum.push_back(inData[0]);
+  costRecord.push_back(- .5 * pow(cumsum[t] - cumsum[s], 2) / (t - s));
   changepointRecord.push_back(0);
 
   // Main loop
@@ -61,7 +61,7 @@ List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty = 
     minCost = std::numeric_limits<double>::infinity();
     for (unsigned int s = 0; s < t; s++)
     {
-      lastCost = costRecord[s] + Cost_1D(t, s, cumsum);
+      lastCost = costRecord[s] - .5 * pow(cumsum[t] - cumsum[s], 2) / (t - s);
       if (lastCost < minCost)
       {
         minCost = lastCost;
@@ -82,30 +82,20 @@ List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty = 
   }
 
   changepoints.push_front(0);
-
-  double totalCost = 0;
-  auto it = changepoints.begin();     // Iterator to the current element
-  auto next_it = std::next(it); // Iterator to the next element
-
-  while (next_it != changepoints.end())
-  {
-    totalCost += Cost_1D(*next_it, *it, cumsum);  // Apply cost function to consecutive elements
-    it = next_it;  // Move to the next element
-    ++next_it;     // Advance the next iterator
-  }
-
   changepoints.pop_front();
-
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
 
   return List::create(
     _["changepoints"] = changepoints,
-    _["segmentation_cost"] = totalCost,
     _["costQ"] = costRecord
   );
 }
 
 
+RCPP_MODULE(FLATOP1D)
+{
+  function("OP.gauss.1D", flat_OP_1D);
+}
 
 
 

@@ -35,7 +35,7 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval1"}: max value with closed formula (gauss model only), otherwise no pruning performed and we get the (slow) OP algorithm
   \item \code{"Eval2"}: golden-section search.
   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
-  \item \code{"Eval4"}: auasi-Newton method with armijo condition
+  \item \code{"Eval4"}: quasi-Newton method with armijo condition
   \item \code{"Eval5"}: PELT rule
 }}
 

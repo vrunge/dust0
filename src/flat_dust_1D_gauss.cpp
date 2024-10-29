@@ -1,9 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 
-#include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
-
-#include "1D_A_DUST.h"
+#include "1D_B_Indices.h"
 #include "preProcessing.h"
 
 using namespace Rcpp;
@@ -36,7 +34,6 @@ double DualMax(const double& minCost, const unsigned int& t, const unsigned int&
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// --- // Constructor // --- //
 
 List flat_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty = R_NilValue)
 {
@@ -156,9 +153,9 @@ List flat_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty 
   );
 }
 
-
-
-// --- // Constructor // --- //
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 List flat2_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty = R_NilValue)
 {
@@ -276,15 +273,19 @@ List flat2_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty
   );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 RCPP_MODULE(FLATDUST1D)
 {
-  function("flat.dust.1D", flat_DUST_1D);
+  function("dust.gauss.1D", flat_DUST_1D);
 }
 
 RCPP_MODULE(FLAT2DUST1D)
 {
-  function("flat2.dust.1D", flat2_DUST_1D);
+  function("dust2.gauss.1D", flat2_DUST_1D);
 }
 
 

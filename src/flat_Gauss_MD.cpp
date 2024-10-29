@@ -2,7 +2,7 @@
 
 using namespace Rcpp;
 
-double Cost_MD(const unsigned int& t, const unsigned int& s, const arma::dmat& cumsum)
+double CostGauss_MD(const unsigned int& t, const unsigned int& s, const arma::dmat& cumsum)
 {
   double result = 0;
   for (unsigned int row = 0; row < cumsum.n_rows; row++)
@@ -11,10 +11,6 @@ double Cost_MD(const unsigned int& t, const unsigned int& s, const arma::dmat& c
   return - .5 * result / (t - s);
 }
 
-double statistic_MD(const double& value)
-{
-  return value;
-}
 
 
 

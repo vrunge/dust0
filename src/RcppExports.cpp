@@ -127,12 +127,14 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _rcpp_module_boot_FLATDUST1D();
-RcppExport SEXP _rcpp_module_boot_FLAT2DUST1D();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULE1D();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULEMeanVar();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULEreg();
 RcppExport SEXP _rcpp_module_boot_DUSTMODULEMD();
+RcppExport SEXP _rcpp_module_boot_FLATOP1D();
+RcppExport SEXP _rcpp_module_boot_FLATOPMD();
+RcppExport SEXP _rcpp_module_boot_FLATDUST1D();
+RcppExport SEXP _rcpp_module_boot_FLAT2DUST1D();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dust_flat_OP_1D", (DL_FUNC) &_dust_flat_OP_1D, 2},
@@ -145,12 +147,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dust_cs3", (DL_FUNC) &_dust_cs3, 1},
     {"_dust_cs4", (DL_FUNC) &_dust_cs4, 1},
     {"_dust_cs5", (DL_FUNC) &_dust_cs5, 1},
-    {"_rcpp_module_boot_FLATDUST1D", (DL_FUNC) &_rcpp_module_boot_FLATDUST1D, 0},
-    {"_rcpp_module_boot_FLAT2DUST1D", (DL_FUNC) &_rcpp_module_boot_FLAT2DUST1D, 0},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {"_rcpp_module_boot_DUSTMODULEMeanVar", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMeanVar, 0},
     {"_rcpp_module_boot_DUSTMODULEreg", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEreg, 0},
     {"_rcpp_module_boot_DUSTMODULEMD", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMD, 0},
+    {"_rcpp_module_boot_FLATOP1D", (DL_FUNC) &_rcpp_module_boot_FLATOP1D, 0},
+    {"_rcpp_module_boot_FLATOPMD", (DL_FUNC) &_rcpp_module_boot_FLATOPMD, 0},
+    {"_rcpp_module_boot_FLATDUST1D", (DL_FUNC) &_rcpp_module_boot_FLATDUST1D, 0},
+    {"_rcpp_module_boot_FLAT2DUST1D", (DL_FUNC) &_rcpp_module_boot_FLAT2DUST1D, 0},
     {NULL, NULL, 0}
 };
 

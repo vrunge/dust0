@@ -39,7 +39,7 @@ DUST_MD *newModuleMD(const std::string& model,
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
   ///////////////////  DEFAULT CHOICE  = best choice ///////////////////
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
-  int dual_max = 2;
+  int dual_max = 4;
   bool random_constraint = false;
   if(model == "gauss"){dual_max = 1;}
 
@@ -53,6 +53,7 @@ DUST_MD *newModuleMD(const std::string& model,
   else if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
   else if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
   else if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
+  else if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   if (model == "gauss")
     return new Gauss_MD(dual_max, random_constraint, alpha, nbLoops);

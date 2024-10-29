@@ -86,11 +86,20 @@ private:
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
+  // 0: random eval
+  // 1: exact eval (if possible, otherwise, -inf (OP))
+  // 2:
+  // 3:
+  // 4: Quasi-Newton
+  // 5: PELT
+  // 6: OP
   bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
   bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  // bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
   bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
   bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
 
   bool (DUST_MD::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
 

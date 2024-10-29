@@ -83,7 +83,6 @@ segmentation_Cost_1D <- function(data, chpts, model = "gauss")
 #' @export
 Cost_1D <- function(S, a, b, model)
 {
-
   cost_value <- 0
   diff <- S[b] - S[a]
   delta <- b - a

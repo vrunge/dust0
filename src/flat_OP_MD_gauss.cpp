@@ -47,9 +47,9 @@ List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValu
   unsigned int s = 0;
 
   for (unsigned int row = 0; row < d; row++)
-    cumsum(row, 1) = statistic_MD(inData(row));
+    cumsum(row, 1) = inData(row);
 
-  costRecord.push_back(Cost_MD(t, s, cumsum));
+  costRecord.push_back(CostGauss_MD(t, s, cumsum));
   changepointRecord.push_back(0);
 
   // Main loop
@@ -58,14 +58,14 @@ List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValu
     // update cumsum
     auto col_prev = cumsum.col(t - 1);
     for (unsigned int row = 0; row < d; row++)
-      cumsum(row, t) = col_prev(row) + statistic_MD(inData(row, t - 1));
+      cumsum(row, t) = col_prev(row) + inData(row, t - 1);
 
     // OP step
     minCost = std::numeric_limits<double>::infinity();
     for (unsigned int s = 0; s < t; s++)
     {
       // Rcout << "t = " << t << "; s = " << s << std::endl;
-      lastCost = costRecord[s] + Cost_MD(t, s, cumsum);
+      lastCost = costRecord[s] + CostGauss_MD(t, s, cumsum);
       if (lastCost < minCost)
       {
         minCost = lastCost;
@@ -86,25 +86,11 @@ List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValu
   }
 
   changepoints.push_front(0);
-
-  double totalCost = 0;
-  auto it = changepoints.begin();      // Iterator to the current element
-  auto next_it = std::next(it); // Iterator to the next element
-
-  while (next_it != changepoints.end())
-  {
-    totalCost += Cost_MD(*next_it, *it, cumsum);  // Apply cost function to consecutive elements
-    it = next_it;  // Move to the next element
-    ++next_it;     // Advance the next iterator
-  }
-
   changepoints.pop_front();
-
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
 
   return List::create(
     _["changepoints"] = changepoints,
-    _["segmentation_cost"] = totalCost,
     _["costQ"] = costRecord
   );
 }
@@ -114,6 +100,11 @@ List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValu
 //// solving the K fixed (number of change) problem.
 //// new 3 functions : ini, comute and get_partition
 ////
+
+RCPP_MODULE(FLATOPMD)
+{
+  function("OP.gauss.MD", flat_OP_MD);
+}
 
 
 

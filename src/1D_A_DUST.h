@@ -77,6 +77,13 @@ private:
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
+  // 0: random eval
+  // 1: exact eval (if possible, otherwise, -inf (OP))
+  // 2: golden-section search
+  // 3: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
+  // 4: Quasi-Newton
+  // 5: PELT
+  // 6: OP
   bool dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
