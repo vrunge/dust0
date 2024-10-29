@@ -1,4 +1,4 @@
-#include "MD_A_DUST.h"
+#include "MD2_A_DUST.h"
 
 using namespace Rcpp;
 
@@ -7,7 +7,7 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_MD2::DUST_MD2(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
   : dual_max(dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
@@ -30,12 +30,12 @@ DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<double> alpha_, 
   }
 }
 
-DUST_MD::~DUST_MD()
+DUST_MD2::~DUST_MD2()
 {
   delete indices;
 }
 
-void DUST_MD::init_method()
+void DUST_MD2::init_method()
 {
   delete indices;
 
@@ -44,23 +44,23 @@ void DUST_MD::init_method()
   /// /// ///
   if(random_constraint)
   {
-    indices = new RandomIndices_MD(nb_max);
+    indices = new RandomIndices_MD2(nb_max);
   }
   else
   {
-    indices = new VariableIndices_MD(nb_max);
+    indices = new VariableIndices_MD2(nb_max);
   }
 
   /// /// ///
   /// /// /// dual_max METHOD
   /// /// ///
-  if(dual_max == 0){current_test = &DUST_MD::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_MD::dualMaxAlgo1;}
-  if(dual_max == 2){current_test = &DUST_MD::dualMaxAlgo2;}
-  if(dual_max == 3){current_test = &DUST_MD::dualMaxAlgo3;}
-  if(dual_max == 4){current_test = &DUST_MD::dualMaxAlgo4;}
-  if(dual_max == 5){current_test = &DUST_MD::dualMaxAlgo5;}
-  if(dual_max == 6){current_test = &DUST_MD::dualMaxAlgo6;}
+  if(dual_max == 0){current_test = &DUST_MD2::dualMaxAlgo0;}
+  if(dual_max == 1){current_test = &DUST_MD2::dualMaxAlgo1;}
+  if(dual_max == 2){current_test = &DUST_MD2::dualMaxAlgo2;}
+  if(dual_max == 3){current_test = &DUST_MD2::dualMaxAlgo3;}
+  if(dual_max == 4){current_test = &DUST_MD2::dualMaxAlgo4;}
+  if(dual_max == 5){current_test = &DUST_MD2::dualMaxAlgo5;}
+  if(dual_max == 6){current_test = &DUST_MD2::dualMaxAlgo6;}
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
   engine.seed(std::random_device{}());
@@ -73,7 +73,7 @@ void DUST_MD::init_method()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {
   // Draw a random point and evaluate the corresponding dual value
   unsigned int r_size = r.size();
@@ -148,7 +148,7 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {
   // BARYCENTRE test
   unsigned int r_size = r.size();
@@ -207,7 +207,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {return(false);
 }
 
@@ -216,7 +216,7 @@ bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {return(false);
 }
 
@@ -225,7 +225,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {
 
   // ############################################## //
@@ -565,7 +565,7 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {
   // ############################################## //
   // ############################################## //
@@ -599,7 +599,7 @@ bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t, const u
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
 {return(false);
 }
 
@@ -611,7 +611,7 @@ bool DUST_MD::dualMaxAlgo6(const double& minCost, const unsigned int& t, const u
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
-void DUST_MD::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbMax)
+void DUST_MD2::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbMax)
 {
   n = inData.n_cols;
   d = inData.n_rows;
@@ -666,7 +666,7 @@ void DUST_MD::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullabl
 
 
 // --- // Algorithm-specific method // --- //
-void DUST_MD::compute(const arma::dmat& inData)
+void DUST_MD2::compute(const arma::dmat& inData)
 {
 
   // Initialize OP step value
@@ -766,7 +766,7 @@ void DUST_MD::compute(const arma::dmat& inData)
 
 
 // --- // Builds changepoints // --- //
-std::forward_list<unsigned int> DUST_MD::backtrack_changepoints()
+std::forward_list<unsigned int> DUST_MD2::backtrack_changepoints()
 {
   std::forward_list<unsigned int> changepoints {n};
   for (int newChangepoint = changepointRecord[n]; newChangepoint != 0; newChangepoint = changepointRecord[newChangepoint])
@@ -778,7 +778,7 @@ std::forward_list<unsigned int> DUST_MD::backtrack_changepoints()
 
 
 // --- // Retrieves optimal partition // --- //
-List DUST_MD::get_partition()
+List DUST_MD2::get_partition()
 {
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
   indices->remove_last(); ///// REMOVE FIRST ELEMENT /////
@@ -798,7 +798,7 @@ List DUST_MD::get_partition()
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //
-List DUST_MD::quick(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbMax)
+List DUST_MD2::quick(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbMax)
 {
   init(inData, inPenalty, inNbMax);
   compute(inData);

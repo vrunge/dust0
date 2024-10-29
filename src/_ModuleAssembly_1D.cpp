@@ -46,16 +46,16 @@ DUST_1D *newModule1D(const std::string& model,
   if(model == "gauss"){dual_max = 1;}
 
   if (indices_max[0] == "randIndex"){random_constraint = true;}
-  if (indices_max[0] == "detIndex"){random_constraint = false;}
+  else if (indices_max[0] == "detIndex"){random_constraint = false;}
 
 
   if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
-  if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
-  if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
-  if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
-  if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
-  if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
-  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
+  else if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
+  else if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
+  else if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
+  else if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
+  else if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
+  else if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   if (model == "gauss")
     return new Gauss_1D(dual_max, random_constraint, alpha, nbLoops);
