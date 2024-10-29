@@ -31,7 +31,10 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>(), Nullable<unsigned int> inNbMax = Nullable<unsigned int>());
+  void init(const arma::dmat& inData,
+            Nullable<double> inPenalty = Nullable<double>(),
+            Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
+            Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   // --- // Main computation // --- //
   void compute(const arma::dmat& inData);
@@ -42,7 +45,10 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>(), Nullable<unsigned int> inNbMax = Nullable<unsigned int>());
+  List quick(const arma::dmat& inData,
+             Nullable<double> inPenalty = Nullable<double>(),
+             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
+             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   ////////////////////////////////
   ////////////////////////////////
@@ -51,7 +57,9 @@ public:
 protected:
   unsigned int n; // number of observations
   unsigned int d;
-  unsigned int nb_max;
+  unsigned int nb_max; // = nb_l + nb_r
+  unsigned int nb_l; // number of constraints before the current index to prune
+  unsigned int nb_r; // number of constraints after the current index to prune
 
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
   const double m1 = 0.01;  // Armijo

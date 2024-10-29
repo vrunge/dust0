@@ -624,6 +624,8 @@ void DUST_MD::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullabl
   {
     penalty = as<double>(inPenalty);
   }
+  /// if not precised, the number of constraints =
+  ///  = the dimension of the parameter space  = number of time series
   if (inNbMax.isNull())
   {
     nb_max = d;
