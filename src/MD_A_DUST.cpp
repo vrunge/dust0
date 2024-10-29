@@ -12,28 +12,18 @@ DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<double> alpha_, 
     random_constraint(random_constraint),
     indices(nullptr)
 {
-  if(alpha_.isNull())
-  {
-    alpha = 1e-9;
-  }
-  else
-  {
-    alpha = as<double>(alpha_);
-  }
-  if(nbLoops.isNull())
-  {
-    nb_Loops = 10;
-  }
-  else
-  {
-    nb_Loops = as<int>(nbLoops);
-  }
+  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
+  if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 DUST_MD::~DUST_MD()
 {
   delete indices;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 void DUST_MD::init_method()
 {
@@ -129,7 +119,7 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t, const u
     mu(i) = mu_max(i) * (u[i + 1] - u[i]); /// change if constraint s < r
     mu_sum += mu(i); /// change if constraint s < r
   }
-  double inv_sum = pow(mu_sum, -1); ///???
+  double inv_sum = pow(mu_sum, -1); ///???ok
 
   double linDot = 0;
   for (unsigned int col = 0; col < r_size; col++)

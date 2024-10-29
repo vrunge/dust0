@@ -12,28 +12,19 @@ DUST_MD2::DUST_MD2(int dual_max, bool random_constraint, Nullable<double> alpha_
     random_constraint(random_constraint),
     indices(nullptr)
 {
-  if(alpha_.isNull())
-  {
-    alpha = 1e-9;
-  }
-  else
-  {
-    alpha = as<double>(alpha_);
-  }
-  if(nbLoops.isNull())
-  {
-    nb_Loops = 10;
-  }
-  else
-  {
-    nb_Loops = as<int>(nbLoops);
-  }
+  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
+  if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 DUST_MD2::~DUST_MD2()
 {
   delete indices;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 void DUST_MD2::init_method()
 {
@@ -44,11 +35,11 @@ void DUST_MD2::init_method()
   /// /// ///
   if(random_constraint)
   {
-    indices = new RandomIndices_MD2(nb_max);
+    indices = new RandomIndices_MD2(nb_l, nb_r);
   }
   else
   {
-    indices = new VariableIndices_MD2(nb_max);
+    indices = new VariableIndices_MD2(nb_l, nb_r);
   }
 
   /// /// ///
@@ -73,7 +64,10 @@ void DUST_MD2::init_method()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-bool DUST_MD2::dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo0(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {
   // Draw a random point and evaluate the corresponding dual value
   unsigned int r_size = r.size();
@@ -148,7 +142,10 @@ bool DUST_MD2::dualMaxAlgo0(const double& minCost, const unsigned int& t, const 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {
   // BARYCENTRE test
   unsigned int r_size = r.size();
@@ -207,23 +204,38 @@ bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t, const 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD2::dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo2(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {return(false);
 }
 
-bool DUST_MD2::dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo3(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {return(false);
 }
 
-bool DUST_MD2::dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo4(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {return(false);
 }
 
-bool DUST_MD2::dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo5(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {return(false);
 }
 
-bool DUST_MD2::dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r)
+bool DUST_MD2::dualMaxAlgo6(const double& minCost, const unsigned int& t,
+                            const unsigned int& s,
+                            std::vector<unsigned int> r,
+                            std::vector<unsigned int> r2)
 {return(false);
 }
 
@@ -235,7 +247,10 @@ bool DUST_MD2::dualMaxAlgo6(const double& minCost, const unsigned int& t, const 
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
-void DUST_MD2::init(const arma::dmat& inData, Nullable<double> inPenalty, Nullable<unsigned int> inNbL, Nullable<unsigned int> inNbR)
+void DUST_MD2::init(const arma::dmat& inData,
+                    Nullable<double> inPenalty,
+                    Nullable<unsigned int> inNbL,
+                    Nullable<unsigned int> inNbR)
 {
   n = inData.n_cols;
   d = inData.n_rows;
@@ -348,7 +363,10 @@ void DUST_MD2::compute(const arma::dmat& inData)
     // DUST loop
     while (indices->check_prune())
     {
-      if ((this->*current_test)(minCost, t, *(indices->current), indices->get_constraints())) // prune as needs pruning
+      if ((this->*current_test)(minCost, t,
+                                *(indices->current),
+                                  indices->get_constraints_l(),
+                                  indices->get_constraints_r())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointerIt, while before stands still
@@ -433,7 +451,7 @@ List DUST_MD2::quick(const arma::dmat& inData,
 ////
 //// IDEA : propose a new quick method with a loop of "compute (K)"
 //// solving the K fixed (number of change) problem.
-//// new 3 functions : ini, comute and get_partition
+//// new 3 functions : init, compute and get_partition
 ////
 
 

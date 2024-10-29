@@ -11,11 +11,11 @@ using namespace Rcpp;
 //
 // Parameters:
 
-
 // Expliciter le constructeur, avec initialisation des 2 premiers indices
 // Initiate handler and nb_max_ vector
-Indices_MD2::Indices_MD2() : nb_max(1) {}
-Indices_MD2::Indices_MD2(const unsigned int& nb_max_) : nb_max(nb_max_) { }
+Indices_MD2::Indices_MD2() : nb_l(1), nb_r(0), nb_max(1) {}
+Indices_MD2::Indices_MD2(const unsigned int& nb_l_, const unsigned int& nb_r_) :
+  nb_l(nb_l_), nb_r(nb_r_), nb_max(nb_l_ + nb_r_)  {}
 
 // Vérifier les fuites de mémoire
 Indices_MD2::~Indices_MD2() {}
@@ -42,11 +42,19 @@ std::vector<unsigned int> Indices_MD2::get_list() { return list; }
 
 void Indices_MD2::remove_last() { list.pop_back(); }
 
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// //// VariableIndices_MD2 //// /////
+///// ///// ///// ///// ///// ///// /////
+
 VariableIndices_MD2::VariableIndices_MD2() : Indices_MD2() {}
-VariableIndices_MD2::VariableIndices_MD2(const unsigned int& nb_max_) : Indices_MD2(nb_max_) {}
+
+VariableIndices_MD2::VariableIndices_MD2(const unsigned int& nb_l_, const unsigned int& nb_r_) :
+  Indices_MD2(nb_l_, nb_r_)  { }
 
 // full reset for pruning step, including reinitialization of nb_max_ vector
-void VariableIndices_MD2::reset_prune() {
+void VariableIndices_MD2::reset_prune()
+{
   // reset iterators
   if (list.size() > 1)
   {
@@ -57,7 +65,8 @@ void VariableIndices_MD2::reset_prune() {
 }
 
 // full next for pruning step
-void VariableIndices_MD2::next_prune() {
+void VariableIndices_MD2::next_prune()
+{
   ++current;
   if (current - begin > nb_max) ++begin;
 }
@@ -68,14 +77,23 @@ void VariableIndices_MD2::prune_current() { current = list.erase(current); }
 // break check for pruning step
 bool VariableIndices_MD2::check_prune() { return current != list.end(); }
 
-std::vector<unsigned int> VariableIndices_MD2::get_constraints()
+std::vector<unsigned int> VariableIndices_MD2::get_constraints_l()
 {
   return std::vector(begin, current);
 }
+std::vector<unsigned int> VariableIndices_MD2::get_constraints_r()
+{
+  return std::vector(current + 1, list.end()); //// A VERIFIER
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// ///// RandomIndices_MD2 ///// /////
+///// ///// ///// ///// ///// ///// /////
 
 RandomIndices_MD2::RandomIndices_MD2() : Indices_MD2() {}
-RandomIndices_MD2::RandomIndices_MD2(const unsigned int& nb_max_)
-  : Indices_MD2(nb_max_)
+RandomIndices_MD2::RandomIndices_MD2(const unsigned int& nb_l_, const unsigned int& nb_r_)
+  : Indices_MD2(nb_l_, nb_r_)
     , rng(std::random_device{}())
     , dist(std::uniform_real_distribution(0., 1.))
     // , dist2(std::uniform_int_distribution(0, 0))
@@ -84,7 +102,8 @@ RandomIndices_MD2::RandomIndices_MD2(const unsigned int& nb_max_)
   }
 
 // full reset for pruning step, including reinitialization of nb_max_ vector
-void RandomIndices_MD2::reset_prune() {
+void RandomIndices_MD2::reset_prune()
+{
   // reset iterators
   if (list.size() > 1)
   {
@@ -102,7 +121,7 @@ void RandomIndices_MD2::prune_current() { current = list.erase(current); }
 // break check for pruning step
 bool RandomIndices_MD2::check_prune() { return current != list.end(); }
 
-std::vector<unsigned int> RandomIndices_MD2::get_constraints()
+std::vector<unsigned int> RandomIndices_MD2::get_constraints_l()
 {
   // std::vector<unsigned int> constraints;
   // std::sample(
@@ -128,9 +147,9 @@ std::vector<unsigned int> RandomIndices_MD2::get_constraints()
   // return std::vector<unsigned int>(constraints.begin(), constraints.end());
 
   std::vector<unsigned int> constraints;
-  constraints.reserve(nb_max);
+  constraints.reserve(nb_l);
   unsigned int nbC = current - list.begin();
-  for (unsigned int i = 0; i < nb_max; i++)
+  for (unsigned int i = 0; i < nb_l; i++)
     constraints.push_back(list[std::floor(dist(rng) * nbC)]);
   // Rcout << "r: ";
   // for (auto i = constraints.begin(); i != constraints.end(); ++i)
@@ -150,3 +169,19 @@ std::vector<unsigned int> RandomIndices_MD2::get_constraints()
   // // Rcout << std::endl;
   // return constraints;
 }
+
+
+
+std::vector<unsigned int> RandomIndices_MD2::get_constraints_r()
+{
+  std::vector<unsigned int> constraints;
+  constraints.reserve(nb_r);
+  unsigned int nbC = current - list.begin();
+  for (unsigned int i = 0; i < nb_r; i++)
+    constraints.push_back(list[std::floor(dist(rng) * nbC)]);
+  return constraints;
+
+}
+
+
+

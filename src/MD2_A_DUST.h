@@ -101,15 +101,15 @@ private:
   // 4: Quasi-Newton
   // 5: PELT
   // 6: OP
-  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
 
-  bool (DUST_MD2::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool (DUST_MD2::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();

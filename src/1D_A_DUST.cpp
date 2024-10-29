@@ -18,28 +18,18 @@ DUST_1D::DUST_1D(int dual_max, bool random_constraint, Nullable<double> alpha_, 
     random_constraint(random_constraint),
     indices(nullptr)
 {
-  if(alpha_.isNull())
-  {
-    alpha = 1e-9;
-  }
-  else
-  {
-    alpha = as<double>(alpha_);
-  }
-  if(nbLoops.isNull())
-  {
-    nb_Loops = 10;
-  }
-  else
-  {
-    nb_Loops = as<int>(nbLoops);
-  }
+  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
+  if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 DUST_1D::~DUST_1D()
 {
   delete indices;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 void DUST_1D::init_method()
 {
