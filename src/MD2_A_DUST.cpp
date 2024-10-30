@@ -141,15 +141,21 @@ bool DUST_MD2::dualMaxAlgo0(const double& minCost, const unsigned int& t,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// BARYCENTRE test
+// BARYCENTRE test
+// BARYCENTRE test
 
 bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t,
                             const unsigned int& s,
                             std::vector<unsigned int> r,
                             std::vector<unsigned int> r2)
 {
-  // BARYCENTRE test
   unsigned int r_size = r.size();
+  unsigned int r2_size = r2.size();
 
+  ///////
+  /////// constantTerm AND objectiveMean
+  ///////
   double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
   auto col_t = cumsum.col(t);
@@ -157,15 +163,20 @@ bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   for (unsigned int row = 0; row < d; row++)
     objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
 
-  linearTerm.resize(r_size);
-  constraintMean.resize(d, r_size);
-
-  mu_max.resize(r_size);
+  ///////
+  /////// resize vectors. r_size + r2_size constraints
+  ///////
+  linearTerm.resize(r_size + r2_size);
+  constraintMean.resize(d, r_size + r2_size);
+  mu_max.resize(r_size + r2_size);
 
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
+  ///////
+  /////// constraintMean, constraint_mean_sum
+  ///////
   unsigned int j = 0;
-  for (auto k: r)
+  for (auto k: r) ///////// WITH r
   {
     double constraint_mean_sum = 0;
     linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
@@ -176,27 +187,52 @@ bool DUST_MD2::dualMaxAlgo1(const double& minCost, const unsigned int& t,
       constraint_mean_sum += constraintMean(row, j);
     }
 
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY?
+    j++;
+  }
+  for (auto k: r2) ///////// SAME WITH r2
+  {
+    double constraint_mean_sum = 0;
+    linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
+    auto col_k = cumsum.col(k);
+    for (unsigned int row = 0; row < d; row++)
+    {
+      constraintMean(row, j) = (col_s(row) - col_k(row)) / (s - k);
+      constraint_mean_sum += constraintMean(row, j);
+    }
+
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY?
     j++;
   }
 
-  mu.resize(r_size);
+
+  ///////
+  /////// mu
+  ///////
+  mu.resize(r_size + r2_size);
   double mu_sum = 0;
-  double x = pow(r_size + 1, -1);
-  for (unsigned int i = 0; i < r_size; i++)
+  double x = pow(r_size + r2_size + 1, -1);
+  for (unsigned int i = 0; i < r_size; i++) ///////// WITH r
   {
     mu(i) = mu_max(i) * x;
     mu_sum += mu(i);
   }
+  for (unsigned int i = 0; i < r2_size; i++) ///////// WITH r2
+  {
+    mu(r_size + i) = - mu_max(r_size + i) * x; /// with a minus here
+    mu_sum = mu(r_size + i);
+  }
+
+  ///////
+  /////// dual value in mu
+  ///////
   double inv_sum = pow(1 - mu_sum, -1);
-
   double linDot = arma::dot(mu, linearTerm);
-
   double nonLinear = 0;
   for (unsigned int row = 0; row < d; row++)
     nonLinear += Dstar(inv_sum * (objectiveMean(row) - arma::dot(mu, constraintMean.row(row))));
 
-  return constantTerm + linDot - (1 - mu_sum) * nonLinear > 0;
+  return(constantTerm + linDot - (1 - mu_sum) * nonLinear > 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
