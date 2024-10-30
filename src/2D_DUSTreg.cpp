@@ -19,22 +19,8 @@ DUST_reg::DUST_reg(int dual_max, int constraint_indices, Nullable<double> alpha_
     constraint_indices(constraint_indices),
     indices(nullptr)
 {
-  if(alpha_.isNull())
-  {
-    alpha = 1e-9;
-  }
-  else
-  {
-    alpha = as<double>(alpha_);
-  }
-  if(nbLoops.isNull())
-  {
-    nb_Loops = 10;
-  }
-  else
-  {
-    nb_Loops = as<int>(nbLoops);
-  }
+  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
+  if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
 
 DUST_reg::~DUST_reg()
