@@ -6,7 +6,6 @@
 #include <forward_list>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 
-
 using namespace Rcpp;
 
 class Indices_1D
@@ -17,11 +16,12 @@ public:
   // --- // Methods // --- //
   virtual void add(unsigned int value) = 0;
 
-  void reset();
-  void next();
-  void remove_first();
-  bool check();
+  void reset(); //iterator current = start
+  void next(); //current++
+  bool check(); //no the end
 
+  void remove_first(); //remove the first element
+  std::forward_list<unsigned int> get_list();
 
   virtual void reset_prune() = 0;
   virtual void next_prune() = 0;
@@ -33,19 +33,24 @@ public:
   unsigned int get_current();
   virtual void new_constraint() = 0;
   virtual unsigned int get_constraint() = 0;
-  std::forward_list<unsigned int> get_list();
 
+protected:
   // --- // Fields // --- //
   std::forward_list<unsigned int> list;
   std::forward_list<unsigned int>::iterator current;
   std::forward_list<unsigned int>::iterator before;
 };
 
+
+
+////////////////
+//////////////// derived class 1:  RandomIndices_1D
+////////////////
+
 class RandomIndices_1D : public Indices_1D
 {
 public:
   RandomIndices_1D(unsigned int size, double alpha = 1e-9);
-  // ~I_Random() override;
 
   void add(unsigned int value) override;
 
@@ -60,18 +65,21 @@ public:
   unsigned int get_constraint() override;
 
 private:
-  unsigned int nb = 0;
-  unsigned int nbC = 0;
+  unsigned int nb = 0; // number of elements in the list = length
+  unsigned int nbC = 0; // number of available constraint (smaller indices) for a given s index
 
-  unsigned int* constraint;
-  std::vector<unsigned int*> pointers;
-  std::vector<unsigned int*>::reverse_iterator pointersCurrent;
+  unsigned int* constraint; // the constraint r (for s, r < s)
+  std::vector<unsigned int*> pointers; // all pointers for the list of indices
+  std::vector<unsigned int*>::reverse_iterator pointersCurrent; // to move on pointers
 
-  std::vector<double> randomU;
+  std::vector<double> randomU; // vector of random uniform numbers (length determined by alpha)
   std::vector<double>::iterator u;
 
 };
 
+////////////////
+//////////////// derived class 1:  DeterministicIndices_1D
+////////////////
 
 class DeterministicIndices_1D : public Indices_1D
 {
@@ -89,6 +97,8 @@ public:
   unsigned int get_constraint() override;
 
 private:
+  // iterator for list
+  // a kind of "after" or "next" pointer
   std::forward_list<unsigned int>::iterator constraint;
 };
 

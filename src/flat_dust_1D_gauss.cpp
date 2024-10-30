@@ -109,7 +109,7 @@ List flat_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty 
       if (DualMax(minCost, t, indices.get_current(), indices.get_constraint(), cumsum, costRecord) > 0) // prune as needs pruning
       {
         // remove the pruned index and its pointer
-        // removing the elements increments the cursors i and pointerIt, while before stands still
+        // removing the elements increments the cursors i and pointersCurrent, while before stands still
         indices.prune_current();
       }
       else
@@ -221,7 +221,7 @@ List flat2_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty
       if (DualMax(minCost, t, indices.get_current(), indices.get_constraint(), cumsum, costRecord) > 0) // prune as needs pruning
       {
         // remove the pruned index and its pointer
-        // removing the elements increments the cursors i and pointerIt, while before stands still
+        // removing the elements increments the cursors i and pointersCurrent, while before stands still
         indices.prune_current();
       }
       else

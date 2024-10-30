@@ -309,50 +309,6 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   return (false);
 }
 
-
-/*
-double DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
-{
-  double a = (cumsum[t] - cumsum[s]) / (t - s); // m_it
-  double b = (cumsum[s] - cumsum[r]) / (s - r); // m_ji
-  double C = (costRecord[s] - costRecord[r]) / (s - r);
-
-  //std::cout << "c " << C << std::endl;
-  double f_prime;
-  double f_second;
-  double mu_new;
-
-  ////DANGER
-  double mu = 0.01;
-
-  double m;
-  for (int i = 0; i < nb_Loops; ++i)
-  {
-
-    m =  (a - mu*b) / (1.0 - mu);
-    //std::cout << "dualEvaldualEval" << -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s) << std::endl;
-
-    f_prime = Dstar(m) - ((a-b)/(1.0 - mu)) * DstarPrime(m) + C;
-    f_second = - (std::pow(a-b,2)/std::pow(1.0-mu,3)) * DstarSecond(m);
-
-    mu_new = mu - (f_prime / f_second);
-    mu_new = std::max(0.0, std::min(1.0, mu_new));
-    // Check for pruning
-    //if(dualEval(mu_new, minCost, t, s, r) > 0) {break;}
-    //std::cout << "mu " << mu << " munew " << mu_new << " ab " << a << " " << b << std::endl;
-    mu = mu_new;
-    //std::cout <<  " Dstar(m)" << Dstar(m)  << " DstarPrime(m) " << ((a-b)/(1.0 - mu)) * DstarPrime(m)  << " DstarSecond(m) " << DstarSecond(m) << std::endl;
-    //std::cout <<  " --- " << f_prime  << " --- " << f_second << " +++ " << f_prime / f_second << std::endl;
-  }
-  //std::cout << std::endl;
-  return -(1.0 - mu) * Dstar(m) + mu * C - (minCost - costRecord[s]) / (t - s);
-  //return(-std::numeric_limits<double>::infinity());
-}
-
-*/
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,14 +320,7 @@ void DUST_1D::init(std::vector<double>& inData, Nullable<double> inPenalty)
 {
   n = inData.size();
 
-  if (inPenalty.isNull())
-  {
-    penalty = 2 * pow(sdDiff(inData), 2) * std::log(n);
-  }
-  else
-  {
-    penalty = as<double>(inPenalty);
-  }
+  if (inPenalty.isNull()){penalty = 2 * pow(sdDiff(inData), 2) * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   changepointRecord = std::vector<int>(n + 1, 0);
   nb_indices = std::vector<int>(n, 0);
@@ -379,13 +328,12 @@ void DUST_1D::init(std::vector<double>& inData, Nullable<double> inPenalty)
   cumsum = std::vector<double>(n + 1, 0.);
   costRecord = std::vector<double>(n + 1, -penalty);
 
-
   init_method();
 
   indices->add(0);
   indices->add(1);
-
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -396,8 +344,8 @@ void DUST_1D::compute(std::vector<double>& inData)
 {
   // Initialize OP step value
   double lastCost; // temporarily stores the cost for the model with last changepoint at some i
-                   // then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
-                   // ... storing it allows pruning of the first available index
+                   // then keeps the cost of the model with last changepoint at the smallest possible index in the t-th OP step ...
+                   // ... storing it allows pruning (with PELT) for the smallest available index
   double minCost;
   unsigned int argMin; // stores the optimal last changepoint for the current OP step
 
@@ -408,23 +356,23 @@ void DUST_1D::compute(std::vector<double>& inData)
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
 
-  int nbt = 2;
+  int nbt = 2; ///number of indices at time step 2 : 0 and 1
   nb_indices[0] = 1;
 
   // Main loop
   for (t = 2; t <= n; t++)
   {
     // update cumsum
-    cumsum[t] =
-      cumsum[t - 1] + statistic(inData[t - 1]);
+    cumsum[t] = cumsum[t - 1] + statistic(inData[t - 1]);
 
+    // OP step
     // OP step
     indices->reset();
     minCost = std::numeric_limits<double>::infinity();
     do
     {
       s = indices->get_current();
-      lastCost = costRecord[s] + Cost(t, s);
+      lastCost = costRecord[s] + Cost(t, s); // without the penalty beta
       if (lastCost < minCost)
       {
         minCost = lastCost;
@@ -434,22 +382,27 @@ void DUST_1D::compute(std::vector<double>& inData)
     }
     while(indices->check());
     // END (OP step)
+    // END (OP step)
 
-    // OP update
+    // OP update minCost and save values
+    // minCost = Q_t. Here + beta to get Q_t = Q_i + C(y_it) + beta
     minCost += penalty;
     costRecord[t] = minCost;
     changepointRecord[t] = argMin;
 
     // DUST step
+    // DUST step
     indices->reset_prune();
 
     // DUST loop
-    while (indices->check_prune())
+    // DUST loop
+    while (indices->check_prune()) // is true, while we are not on the smallest index
     {
-      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
+      // prune as needs pruning
+      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint()))
       {
         // remove the pruned index and its pointer
-        // removing the elements increments the cursors i and pointerIt, while before stands still
+        // removing the elements increments the cursors i and pointersCurrent, while before stands still
         indices->prune_current();
         nbt--;
       }
@@ -460,8 +413,10 @@ void DUST_1D::compute(std::vector<double>& inData)
       }
     }
     // END (DUST loop)
+    // END (DUST loop)
 
-    // Prune the last index (analoguous with a null (mu* = 0) duality simple test)
+    // Prune the last index (analogous with a "mu* = 0" duality simple test)
+    // this is the smallest available index
     if (lastCost > minCost)
     {
       indices->prune_last();
@@ -520,13 +475,6 @@ List DUST_1D::quick(std::vector<double>& inData, Nullable<double> inPenalty)
   compute(inData);
   return get_partition();
 }
-
-////
-//// IDEA : propose a new quick method with a loop of "compute (K)"
-//// solving the K fixed (number of change) problem.
-//// new 3 functions : ini, comute and get_partition
-////
-
 
 
 

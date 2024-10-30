@@ -12,10 +12,6 @@ using namespace Rcpp;
 class DUST_1D
 {
 
-  ////////////////////////////////
-  ////////////////////////////////
-  ////////////////////////////////
-
 public:
   DUST_1D(int dual_max,
           bool random_constraint,

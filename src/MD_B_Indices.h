@@ -2,14 +2,9 @@
 #define INDICESMD_H
 
 #include <RcppArmadillo.h>
-#include <dqrng.h>
-#include <xoshiro.h>
-
-#include <forward_list>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 
 using namespace Rcpp;
-
 
 class Indices_MD
 {
@@ -24,25 +19,25 @@ public:
   void next();
   bool check();
 
+  void add(const unsigned int& value);
+  void set_size(const unsigned int& size);
+
+  std::vector<unsigned int> get_list();
+  void remove_last();
+
   virtual void reset_prune() = 0;
   virtual void next_prune() = 0;
   virtual void prune_current() = 0;
   virtual bool check_prune() = 0;
 
-  void add(const unsigned int& value);
-
-  void set_size(const unsigned int& size);
-  std::vector<unsigned int> get_list();
   virtual std::vector<unsigned int> get_constraints_l() = 0;
   virtual std::vector<unsigned int> get_constraints_r() = 0;
 
-  /// WHY NOT IN PROTECTED?
-  std::vector<unsigned int> list;
   std::vector<unsigned int>::iterator current;
 
-  void remove_last();
 
 protected:
+  std::vector<unsigned int> list;
   unsigned int nb_l;
   unsigned int nb_r;
   unsigned int nb_max;
@@ -53,12 +48,12 @@ protected:
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
-class VariableIndices_MD : public Indices_MD
+class DeterministicIndices_MD : public Indices_MD
 {
 
 public:
-  VariableIndices_MD();
-  VariableIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);
+  DeterministicIndices_MD();
+  DeterministicIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);
 
   void reset_prune() override;
   void next_prune() override;
@@ -69,8 +64,8 @@ public:
   std::vector<unsigned int> get_constraints_r() override;
 
 private:
-  std::vector<unsigned int>::iterator begin;
-
+  std::vector<unsigned int>::iterator begin_l;
+  std::vector<unsigned int>::iterator begin_r;
 };
 
 ////////////////////////////////////////////////
@@ -92,11 +87,10 @@ public:
   std::vector<unsigned int> get_constraints_r() override;
 
 private:
-  dqrng::xoshiro256plus rng;
-  std::uniform_real_distribution<double> dist;
-  // std::uniform_int_distribution<int> dist2;
-  std::vector<unsigned int>::iterator begin;
+  //////////// RANDOM NUMBER GENERATOR ////////////
 
+  std::minstd_rand0 rng;  // Random number engine
+  std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 };
 
 #endif

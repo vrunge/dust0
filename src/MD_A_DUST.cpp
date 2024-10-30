@@ -33,9 +33,8 @@ void DUST_MD::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint)
-  {indices = new RandomIndices_MD(nb_l, nb_r);}
-  else{indices = new VariableIndices_MD(nb_l, nb_r);}
+  if(random_constraint){indices = new RandomIndices_MD(nb_l, nb_r);}
+  else{indices = new DeterministicIndices_MD(nb_l, nb_r);}
 
   /// /// ///
   /// /// /// dual_max METHOD
@@ -165,6 +164,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   constraintMean.resize(d, r_size + r2_size);
   mu_max.resize(r_size + r2_size);
 
+  /// /d ????
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
   ///////
@@ -182,7 +182,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
       constraint_mean_sum += constraintMean(row, j);
     }
 
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY?
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY? //// to be reviewed
     j++;
   }
   for (auto k: r2) ///////// SAME WITH r2
@@ -196,7 +196,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
       constraint_mean_sum += constraintMean(row, j);
     }
 
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY?
+    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY? //// to be reviewed... (no mu_max)
     j++;
   }
 
@@ -206,7 +206,8 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   ///////
   mu.resize(r_size + r2_size);
   double mu_sum = 0;
-  double x = pow(r_size + r2_size + 1, -1);
+  double x = pow(r_size + r2_size + 1, -1); ///
+
   for (unsigned int i = 0; i < r_size; i++) ///////// WITH r
   {
     mu(i) = mu_max(i) * x;
@@ -663,10 +664,9 @@ void DUST_MD::init(const arma::dmat& inData,
   if (inPenalty.isNull()){penalty = 2 * d * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   /// read the number of constraints + default choice
-  if (inNbR.isNull()){nb_r = 1;}else{nb_r = std::min(d, as<unsigned int>(inNbR));}
   if (inNbL.isNull()){nb_l = d - 1;}else{nb_l = std::min(d, as<unsigned int>(inNbL));}
+  if (inNbR.isNull()){nb_r = 1;}else{nb_r = std::min(d - nb_l, as<unsigned int>(inNbR));}
   nb_max = nb_l + nb_r;
-
 
   changepointRecord = std::vector<int>(n + 1, 0);
   nb_indices = std::vector<int>(n, 0);
@@ -706,8 +706,6 @@ void DUST_MD::compute(const arma::dmat& inData)
 
   // Initialize OP step value
   double lastCost; // temporarily stores the cost for the model with last changepoint at some i
-  // then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
-  // ... storing it allows pruning of the first available index
   double minCost;
   unsigned int argMin; // stores the optimal last changepoint for the current OP step
 
@@ -715,15 +713,14 @@ void DUST_MD::compute(const arma::dmat& inData)
   unsigned int t = 1;
   unsigned int s = 0;
 
-  for (unsigned int row = 0; row < d; row++)
-    cumsum(row, 1) = statistic(inData(row));
-
+  for (unsigned int row = 0; row < d; row++) cumsum(row, 1) = statistic(inData(row));
   costRecord[1] = Cost(t, s);
   changepointRecord[1] = 0;
 
   int nbt = 2;
   nb_indices[0] = 1;
 
+  // Main loop
   // Main loop
   for (t = 2; t <= n; t++)
   {
@@ -733,12 +730,12 @@ void DUST_MD::compute(const arma::dmat& inData)
       cumsum(row, t) = col_prev(row) + statistic(inData(row, t - 1));
 
     // OP step
+    // OP step
     indices->reset();
     minCost = std::numeric_limits<double>::infinity();
     do
     {
       s = *(indices->current);
-      // Rcout << "t = " << t << "; s = " << s << std::endl;
       lastCost = costRecord[s] + Cost(t, s);
       if (lastCost < minCost)
       {
@@ -749,12 +746,15 @@ void DUST_MD::compute(const arma::dmat& inData)
     }
     while(indices->check());
     // END (OP step)
+    // END (OP step)
 
     // OP update
     minCost += penalty;
     costRecord[t] = minCost;
     changepointRecord[t] = argMin;
 
+
+    // DUST step
     // DUST step
     indices->reset_prune();
 
@@ -766,8 +766,7 @@ void DUST_MD::compute(const arma::dmat& inData)
                                   indices->get_constraints_l(),
                                   indices->get_constraints_r())) // prune as needs pruning
       {
-        // remove the pruned index and its pointer
-        // removing the elements increments the cursors i and pointerIt, while before stands still
+        // remove the pruned index
         indices->prune_current();
         nbt--;
       }
@@ -778,8 +777,9 @@ void DUST_MD::compute(const arma::dmat& inData)
       }
     }
     // END (DUST loop)
+    // END (DUST loop)
 
-    // Prune the last index (analoguous with a null (mu* = 0) duality simple test)
+    // Prune the last index (analogous with a null (mu* = 0) duality simple test)
     // if (lastCost > minCost)
     // {
     //   indices->prune_last();
@@ -845,15 +845,6 @@ List DUST_MD::quick(const arma::dmat& inData,
   compute(inData);
   return get_partition();
 }
-
-////
-//// IDEA : propose a new quick method with a loop of "compute (K)"
-//// solving the K fixed (number of change) problem.
-//// new 3 functions : init, compute and get_partition
-////
-
-
-
 
 
 

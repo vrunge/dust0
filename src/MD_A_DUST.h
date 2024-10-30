@@ -2,23 +2,17 @@
 #define DUST_MD_H
 
 #include <RcppArmadillo.h>
-#include <dqrng.h>
-#include <xoshiro.h>
-
-#include <fstream>
+#include <random>
+#include <forward_list>
+// #include <fstream>
 
 #include "MD_B_Indices.h"
-
 #include "utils.h"
 
 using namespace Rcpp;
 
-
 class DUST_MD
 {
-
-  ////////////////////////////////
-  ////////////////////////////////
 
 public:
   DUST_MD(int dual_max,
@@ -36,7 +30,7 @@ public:
             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   // --- // Main computation // --- //
-  void compute(const arma::dmat& inData);
+  void compute(const arma::dmat& inData); /// some day, remove the inData, i.e. save the pointer to inData in the class
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
@@ -55,7 +49,7 @@ public:
 
 protected:
   unsigned int n; // number of observations
-  unsigned int d;
+  unsigned int d; // data dimension
   unsigned int nb_max; // = nb_l + nb_r
   unsigned int nb_l; // number of constraints before the current index to prune
   unsigned int nb_r; // number of constraints after the current index to prune
@@ -72,6 +66,7 @@ protected:
   virtual double muMax(const double& a, const double& b) const = 0;
 
   virtual double dualMax(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
+  ///dualEval to do, for speeding up (instead of using the Dstar, DstarPrime)
   virtual double dualEval(std::vector<unsigned int> point, const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
 
   virtual double Dstar(const double& x) const = 0;
@@ -80,7 +75,7 @@ protected:
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 
-  dqrng::xoshiro256plus engine;  // Random number engine
+  std::minstd_rand0 engine;  // Random number engine
   std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 
   ////////////////////////////////

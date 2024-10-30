@@ -365,7 +365,7 @@ void DUST_meanVar::compute(std::vector<double>& inData)
       if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
-        // removing the elements increments the cursors i and pointerIt, while before stands still
+        // removing the elements increments the cursors i and pointersCurrent, while before stands still
         indices->prune_current();
         nbt--;
       }

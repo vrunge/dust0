@@ -12,12 +12,12 @@ Description: Algorithms for detecting multiple changes within time-series. The d
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.10), methods, dqrng
+Imports: Rcpp (>= 1.0.10), methods
 Suggests: 
     devtools,
     testthat (>= 3.0.0),
     rmarkdown,
     ggplot2
-LinkingTo: Rcpp, RcppArmadillo, dqrng
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3

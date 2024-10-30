@@ -3,6 +3,7 @@ exportPattern("^[[:alpha:]]+")
 
 importFrom(Rcpp, evalCpp)
 importFrom(Rcpp, loadModule)
+
 importFrom(methods, new)
 
 

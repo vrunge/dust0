@@ -13,35 +13,15 @@ using namespace Rcpp;
 
 Indices_1D::~Indices_1D() {}
 
-void Indices_1D::reset()
-{
-  current = list.begin();
-}
 
-void Indices_1D::next()
-{
-  ++current;
-}
+void Indices_1D::reset(){current = list.begin();}
+void Indices_1D::next(){++current;}
+bool Indices_1D::check(){return current != list.end();}
+unsigned int Indices_1D::get_current(){return *current;}
 
-void Indices_1D::remove_first()
-{
-  list.pop_front();
-}
 
-bool Indices_1D::check()
-{
-  return current != list.end();
-}
-
-unsigned int Indices_1D::get_current()
-{
-  return *current;
-}
-
-std::forward_list<unsigned int> Indices_1D::get_list()
-{
-  return list;
-}
+std::forward_list<unsigned int> Indices_1D::get_list(){return list;}
+void Indices_1D::remove_first(){list.pop_front();}
 
 
 // --------------------------- //
@@ -52,7 +32,6 @@ std::forward_list<unsigned int> Indices_1D::get_list()
 
 RandomIndices_1D::RandomIndices_1D(unsigned int size, double alpha)
 {
-
   // length of the random vector
   double k = std::max(2., ceil(pow(size, .2)));
   int len = std::log(alpha) / std::log(1 - 1/k);
@@ -67,6 +46,11 @@ RandomIndices_1D::RandomIndices_1D(unsigned int size, double alpha)
   u = randomU.begin();
 }
 
+/////////////////////
+
+///
+/// Simon : possible update, save only the pointer
+///
 void RandomIndices_1D::add(unsigned int value)
 {
   list.push_front(value);
@@ -78,7 +62,7 @@ void RandomIndices_1D::reset_prune()
 {
   current = list.begin();
   before = list.before_begin();
-  pointersCurrent = pointers.rbegin();
+  pointersCurrent = pointers.rbegin(); //rbegin for reverse iterator
 
   nbC = nb - 1;
 }
@@ -113,7 +97,6 @@ void RandomIndices_1D::prune_last()
 }
 
 // --- // Select new constraint // --- //
-// Optimisation possible, car dans le cas random on sélectionne une nouvelle contrainte avant de vérifier qu'elle sera utilisée
 void RandomIndices_1D::new_constraint()
 {
   nbC--;
@@ -122,13 +105,8 @@ void RandomIndices_1D::new_constraint()
 unsigned int RandomIndices_1D::get_constraint()
 {
   constraint = pointers[floor(nbC * (*u))];
-
   ++u;
-  if (u == randomU.end())
-  {
-    u = randomU.begin();
-  }
-
+  if (u == randomU.end()){u = randomU.begin();}
   return *constraint;
 }
 

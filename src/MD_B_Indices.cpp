@@ -20,70 +20,68 @@ Indices_MD::Indices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_) :
 // Vérifier les fuites de mémoire
 Indices_MD::~Indices_MD() {}
 
-// simple reset for OP step
 void Indices_MD::reset() { current = list.begin(); }
-
-// simple next for OP step
 void Indices_MD::next() { ++current; }
-
-// simple break check for OP step
 bool Indices_MD::check() { return current != list.end(); }
 
-// add index
-void Indices_MD::add(const unsigned int& value)
-{
-  list.push_back(value);
-}
-
+void Indices_MD::add(const unsigned int& value){list.push_back(value);}
 void Indices_MD::set_size(const unsigned int& size) { list.reserve(size); }
 
-// obtain list for main function output
 std::vector<unsigned int> Indices_MD::get_list() { return list; }
-
 void Indices_MD::remove_last() { list.pop_back(); }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///// ///// ///// ///// ///// ///// /////
-///// //// VariableIndices_MD //// /////
+///// ////  DeterministicIndices_MD  ////
 ///// ///// ///// ///// ///// ///// /////
 
-VariableIndices_MD::VariableIndices_MD() : Indices_MD() {}
+DeterministicIndices_MD::DeterministicIndices_MD() : Indices_MD() {}
 
-VariableIndices_MD::VariableIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_) :
+DeterministicIndices_MD::DeterministicIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_) :
   Indices_MD(nb_l_, nb_r_)  { }
 
 // full reset for pruning step, including reinitialization of nb_max_ vector
-void VariableIndices_MD::reset_prune()
+//// TO CHANGE
+//// TO CHANGE
+//// TO CHANGE
+void DeterministicIndices_MD::reset_prune()
 {
   // reset iterators
   if (list.size() > 1)
   {
-    begin = list.begin();
-    current = begin + 1;
+    begin_l = list.begin();
+    current = begin_l + 1;
   }
   else current = list.begin();
 }
 
 // full next for pruning step
-void VariableIndices_MD::next_prune()
+//// TO CHANGE
+//// TO CHANGE with begin_l and begin_r
+//// TO CHANGE
+void DeterministicIndices_MD::next_prune()
 {
   ++current;
-  if (current - begin > nb_max) ++begin;
+  if (current - begin_l > nb_l) ++begin_l;
 }
 
 // remove current index and its pointer
-void VariableIndices_MD::prune_current() { current = list.erase(current); }
+void DeterministicIndices_MD::prune_current() { current = list.erase(current); }
 
 // break check for pruning step
-bool VariableIndices_MD::check_prune() { return current != list.end(); }
+bool DeterministicIndices_MD::check_prune() { return current != list.end(); }
 
-std::vector<unsigned int> VariableIndices_MD::get_constraints_l()
+std::vector<unsigned int> DeterministicIndices_MD::get_constraints_l()
 {
-  return std::vector(begin, current);
+  return std::vector(begin_l, current);
 }
-std::vector<unsigned int> VariableIndices_MD::get_constraints_r()
+//// TO CHANGE
+//// TO CHANGE vector(begin_r, list.end());
+//// TO CHANGE
+std::vector<unsigned int> DeterministicIndices_MD::get_constraints_r()
 {
-  return std::vector(current + 1, list.end()); //// A VERIFIER
+  return std::vector(current + 1, list.end());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,10 +94,7 @@ RandomIndices_MD::RandomIndices_MD(const unsigned int& nb_l_, const unsigned int
   : Indices_MD(nb_l_, nb_r_)
     , rng(std::random_device{}())
     , dist(std::uniform_real_distribution(0., 1.))
-    // , dist2(std::uniform_int_distribution(0, 0))
-  {
-    // rng.seed(1);
-  }
+  {}
 
 // full reset for pruning step, including reinitialization of nb_max_ vector
 void RandomIndices_MD::reset_prune()
@@ -121,64 +116,34 @@ void RandomIndices_MD::prune_current() { current = list.erase(current); }
 // break check for pruning step
 bool RandomIndices_MD::check_prune() { return current != list.end(); }
 
+
+////////////////
+////////////////
+
 std::vector<unsigned int> RandomIndices_MD::get_constraints_l()
 {
-  // std::vector<unsigned int> constraints;
-  // std::sample(
-  //   list.begin(),
-  //   current,
-  //   std::back_inserter(constraints),
-  //   nb_max,
-  //   rng
-  // );
-  // Rcout << "r: ";
-  // for (auto i = constraints.begin(); i != constraints.end(); ++i)
-  //   Rcout << " " << *i;
-  // Rcout << std::endl;
-  // return constraints;
-
-  // std::set<unsigned int> constraints;
-  // for (unsigned int i = 0; i < nb_max; i++)
-  //   constraints.insert(list[std::floor(dist(rng) * (current - list.begin()))]);
-  // // Rcout << "r: ";
-  // // for (auto i = constraints.begin(); i != constraints.end(); ++i)
-  // //   Rcout << " " << *i;
-  // // Rcout << std::endl;
-  // return std::vector<unsigned int>(constraints.begin(), constraints.end());
-
   std::vector<unsigned int> constraints;
   constraints.reserve(nb_l);
-  unsigned int nbC = current - list.begin();
+  unsigned int nbC_l = current - list.begin();
   for (unsigned int i = 0; i < nb_l; i++)
-    constraints.push_back(list[std::floor(dist(rng) * nbC)]);
-  // Rcout << "r: ";
-  // for (auto i = constraints.begin(); i != constraints.end(); ++i)
-  //   Rcout << " " << *i;
-  // Rcout << std::endl;
-  return constraints;
+    constraints.push_back(list[std::floor(dist(rng) * nbC_l)]);
 
-  // std::vector<unsigned int> constraints;
-  // constraints.reserve(nb_max);
-  // dist2.param(std::uniform_int_distribution<int>::param_type(0, current - list.begin()));
-  // // auto x = std::uniform_int_distribution<int>(0, current - list.begin());
-  // for (unsigned int i = 0; i < nb_max; i++)
-  //   constraints.push_back(list[dist2(rng)]);
-  // // Rcout << "r: ";
-  // // for (auto i = constraints.begin(); i != constraints.end(); ++i)
-  // //   Rcout << " " << *i;
-  // // Rcout << std::endl;
-  // return constraints;
+   return constraints;
 }
 
+////////////////
+////////////////
 
-
+//// TO CHANGE
+//// TO CHANGE
+//// TO CHANGE
 std::vector<unsigned int> RandomIndices_MD::get_constraints_r()
 {
   std::vector<unsigned int> constraints;
   constraints.reserve(nb_r);
-  unsigned int nbC = current - list.begin();
+  unsigned int nbC_r = list.end() - current;
   for (unsigned int i = 0; i < nb_r; i++)
-    constraints.push_back(list[std::floor(dist(rng) * nbC)]);
+    constraints.push_back(list[std::floor(dist(rng) * nbC_r)]); //// ?????
   return constraints;
 
 }
