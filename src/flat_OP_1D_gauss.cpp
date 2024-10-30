@@ -8,20 +8,24 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
+
+//' Optimal Partitioning in 1D with Flat Model
+//'
+//' Computes the optimal partitioning of one-dimensional data using a flat model with an optional penalty parameter.
+//'
+//' @param inData A numeric vector representing the input data for partitioning.
+//' @param inPenalty An optional numeric penalty parameter to control the number of partitions. Defaults to \code{NULL}, indicating a default penalty is used.
+//' @return A list containing the results of the optimal partitioning, including identified change points and other model details.
+//' @examples
+//' data <- rnorm(100)
+//' result <- flat_OP_1D(data, inPenalty = 1.0)
 //[[Rcpp::export]]
 List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty = R_NilValue)
 {
   unsigned int n = inData.size();
 
   double penalty;
-  if (inPenalty.isNull())
-  {
-    penalty = 2 * std::log(n); //to do
-  }
-  else
-  {
-    penalty = as<double>(inPenalty);
-  }
+  if (inPenalty.isNull()){penalty = 2 * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   std::vector<int> changepointRecord;
   changepointRecord.reserve(n + 1);

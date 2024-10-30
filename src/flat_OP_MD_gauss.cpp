@@ -9,6 +9,14 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
+
+//' Optimal Partitioning in MD with Flat Model
+//'
+//' Computes the optimal partitioning of multi-dimensional data using a flat model with an optional penalty parameter.
+//'
+//' @param inData A numeric matrix representing the input data for partitioning.
+//' @param inPenalty An optional numeric penalty parameter to control the number of partitions. Defaults to \code{NULL}, indicating a default penalty is used.
+//' @return A list containing the results of the optimal partitioning, including identified change points and other model details.
 //[[Rcpp::export]]
 List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValue)
 {

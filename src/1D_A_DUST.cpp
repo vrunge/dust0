@@ -38,14 +38,8 @@ void DUST_1D::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint)
-  {
-    indices = new RandomIndices_1D(n, alpha);
-  }
-  else
-  {
-    indices = new DeterministicIndices_1D;
-  }
+  if(random_constraint){indices = new RandomIndices_1D(n, alpha);}
+  else{indices = new DeterministicIndices_1D;}
 
   /// /// ///
   /// /// /// dual_max METHOD

@@ -39,13 +39,14 @@ DUST_MD *newModuleMD(const std::string& model,
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
   ///////////////////  DEFAULT CHOICE  = best choice ///////////////////
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
-  int dual_max = 4;
-  bool random_constraint = false;
+  /// FASTEST CHOICE
+  /// FASTEST CHOICE
+  int dual_max = 4; /// quasi newton
+  bool random_constraint = false; /// deterministic choice
   if(model == "gauss"){dual_max = 1;}
 
   if (indices_max[0] == "randIndex"){random_constraint = true;}
-  if (indices_max[0] == "detIndex"){random_constraint = false;}
-
+  else if (indices_max[0] == "detIndex"){random_constraint = false;}
 
   if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
   else if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
@@ -102,4 +103,7 @@ RCPP_MODULE(DUSTMODULEMD)
   .method("quick_raw", &DUST_MD::quick)
   ;
 }
+
+
+
 

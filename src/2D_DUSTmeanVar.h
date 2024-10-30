@@ -79,6 +79,7 @@ public:
   bool dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   bool (DUST_meanVar::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 

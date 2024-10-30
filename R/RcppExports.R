@@ -45,10 +45,27 @@ NULL
 #' @export
 NULL
 
+#' Optimal Partitioning in 1D with Flat Model
+#'
+#' Computes the optimal partitioning of one-dimensional data using a flat model with an optional penalty parameter.
+#'
+#' @param inData A numeric vector representing the input data for partitioning.
+#' @param inPenalty An optional numeric penalty parameter to control the number of partitions. Defaults to \code{NULL}, indicating a default penalty is used.
+#' @return A list containing the results of the optimal partitioning, including identified change points and other model details.
+#' @examples
+#' data <- rnorm(100)
+#' result <- flat_OP_1D(data, inPenalty = 1.0)
 flat_OP_1D <- function(inData, inPenalty = NULL) {
     .Call(`_dust_flat_OP_1D`, inData, inPenalty)
 }
 
+#' Optimal Partitioning in MD with Flat Model
+#'
+#' Computes the optimal partitioning of multi-dimensional data using a flat model with an optional penalty parameter.
+#'
+#' @param inData A numeric matrix representing the input data for partitioning.
+#' @param inPenalty An optional numeric penalty parameter to control the number of partitions. Defaults to \code{NULL}, indicating a default penalty is used.
+#' @return A list containing the results of the optimal partitioning, including identified change points and other model details.
 flat_OP_MD <- function(inData, inPenalty = NULL) {
     .Call(`_dust_flat_OP_MD`, inData, inPenalty)
 }

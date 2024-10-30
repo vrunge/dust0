@@ -16,7 +16,7 @@ class Indices_MD
 
 public:
   Indices_MD();
-  Indices_MD(const unsigned int& nb_max_);
+  Indices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);
   virtual ~Indices_MD();
 
   // --- // Methods // --- //
@@ -33,52 +33,63 @@ public:
 
   void set_size(const unsigned int& size);
   std::vector<unsigned int> get_list();
-  virtual std::vector<unsigned int> get_constraints() = 0;
+  virtual std::vector<unsigned int> get_constraints_l() = 0;
+  virtual std::vector<unsigned int> get_constraints_r() = 0;
 
+  /// WHY NOT IN PROTECTED?
   std::vector<unsigned int> list;
   std::vector<unsigned int>::iterator current;
 
   void remove_last();
 
 protected:
+  unsigned int nb_l;
+  unsigned int nb_r;
   unsigned int nb_max;
 
 };
 
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
 class VariableIndices_MD : public Indices_MD
 {
 
 public:
   VariableIndices_MD();
-  VariableIndices_MD(const unsigned int& nb_max_);
+  VariableIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
   bool check_prune() override;
 
-  std::vector<unsigned int> get_constraints() override;
+  std::vector<unsigned int> get_constraints_l() override;
+  std::vector<unsigned int> get_constraints_r() override;
 
 private:
   std::vector<unsigned int>::iterator begin;
 
 };
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
 class RandomIndices_MD : public Indices_MD
 {
 
 public:
   RandomIndices_MD();
-  RandomIndices_MD(const unsigned int& nb_max_);
+  RandomIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
   bool check_prune() override;
 
-  std::vector<unsigned int> get_constraints() override;
+  std::vector<unsigned int> get_constraints_l() override;
+  std::vector<unsigned int> get_constraints_r() override;
 
 private:
   dqrng::xoshiro256plus rng;

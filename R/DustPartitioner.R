@@ -6,8 +6,10 @@
 ## ----------------------------------- ##
 
 Rcpp::loadModule("DUSTMODULE1D", TRUE)
-Rcpp::loadModule("FLATDUST1D", TRUE)
-Rcpp::loadModule("FLAT2DUST1D", TRUE)
+
+Rcpp::loadModule("FLATDUST1D", TRUE) #with reserve(n + 1);
+Rcpp::loadModule("FLAT2DUST1D", TRUE) #with [n+1]
+
 Rcpp::loadModule("FLATOP1D", TRUE)
 Rcpp::loadModule("FLATOPMD", TRUE)
 
@@ -34,8 +36,8 @@ Rcpp::loadModule("FLATOPMD", TRUE)
 #' }
 #' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{fastest}, which automatically selects the quickest method for the chosen model. Other available methods are:
 #' \itemize{
-#'   \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval5"}: Random index-based methods with different dual maximization algorithm (0 through 5).
-#'   \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval5"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 5).
+#'   \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval6"}: Random index-based methods with different dual maximization algorithm (0 through 5).
+#'   \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval6"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 5).
 #' }
 #' Here are the current available algorithms (\code{Eval4} is often the most efficient one)
 #' \itemize{
@@ -45,6 +47,7 @@ Rcpp::loadModule("FLATOPMD", TRUE)
 #'   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
 #'   \item \code{"Eval4"}: quasi-Newton method with armijo condition
 #'   \item \code{"Eval5"}: PELT rule
+#'   \item \code{"Eval6"}: OP rule
 #' }
 #' @param alpha controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.
 #' the lower the value of alpha, the larger this vector, meaning a selection of indices closer to "true" randomness.
@@ -102,7 +105,6 @@ dust.partitioner.1D <- function(
 ## ----------------------------------- ##
 
 Rcpp::loadModule("DUSTMODULEMeanVar", TRUE)
-
 
 ## --------------------------------- ##
 ## ----///////////////////////// --- ##
@@ -223,7 +225,6 @@ dust.partitioner.reg <- function(
 
 Rcpp::loadModule("DUSTMODULEMD", TRUE)
 
-
 ## --------------------------------- ##
 ## ----///////////////////////// --- ##
 ## --- // MD DUST Partitioner // --- ##
@@ -253,12 +254,15 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #' Here are the current available algorithms (\code{Eval4} is often the most efficient one)
 #' \itemize{
 #'   \item \code{"Eval0"}: random evaluation of the dual (with uniform distribution)
-#'   \item \code{"Eval1"}: max value with closed formula (gauss model only), otherwise no pruning performed and we get the (slow) OP algorithm
-#'   \item \code{"Eval2"}: golden-section search.
-#'   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
-#'   \item \code{"Eval4"}: auasi-Newton method with armijo condition
-#'   \item \code{"Eval5"}: PELT rule
+#'   \item \code{"Eval1"}:
+#'   \item \code{"Eval2"}:
+#'   \item \code{"Eval3"}:
+#'   \item \code{"Eval4"}:
+#'   \item \code{"Eval5"}:
+#'   \item \code{"Eval6"}:
 #' }
+#' @param nb_l number of left constraints
+#' @param nb_r number of right constraints
 #' @param alpha controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.
 #' the lower the value of alpha, the larger this vector, meaning a selection of indices closer to "true" randomness.
 #' @param nbLoops number of iterations in the algorithm for maximizing the dual function
@@ -275,6 +279,8 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 dust.partitioner.MD <- function(
     model = "gauss"
     , method = "fastest"
+    , nb_l = NULL
+    , nb_r = NULL
     , alpha = 1e-9
     , nbLoops = 10
 )
@@ -283,17 +289,16 @@ dust.partitioner.MD <- function(
 
   assign(
     "init",
-    function(data, penalty = NULL, nb_max = NULL)
-      partitioner$init_raw(data, penalty, nb_max),
+    function(data, penalty = NULL, nb_l = NULL, nb_r = NULL)
+      partitioner$init_raw(data, penalty, nb_l, nb_r),
     envir = partitioner
   )
 
   assign(
     "quick",
-    function(data, penalty = NULL, nb_max = NULL)
-      partitioner$quick_raw(data, penalty, nb_max),
+    function(data, penalty = NULL, nb_l = NULL, nb_r = NULL)
+      partitioner$quick_raw(data, penalty, nb_l, nb_r),
     envir = partitioner
   )
-
   return(partitioner)
 }

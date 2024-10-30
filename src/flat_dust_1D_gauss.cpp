@@ -42,14 +42,7 @@ List flat_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty 
   const unsigned int n = inData.size();
 
   double penalty;
-  if (inPenalty.isNull())
-  {
-    penalty = 2 * std::log(n);
-  }
-  else
-  {
-    penalty = as<double>(inPenalty);
-  }
+  if (inPenalty.isNull()){penalty = 2 * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   std::vector<int> changepointRecord;
   changepointRecord.reserve(n + 1);
@@ -164,15 +157,7 @@ List flat2_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty
   const unsigned int n = inData.size();
 
   double penalty;
-  if (inPenalty.isNull())
-  {
-    penalty = 2 * std::log(n);
-  }
-  else
-  {
-    penalty = as<double>(inPenalty);
-  }
-
+  if (inPenalty.isNull()){penalty = 2 * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   std::vector<int> changepointRecord(n + 1);
   changepointRecord[0] = 0;

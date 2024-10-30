@@ -9,28 +9,32 @@ Cost_1D(S, a, b, model)
 \arguments{
 \item{S}{A cumulative sum statistic for the data.}
 
-\item{a}{An integer representing the end index of the previous segment}
+\item{a}{An integer representing the end index of the previous segment.}
 
 \item{b}{An integer representing the end index of the segment.}
 
 \item{model}{A character string specifying the model to be used. Supported models include
-`"gauss"`, `"poisson"`, `"exp"`, `"geom"`, `"bern"`, `"binom"`, `"negbin"`, and `"variance"`.}
+\code{"gauss"}, \code{"poisson"}, \code{"exp"}, \code{"geom"}, \code{"bern"}, \code{"binom"},
+\code{"negbin"}, and \code{"variance"}.}
 }
 \value{
 A numeric value representing the cost of the segment.
 }
 \description{
-This function computes the cost of a single segment of data, defined by indices `a` and `b`,
-using a model specified in the `model` parameter.
+This function computes the cost of a single segment of data, defined by indices \code{a} and \code{b},
+using a model specified in the \code{model} parameter.
 }
 \details{
 The function supports several models, including:
-- `"gauss"`: Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.
-- `"poisson"`: Poisson model
-- `"exp"`: Exponential model
-- `"geom"`: Geometric model
-- `"bern"`: Bernoulli model
-- `"binom"`: Binomial model
-- `"negbin"`: Negative Binomial model
-- `"variance"`: Variance-based cost model
+
+\itemize{
+  \item{\code{"gauss"}}: {Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.}
+  \item{\code{"poisson"}}: {Poisson model.}
+  \item{\code{"exp"}}: {Exponential model.}
+  \item{\code{"geom"}}: {Geometric model.}
+  \item{\code{"bern"}}: {Bernoulli model.}
+  \item{\code{"binom"}}: {Binomial model.}
+  \item{\code{"negbin"}}: {Negative Binomial model.}
+  \item{\code{"variance"}}: {Variance-based cost model.}
+}
 }

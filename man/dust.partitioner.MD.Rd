@@ -7,6 +7,8 @@
 dust.partitioner.MD(
   model = "gauss",
   method = "fastest",
+  nb_l = NULL,
+  nb_r = NULL,
   alpha = 1e-09,
   nbLoops = 10
 )
@@ -32,12 +34,17 @@ dust.partitioner.MD(
 Here are the current available algorithms (\code{Eval4} is often the most efficient one)
 \itemize{
   \item \code{"Eval0"}: random evaluation of the dual (with uniform distribution)
-  \item \code{"Eval1"}: max value with closed formula (gauss model only), otherwise no pruning performed and we get the (slow) OP algorithm
-  \item \code{"Eval2"}: golden-section search.
-  \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
-  \item \code{"Eval4"}: auasi-Newton method with armijo condition
-  \item \code{"Eval5"}: PELT rule
+  \item \code{"Eval1"}:
+  \item \code{"Eval2"}:
+  \item \code{"Eval3"}:
+  \item \code{"Eval4"}:
+  \item \code{"Eval5"}:
+  \item \code{"Eval6"}:
 }}
+
+\item{nb_l}{number of left constraints}
+
+\item{nb_r}{number of right constraints}
 
 \item{alpha}{controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.
 the lower the value of alpha, the larger this vector, meaning a selection of indices closer to "true" randomness.}

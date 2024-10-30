@@ -19,7 +19,6 @@ class DUST_MD
 
   ////////////////////////////////
   ////////////////////////////////
-  ////////////////////////////////
 
 public:
   DUST_MD(int dual_max,
@@ -31,7 +30,10 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>(), Nullable<unsigned int> inNbMax = Nullable<unsigned int>());
+  void init(const arma::dmat& inData,
+            Nullable<double> inPenalty = Nullable<double>(),
+            Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
+            Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   // --- // Main computation // --- //
   void compute(const arma::dmat& inData);
@@ -42,7 +44,10 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(const arma::dmat& inData, Nullable<double> inPenalty = Nullable<double>(), Nullable<unsigned int> inNbMax = Nullable<unsigned int>());
+  List quick(const arma::dmat& inData,
+             Nullable<double> inPenalty = Nullable<double>(),
+             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
+             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   ////////////////////////////////
   ////////////////////////////////
@@ -51,7 +56,9 @@ public:
 protected:
   unsigned int n; // number of observations
   unsigned int d;
-  unsigned int nb_max;
+  unsigned int nb_max; // = nb_l + nb_r
+  unsigned int nb_l; // number of constraints before the current index to prune
+  unsigned int nb_r; // number of constraints after the current index to prune
 
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
   const double m1 = 0.01;  // Armijo
@@ -84,8 +91,9 @@ private:
   // --- // Test and Indices init // --- //
   void init_method();
 
+  ////////////////////////////////////
   // --- // MAX DUAL METHODS // --- //
-  // --- //   // --- //   // --- //   // --- //
+  ////////////////////////////////////
   // 0: random eval
   // 1: exact eval (if possible, otherwise, -inf (OP))
   // 2:
@@ -93,15 +101,15 @@ private:
   // 4: Quasi-Newton
   // 5: PELT
   // 6: OP
-  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
-  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
+  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
 
-  bool (DUST_MD::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r);
+  bool (DUST_MD::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r, std::vector<unsigned int> r2);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();

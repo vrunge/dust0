@@ -46,6 +46,7 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
   if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
   if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
   if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
+  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   return new DUST_meanVar(dual_max, constraint_indices, alpha, nbLoops);
 }
@@ -125,6 +126,7 @@ DUST_reg *newModuleReg(const std::string& method,
   if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
   if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
   if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
+  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   return new DUST_reg(dual_max, constraint_indices, alpha, nbLoops);
 }

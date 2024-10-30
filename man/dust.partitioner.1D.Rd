@@ -26,8 +26,8 @@ dust.partitioner.1D(
 
 \item{method}{A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{fastest}, which automatically selects the quickest method for the chosen model. Other available methods are:
 \itemize{
-  \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval5"}: Random index-based methods with different dual maximization algorithm (0 through 5).
-  \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval5"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 5).
+  \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval6"}: Random index-based methods with different dual maximization algorithm (0 through 5).
+  \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval6"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 5).
 }
 Here are the current available algorithms (\code{Eval4} is often the most efficient one)
 \itemize{
@@ -37,6 +37,7 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval3"}: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
   \item \code{"Eval4"}: quasi-Newton method with armijo condition
   \item \code{"Eval5"}: PELT rule
+  \item \code{"Eval6"}: OP rule
 }}
 
 \item{alpha}{controls the randomness of the random methods. for computational efficiency purposes, a vector of random values is generated upon initializing the partitioner object.

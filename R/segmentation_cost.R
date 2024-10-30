@@ -1,28 +1,33 @@
 
 #' Compute the Total Segmentation Cost in One Dimension with Various Models
 #'
-#' This function calculates the total segmentation cost for one-dimensional data using various models such as Gaussian, Poisson, Exponential, and others.
-#' It computes the segmentation cost for each segment defined by change-points (`chpts`) and sums these costs to provide a total segmentation cost.
+#' This function calculates the total segmentation cost for one-dimensional data using various models, such as Gaussian, Poisson, Exponential, and others.
+#' It computes the segmentation cost for each segment defined by change-points (\code{chpts}) and sums these costs to provide a total segmentation cost.
 #'
 #' @param data A numeric vector representing the one-dimensional data to be segmented.
-#' @param chpts A numeric vector of change-points. These indices represent the locations where the data is segmented. The vector should contain indices before any adjustments.
-#' @param model A character string specifying the cost model to be used. Supported models include `"gauss"`, `"poisson"`, `"exp"`, `"geom"`, `"bern"`, `"binom"`, `"negbin"`, and `"variance"`. The default model is `"gauss"`.
+#' @param chpts A numeric vector of change-points. These indices represent the locations where the data is segmented.
+#'        The vector should contain indices before any adjustments.
+#' @param model A character string specifying the cost model to be used. Supported models include \code{"gauss"},
+#'        \code{"poisson"}, \code{"exp"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"},
+#'        and \code{"variance"}. The default model is \code{"gauss"}.
 #'
 #' @return A numeric value representing the total segmentation cost.
 #'
 #' @details
 #' For each segment defined by two consecutive change-points, the function applies \code{\link{Cost_1D}}, which calculates the cost of the segment based on the provided model. Supported models include:
 #'
-#' - `"gauss"`: Gaussian model, computes the negative log-likelihood under the Gaussian distribution.
-#' - `"poisson"`: Poisson model.
-#' - `"exp"`: Exponential model.
-#' - `"geom"`: Geometric model.
-#' - `"bern"`: Bernoulli model.
-#' - `"binom"`: Binomial model.
-#' - `"negbin"`: Negative Binomial model.
-#' - `"variance"`: Variance-based cost model.
+#' \itemize{
+#'   \item{\code{"gauss"}}: {Gaussian model, computes the negative log-likelihood under the Gaussian distribution.}
+#'   \item{\code{"poisson"}}: {Poisson model.}
+#'   \item{\code{"exp"}}: {Exponential model.}
+#'   \item{\code{"geom"}}: {Geometric model.}
+#'   \item{\code{"bern"}}: {Bernoulli model.}
+#'   \item{\code{"binom"}}: {Binomial model.}
+#'   \item{\code{"negbin"}}: {Negative Binomial model.}
+#'   \item{\code{"variance"}}: {Variance-based cost model.}
+#' }
 #'
-#' If the model is `"gauss"`, the function adds an additional term `sum(data^2)/2` to the total cost to ensure that the cost is zero when the data is perfectly segmented with no noise.
+#' If the model is \code{"gauss"}, the function adds an additional term \code{sum(data^2)/2} to the total cost to ensure that the cost is zero when the data is perfectly segmented with no noise.
 #'
 #' @examples
 #' data <- rnorm(100)  # Generate some random Gaussian data
@@ -58,27 +63,31 @@ segmentation_Cost_1D <- function(data, chpts, model = "gauss")
 
 #' Compute the Cost for a Single Segment Based on a Specified Model
 #'
-#' This function computes the cost of a single segment of data, defined by indices `a` and `b`,
-#' using a model specified in the `model` parameter.
+#' This function computes the cost of a single segment of data, defined by indices \code{a} and \code{b},
+#' using a model specified in the \code{model} parameter.
 #'
 #' @param S A cumulative sum statistic for the data.
-#' @param a An integer representing the end index of the previous segment
+#' @param a An integer representing the end index of the previous segment.
 #' @param b An integer representing the end index of the segment.
 #' @param model A character string specifying the model to be used. Supported models include
-#' `"gauss"`, `"poisson"`, `"exp"`, `"geom"`, `"bern"`, `"binom"`, `"negbin"`, and `"variance"`.
+#'        \code{"gauss"}, \code{"poisson"}, \code{"exp"}, \code{"geom"}, \code{"bern"}, \code{"binom"},
+#'        \code{"negbin"}, and \code{"variance"}.
 #'
 #' @return A numeric value representing the cost of the segment.
 #'
 #' @details
 #' The function supports several models, including:
-#' - `"gauss"`: Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.
-#' - `"poisson"`: Poisson model
-#' - `"exp"`: Exponential model
-#' - `"geom"`: Geometric model
-#' - `"bern"`: Bernoulli model
-#' - `"binom"`: Binomial model
-#' - `"negbin"`: Negative Binomial model
-#' - `"variance"`: Variance-based cost model
+#'
+#' \itemize{
+#'   \item{\code{"gauss"}}: {Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.}
+#'   \item{\code{"poisson"}}: {Poisson model.}
+#'   \item{\code{"exp"}}: {Exponential model.}
+#'   \item{\code{"geom"}}: {Geometric model.}
+#'   \item{\code{"bern"}}: {Bernoulli model.}
+#'   \item{\code{"binom"}}: {Binomial model.}
+#'   \item{\code{"negbin"}}: {Negative Binomial model.}
+#'   \item{\code{"variance"}}: {Variance-based cost model.}
+#' }
 #'
 #' @export
 Cost_1D <- function(S, a, b, model)
