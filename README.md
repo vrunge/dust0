@@ -4,7 +4,7 @@
 
 ### Vincent Runge and Simon Querné
 
-#### LaMME, Evry University, August 31, 2024
+#### LaMME, Evry University, October 31, 2024
 
 <center>
 <img src="man/figures/dust.png" alt="" style="width:30%;"/>
@@ -48,19 +48,22 @@ some optimization problems under inequality constraints and its dual for
 discarding indices in the search for the last change-point index.
 
 Data are modeled by a cost derived from the **exponential family**
-(Gauss, Poisson, Exponential…). We provide a polymorphic structure in
-Rcpp **allowing any User to easily add a new cost** of their own choice.
-The steps to follow are described in details [in this Section](#rcpp).
-The User only have to provide few Rcpp functions: the minimal cost
-function, the dual function and its derivative. In addition we need some
-information on the domain of the dual.
+(Gauss, Poisson, Exponential…).
 
-Various tests and simulations are provided in this **readme file** and
-in the **simulations folder** and show that the dust dual approach is
-**highly efficient in all regimes** (many or few changes) with improved
-time efficient comparing to PELT and FPOP. Furthermore, unlike these 2
-methods, the DUST method is capable of reducing time for multivariate
-cost functions (See Section [pruning](#pruning)).
+We provide a polymorphic structure in Rcpp that enables users **to
+easily add custom cost functions of their choice**. Detailed
+instructions are available [in this Section](#rcpp), and users only need
+to define a few Rcpp functions: the minimal cost function, the dual
+function, and its derivative, along with some domain information for the
+dual.
+
+Various tests and simulations are included in this **README file** and
+the **simulations folder**, demonstrating that the DUST dual approach is
+**highly efficient across all regimes** (whether detecting few or many
+changes) and shows improved computational efficiency compared to PELT
+and FPOP. Additionally, unlike these methods, DUST can also reduce
+computation time for multivariate cost functions (See Section
+[pruning](#pruning)).
 
 ### Installing the dust Rcpp package
 
@@ -286,7 +289,7 @@ following a simple linear regression link (`y = Ax + B + noise`) with
 
 ## dust 1D and MD Algorithms
 
-One simple example with the `exp` model:
+We start with one simple example with the `exp` model:
 
     data <- dataGenerator_1D(chpts = c(5*1e5,1e6), parameters = c(2,1), type = "exp")
     system.time(res <- dust.1D(data = data, model = "exp"))[[1]]
@@ -296,6 +299,9 @@ One simple example with the `exp` model:
     res$changepoints
 
     ## [1]  500010 1000000
+
+A fundamental information relies in the number of indices to consider at
+each data step. It is saved into the field `nb`.
 
 [(Back to Top)](#top)
 

@@ -17,7 +17,7 @@ double Binom_MD::Cost(const unsigned int& t, const unsigned int& s) const
   {
     diff = cumsum(row, t) - cumsum(row, s);
     ratio = diff * inv_delta;
-    if (ratio == 0 || ratio == 1)
+    if (ratio <= 0 || ratio >= 1)
       continue;
     res +=  ratio * std::log(ratio) + (1. - ratio) * std::log(1. - ratio);
   }

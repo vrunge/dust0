@@ -15,6 +15,7 @@ double Exp_MD::Cost(const unsigned int& t, const unsigned int& s) const
   for (unsigned int row = 0; row < d; row++)
   {
     diff = cumsum(row, t) - cumsum(row, s);
+    if(diff <= 0){diff = 1e-100;} /// choice  1e-100 to avoid -Inf
     res += (1.0 + std::log(diff * inv_delta));
   }
   return res * (t - s);

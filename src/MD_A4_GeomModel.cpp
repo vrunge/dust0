@@ -18,7 +18,7 @@ double Geom_MD::Cost(const unsigned int& t, const unsigned int& s) const
   {
     diff = cumsum(row, t) - cumsum(row, s);
     ratio = diff * inv_delta;
-    if (ratio == 1)
+    if (ratio <= 1)
       continue;
     res += delta * std::log(ratio - 1) - diff * std::log((ratio - 1) / ratio);
   }

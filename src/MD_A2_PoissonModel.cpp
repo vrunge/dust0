@@ -13,7 +13,7 @@ double Poisson_MD::Cost(const unsigned int& t, const unsigned int& s) const
   for (unsigned int row = 0; row < d; row++)
   {
     diff = cumsum(row, t) - cumsum(row, s);
-    if (diff == 0)
+    if (diff <= 0)
       continue;
     res += diff * (1. - std::log(diff * inv_delta));
   }
