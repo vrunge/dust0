@@ -676,7 +676,7 @@ void DUST_MD::init(const arma::dmat& inData,
 
   init_method();
 
-  indices->set_size(n);
+  indices->set_init_size(n);
   indices->add(0);
   indices->add(1);
 
@@ -759,7 +759,7 @@ void DUST_MD::compute(const arma::dmat& inData)
     indices->reset_prune();
 
     // DUST loop
-    while (indices->check_prune())
+    while (indices->check())
     {
       if ((this->*current_test)(minCost, t,
                                 *(indices->current),

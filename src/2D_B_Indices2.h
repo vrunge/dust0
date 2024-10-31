@@ -1,14 +1,16 @@
-#ifndef INDICES22C_H
-#define INDICES22C_H
+#ifndef INDICES2D2_H
+#define INDICES2D2_H
 
 #include <Rcpp.h>
 #include <forward_list>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
+
 using namespace Rcpp;
 
 class Indices_2D2
 {
 public:
+  Indices_2D2();
   virtual ~Indices_2D2();
 
   // --- // Methods // --- //
@@ -16,143 +18,112 @@ public:
   void next();
   bool check();
 
-  unsigned int get_current();
-  std::forward_list<unsigned int> get_list();
-  void remove_first();
+  void set_init_size(const unsigned int& size);
+  void add(const unsigned int& value);
 
-  virtual void add(unsigned int value) = 0;
+  std::vector<unsigned int> get_list();
+  void remove_last();
 
+  /////// --- // virtual Methods // --- ///////
   virtual void reset_prune() = 0;
   virtual void next_prune() = 0;
   virtual void prune_current() = 0;
-  virtual bool check_prune() = 0;
 
-  virtual void prune_last() = 0;
+  virtual unsigned int get_constraint_l() = 0;
+  virtual unsigned int get_constraint_r() = 0;
 
-  virtual void new_constraint() = 0;
-  virtual unsigned int get_constraint() = 0;
+  std::vector<unsigned int>::iterator current;
 
-
-  // --- // Fields // --- //
-  std::forward_list<unsigned int> list;
-  std::forward_list<unsigned int>::iterator current;
-  std::forward_list<unsigned int>::iterator before;
+protected:
+  std::vector<unsigned int> list;
 };
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
-class RandomIndices_2D2 : public Indices_2D2
+class DeterministicIndices_2D : public Indices_2D2
 {
-public:
-  RandomIndices_2D2(unsigned int size, double alpha = 1e-9);
-  // ~I_Random() override;
 
-  void add(unsigned int value) override;
+public:
+  DeterministicIndices_2D();
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
-  bool check_prune() override;
 
-  void prune_last() override;
-
-  void new_constraint() override;
-  unsigned int get_constraint() override;
-
-private:
-  unsigned int nb = 0;
-  unsigned int nbC = 0;
-
-  unsigned int* constraint;
-  std::vector<unsigned int*> pointers;
-  std::vector<unsigned int*>::reverse_iterator pointersCurrent;
-
-  std::vector<double> randomU;
-  std::vector<double>::iterator u;
-
+  unsigned int get_constraint_l() override;
+  unsigned int get_constraint_r() override;
 };
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
 class DeterministicIndices_2D2 : public Indices_2D2
 {
+
 public:
-  void add(unsigned int value) override;
+  DeterministicIndices_2D2();
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
-  bool check_prune() override;
 
-  void prune_last() override;
-
-  void new_constraint() override;
-  unsigned int get_constraint() override;
+  unsigned int get_constraint_l() override;
+  unsigned int get_constraint_r() override;
 
 private:
-  std::forward_list<unsigned int>::iterator constraint;
+  std::vector<unsigned int>::iterator begin_l;
+  std::vector<unsigned int>::iterator begin_r;
 };
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
-class Random2Indices_2D2 : public Indices_2D2
+class RandomIndices_2D : public Indices_2D2
 {
-public:
-  Random2Indices_2D2(unsigned int size, double alpha = 1e-9);
-  // ~I_Random() override;
 
-  void add(unsigned int value) override;
+public:
+  RandomIndices_2D();
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
-  bool check_prune() override;
 
-  void prune_last() override;
-
-  void new_constraint() override;
-  unsigned int get_constraint() override;
+  unsigned int get_constraint_l() override;
+  unsigned int get_constraint_r() override;
 
 private:
-  unsigned int nb = 0;
-  unsigned int nbC = 0;
-
-  unsigned int* constraint;
-  std::vector<unsigned int*> pointers;
-  std::vector<unsigned int*>::reverse_iterator pointersCurrent;
-
-  std::vector<double> randomU;
-  std::vector<double>::iterator u;
-
+  //////////// RANDOM NUMBER GENERATOR ////////////
+  std::minstd_rand0 rng;  // Random number engine
+  std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 };
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
 
-class Deterministic2Indices_2D2 : public Indices_2D2
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+class RandomIndices_2D2 : public Indices_2D2
 {
+
 public:
-  void add(unsigned int value) override;
+  RandomIndices_2D2();
 
   void reset_prune() override;
   void next_prune() override;
   void prune_current() override;
-  bool check_prune() override;
 
-  void prune_last() override;
-
-  void new_constraint() override;
-  unsigned int get_constraint() override;
+  unsigned int get_constraint_l() override;
+  unsigned int get_constraint_r() override;
 
 private:
-  std::forward_list<unsigned int>::iterator constraint;
+  //////////// RANDOM NUMBER GENERATOR ////////////
+  std::minstd_rand0 rng;  // Random number engine
+  std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 };
+
 
 #endif

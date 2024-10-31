@@ -1,28 +1,24 @@
-#ifndef DUST_meanVar_H
-#define DUST_meanVar_H
+#ifndef DUST_1D_K_H
+#define DUST_1D_K_H
 
 #include <Rcpp.h>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
 
-#include "2D_B_Indices2.h"
+#include "1D_B_Indices.h"
 
 using namespace Rcpp;
 
 
-class DUST_meanVar
+class DUST_1D_K
 {
 
-  ////////////////////////////////
-  ////////////////////////////////
-  ////////////////////////////////
-
 public:
-  DUST_meanVar(int dual_max,
-               int constraint_indices,
-               Nullable<double> alpha = Nullable<double>(),
-               Nullable<int> nbLoops = Nullable<int>());
+  DUST_1D_K(int dual_max,
+          bool random_constraint,
+          Nullable<double> alpha = Nullable<double>(),
+          Nullable<int> nbLoops = Nullable<int>());
 
-  ~DUST_meanVar();
+  virtual ~DUST_1D_K();
 
   // --- // Setup // --- //
   // fit is accessible by user
@@ -43,21 +39,24 @@ public:
   ////////////////////////////////
   ////////////////////////////////
 
-  private:
+protected:
   const double phi = (1 + sqrt(5)) / 2;  // Golden ratio
   const double m1 = 0.01;  // Armijo
-
   std::vector<double> cumsum;
-  std::vector<double> cumsum2;
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
 
-  double Cost(unsigned int t, unsigned int s) const;
-  double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const;
-  double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const;
+  virtual double Cost(unsigned int t, unsigned int s) const = 0;
+  virtual double statistic(double& data) const = 0;
 
-  double muMax(double a, double b, double a2, double b2) const;
+  virtual double dualEval(double point, double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
+  virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
 
+  virtual double muMax(double a, double b) const = 0;
+
+  virtual double Dstar(double x) const = 0;
+  virtual double DstarPrime(double x) const = 0;
+  virtual double DstarSecond(double x) const = 0;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 
@@ -68,11 +67,19 @@ public:
   ////////////////////////////////
   ////////////////////////////////
 
+private:
   // --- // Test and Indices init // --- //
   void init_method();
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
+  // 0: random eval
+  // 1: exact eval (if possible, otherwise, -inf (OP))
+  // 2: golden-section search
+  // 3: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
+  // 4: Quasi-Newton
+  // 5: PELT
+  // 6: OP
   bool dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r);
@@ -81,23 +88,24 @@ public:
   bool dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r);
   bool dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
-  bool (DUST_meanVar::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
+  bool (DUST_1D_K::*current_test)(double minCost, unsigned int t, unsigned int s, unsigned int r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();
 
   // --- // Private fields // --- //
   int dual_max;
-  int constraint_indices;
+  bool random_constraint;
   double alpha;
 
-  Indices_2D2* indices;
+  Indices_1D* indices;
   std::vector<int> nb_indices;
 
   unsigned int n; // number of observations
   double penalty;
 
   std::vector<int> changepointRecord;
+
 };
 
 #endif

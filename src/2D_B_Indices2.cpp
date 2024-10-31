@@ -1,8 +1,5 @@
-#include <Rcpp.h>
-#include <cmath>
-
 #include "2D_B_Indices2.h"
-
+#include <cmath>
 using namespace Rcpp;
 
 // --------------------------- //
@@ -11,299 +8,199 @@ using namespace Rcpp;
 // --- /////////////////// --- //
 // --------------------------- //
 
-Indices_2D2::~Indices_2D2() {}
 
-void Indices_2D2::reset(){current = list.begin();}
-void Indices_2D2::next(){++current;}
-bool Indices_2D2::check(){return current != list.end();}
+Indices_2D2::Indices_2D2(){}
 
-unsigned int Indices_2D2::get_current(){return *current;}
-std::forward_list<unsigned int> Indices_2D2::get_list(){return list;}
-void Indices_2D2::remove_first(){list.pop_front();}
+Indices_2D2::~Indices_2D2(){}
 
-// --------------------------- //
-// --- /////////////////// --- //
-// --- // Random Module // --- //
-// --- /////////////////// --- //
-// --------------------------- //
+void Indices_2D2::reset() { current = list.begin(); }
+void Indices_2D2::next() { ++current; }
+bool Indices_2D2::check() { return current != list.end(); }
 
-RandomIndices_2D2::RandomIndices_2D2(unsigned int size, double alpha)
+void Indices_2D2::set_init_size(const unsigned int& size) { list.reserve(size); }
+void Indices_2D2::add(const unsigned int& value){list.push_back(value);}
+
+std::vector<unsigned int> Indices_2D2::get_list() { return list; }
+void Indices_2D2::remove_last() { list.pop_back(); }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// ////  DeterministicIndices_2D  ////
+///// ///// ///// ///// ///// ///// /////
+
+DeterministicIndices_2D::DeterministicIndices_2D() : Indices_2D2() {}
+
+// full reset for pruning step
+void DeterministicIndices_2D::reset_prune()
 {
-
-  // length of the random vector
-  double k = std::max(2., ceil(pow(size, .2)));
-  int len = std::log(alpha) / std::log(1 - 1/k);
-
-  randomU = std::vector<double>(len, 0.);
-
-  // Random number engine
-  std::minstd_rand0  engine(std::random_device{}());
-  std::uniform_real_distribution<double> dist(0.0, 1.0);
-
-  for(int i = 0; i < len; ++i) {randomU[i] = dist(engine);}
-  u = randomU.begin();
-}
-
-void RandomIndices_2D2::add(unsigned int value)
-{
-  list.push_front(value);
-  pointers.push_back(&list.front());
-  nb++;
-}
-
-void RandomIndices_2D2::reset_prune()
-{
-  current = list.begin();
-  before = list.before_begin();
-  pointersCurrent = pointers.rbegin();
-
-  nbC = nb - 1;
-}
-
-void RandomIndices_2D2::next_prune()
-{
-  before = current;
-  ++current;
-  ++pointersCurrent;
-  new_constraint();
-}
-
-void RandomIndices_2D2::prune_current()
-{
-  current = list.erase_after(before);
-  pointersCurrent = std::vector<unsigned int*>::reverse_iterator(pointers.erase(std::next(pointersCurrent).base()));
-  nb--;
-  new_constraint();
-}
-
-// --- // If no constraint can be selected, exit loop // --- //
-bool RandomIndices_2D2::check_prune()
-{
-  return nbC > 0;
-}
-
-void RandomIndices_2D2::prune_last()
-{
-  list.erase_after(before);
-  pointers.erase(std::next(pointersCurrent).base());
-  nb--;
-}
-
-// --- // Select new constraint // --- //
-// Optimisation possible, car dans le cas random on sélectionne une nouvelle contrainte avant de vérifier qu'elle sera utilisée
-void RandomIndices_2D2::new_constraint()
-{
-  nbC--;
-}
-
-unsigned int RandomIndices_2D2::get_constraint()
-{
-  constraint = pointers[floor(nbC * (*u))];
-
-  ++u;
-  if (u == randomU.end())
+  // reset iterators
+  if (list.size() > 1)
   {
-    u = randomU.begin();
+    current = list.begin() + 1;
   }
-
-  return *constraint;
+  else current = list.begin();
 }
 
-
-// ---------------------------------- //
-// --- ////////////////////////// --- //
-// --- // Deterministic Module // --- //
-// --- ////////////////////////// --- //
-// ---------------------------------- //
-
-void DeterministicIndices_2D2::add(unsigned int value)
+////
+void DeterministicIndices_2D::next_prune()
 {
-  list.push_front(value);
+  ++current;
 }
 
+// remove current index and its pointer VERY TECHNIK for begin_r
+void DeterministicIndices_2D::prune_current()
+{
+  current = list.erase(current);
+}
+
+////////////////
+////////////////
+
+unsigned int DeterministicIndices_2D::get_constraint_l()
+{
+  return *--current;
+}
+
+unsigned int DeterministicIndices_2D::get_constraint_r()
+{
+  return *--current;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// //// DeterministicIndices_2D2  ////
+///// ///// ///// ///// ///// ///// /////
+
+DeterministicIndices_2D2::DeterministicIndices_2D2() : Indices_2D2() {}
+
+// full reset for pruning step
 void DeterministicIndices_2D2::reset_prune()
 {
-  before = list.before_begin();
-  current = std::next(before);
-  constraint = std::next(current);
+  // reset iterators
+  if (list.size() > 1)
+  {
+    current = list.begin() + 1;
+  }
+  else current = list.begin();
 }
 
+
+////
 void DeterministicIndices_2D2::next_prune()
 {
-  before = current;
-  current = constraint;
-  new_constraint();
+  ++current;
 }
 
+// remove current index and its pointer VERY TECHNIK for begin_r
 void DeterministicIndices_2D2::prune_current()
 {
-  current = list.erase_after(before);
-  new_constraint();
+  current = list.erase(current);
 }
 
-bool DeterministicIndices_2D2::check_prune()
+////////////////
+////////////////
+
+unsigned int DeterministicIndices_2D2::get_constraint_l()
 {
-  return constraint != list.end();
+  return *--current;
 }
 
-void DeterministicIndices_2D2::prune_last()
+unsigned int DeterministicIndices_2D2::get_constraint_r()
 {
-  list.erase_after(before);
-}
-
-void DeterministicIndices_2D2::new_constraint()
-{
-  ++constraint;
-}
-
-unsigned int DeterministicIndices_2D2::get_constraint()
-{
-  return *constraint;
+  return list.back();
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// ///// RandomIndices_2D ///// /////
+///// ///// ///// ///// ///// ///// /////
 
-// --------------------------- //
-// --- /////////////////// --- //
-// --- // Random Module // --- //
-// --- /////////////////// --- //
-// --------------------------- //
+RandomIndices_2D::RandomIndices_2D() : Indices_2D2() {}
 
-Random2Indices_2D2::Random2Indices_2D2(unsigned int size, double alpha)
+// full reset for pruning step,
+void RandomIndices_2D::reset_prune()
 {
-
-  // length of the random vector
-  double k = std::max(2., ceil(pow(size, .2)));
-  int len = std::log(alpha) / std::log(1 - 1/k);
-
-  randomU = std::vector<double>(len, 0.);
-
-  // Random number engine
-  std::minstd_rand0  engine(std::random_device{}());
-  std::uniform_real_distribution<double> dist(0.0, 1.0);
-
-  for(int i = 0; i < len; ++i) {randomU[i] = dist(engine);}
-  u = randomU.begin();
+  if (list.size() > 1){current = list.begin() + 1;}
+  else current = list.begin();
 }
 
-void Random2Indices_2D2::add(unsigned int value)
+// full next for pruning step
+void RandomIndices_2D::next_prune() { ++current; }
+
+// remove current index and its pointer
+void RandomIndices_2D::prune_current() { current = list.erase(current); }
+
+
+
+////////////////
+////////////////
+
+unsigned int RandomIndices_2D::get_constraint_l()
 {
-  list.push_front(value);
-  pointers.push_back(&list.front());
-  nb++;
-}
-
-void Random2Indices_2D2::reset_prune()
-{
-  current = list.begin();
-  before = list.before_begin();
-  pointersCurrent = pointers.rbegin();
-
-  nbC = nb - 1;
-}
-
-void Random2Indices_2D2::next_prune()
-{
-  before = current;
-  ++current;
-  ++pointersCurrent;
-  new_constraint();
-}
-
-void Random2Indices_2D2::prune_current()
-{
-  current = list.erase_after(before);
-  pointersCurrent = std::vector<unsigned int*>::reverse_iterator(pointers.erase(std::next(pointersCurrent).base()));
-  nb--;
-  new_constraint();
-}
-
-// --- // If no constraint can be selected, exit loop // --- //
-bool Random2Indices_2D2::check_prune()
-{
-  return nbC > 0;
-}
-
-void Random2Indices_2D2::prune_last()
-{
-  list.erase_after(before);
-  pointers.erase(std::next(pointersCurrent).base());
-  nb--;
-}
-
-// --- // Select new constraint // --- //
-// Optimisation possible, car dans le cas random on sélectionne une nouvelle contrainte avant de vérifier qu'elle sera utilisée
-void Random2Indices_2D2::new_constraint()
-{
-  nbC--;
-}
-
-unsigned int Random2Indices_2D2::get_constraint()
-{
-  constraint = pointers[floor(nbC * (*u))];
-
-  ++u;
-  if (u == randomU.end())
-  {
-    u = randomU.begin();
-  }
-
-  return *constraint;
+  unsigned int nbC_l = current - list.begin();
+  return list[std::floor(dist(rng) * nbC_l)];
 }
 
 
-// ---------------------------------- //
-// --- ////////////////////////// --- //
-// --- // Deterministic Module // --- //
-// --- ////////////////////////// --- //
-// ---------------------------------- //
-
-void Deterministic2Indices_2D2::add(unsigned int value)
+unsigned int RandomIndices_2D::get_constraint_r()
 {
-  list.push_front(value);
+  unsigned int nbC_l = current - list.begin();
+  return list[std::floor(dist(rng) * nbC_l)];
 }
 
-void Deterministic2Indices_2D2::reset_prune()
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+///// ///// ///// ///// ///// ///// /////
+///// ///// RandomIndices_2D2 ///// /////
+///// ///// ///// ///// ///// ///// /////
+
+RandomIndices_2D2::RandomIndices_2D2() : Indices_2D2() {}
+
+// full reset for pruning step,
+void RandomIndices_2D2::reset_prune()
 {
-  before = list.before_begin();
-  current = std::next(before);
-  constraint = std::next(current);
+  if (list.size() > 1){current = list.begin() + 1;}
+  else current = list.begin();
 }
 
-void Deterministic2Indices_2D2::next_prune()
+// full next for pruning step
+void RandomIndices_2D2::next_prune() { ++current; }
+
+// remove current index and its pointer
+void RandomIndices_2D2::prune_current() { current = list.erase(current); }
+
+
+////////////////
+////////////////
+
+unsigned int RandomIndices_2D2::get_constraint_l()
 {
-  before = current;
-  current = constraint;
-  new_constraint();
+  unsigned int nbC_l = current - list.begin();
+  return list[std::floor(dist(rng) * nbC_l)];
 }
 
-void Deterministic2Indices_2D2::prune_current()
+////////////////
+////////////////
+
+unsigned int RandomIndices_2D2::get_constraint_r()
 {
-  current = list.erase_after(before);
-  new_constraint();
+  unsigned int nbC_r = list.end() - current - 1;
+  return list[list.size() - std::ceil(dist(rng) * nbC_r)];
 }
 
-bool Deterministic2Indices_2D2::check_prune()
-{
-  return constraint != list.end();
-}
 
-void Deterministic2Indices_2D2::prune_last()
-{
-  list.erase_after(before);
-}
 
-void Deterministic2Indices_2D2::new_constraint()
-{
-  ++constraint;
-}
 
-unsigned int Deterministic2Indices_2D2::get_constraint()
-{
-  return *constraint;
-}

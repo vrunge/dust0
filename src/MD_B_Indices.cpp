@@ -17,15 +17,14 @@ Indices_MD::Indices_MD() : nb_l(1), nb_r(0), nb_max(1) {}
 Indices_MD::Indices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_) :
   nb_l(nb_l_), nb_r(nb_r_), nb_max(nb_l_ + nb_r_)  {}
 
-// Vérifier les fuites de mémoire
 Indices_MD::~Indices_MD() {}
 
 void Indices_MD::reset() { current = list.begin(); }
 void Indices_MD::next() { ++current; }
 bool Indices_MD::check() { return current != list.end(); }
 
+void Indices_MD::set_init_size(const unsigned int& size) { list.reserve(size); }
 void Indices_MD::add(const unsigned int& value){list.push_back(value);}
-void Indices_MD::set_size(const unsigned int& size) { list.reserve(size); }
 
 std::vector<unsigned int> Indices_MD::get_list() { return list; }
 void Indices_MD::remove_last() { list.pop_back(); }
@@ -41,7 +40,7 @@ DeterministicIndices_MD::DeterministicIndices_MD() : Indices_MD() {}
 DeterministicIndices_MD::DeterministicIndices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_) :
   Indices_MD(nb_l_, nb_r_)  { }
 
-// full reset for pruning step, including reinitialization of nb_max_ vector
+// full reset for pruning step
 void DeterministicIndices_MD::reset_prune()
 {
   // reset iterators
@@ -49,20 +48,21 @@ void DeterministicIndices_MD::reset_prune()
   {
     begin_l = list.begin();
     current = begin_l + 1;
-    if (list.size() - nb_r >= 2) begin_r = list.end() - nb_r;
+    if (list.size() >= nb_r + 2) begin_r = list.end() - nb_r;
     else begin_r = current + 1;
   }
   else current = list.begin();
 }
 
-// full next for pruning step
+////
 void DeterministicIndices_MD::next_prune()
 {
   ++current;
+  /// move begin_l if too many indices bwn begin_l and current
   if (current - begin_l > nb_l) ++begin_l;
 }
 
-// remove current index and its pointer
+// remove current index and its pointer VERY TECHNIK for begin_r
 void DeterministicIndices_MD::prune_current()
 {
   unsigned int gap_r = begin_r - current;
@@ -70,8 +70,8 @@ void DeterministicIndices_MD::prune_current()
   begin_r = current + gap_r - 1;
 }
 
-// break check for pruning step
-bool DeterministicIndices_MD::check_prune() { return current != list.end(); }
+////////////////
+////////////////
 
 std::vector<unsigned int> DeterministicIndices_MD::get_constraints_l()
 {
@@ -84,6 +84,9 @@ std::vector<unsigned int> DeterministicIndices_MD::get_constraints_r()
   return std::vector(begin_r, list.end());
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ///// ///// ///// ///// ///// ///// /////
 ///// ///// RandomIndices_MD ///// /////
@@ -96,14 +99,12 @@ RandomIndices_MD::RandomIndices_MD(const unsigned int& nb_l_, const unsigned int
   , dist(std::uniform_real_distribution(0., 1.))
 {}
 
-// full reset for pruning step, including reinitialization of nb_max_ vector
+
+
+// full reset for pruning step,
 void RandomIndices_MD::reset_prune()
 {
-  // reset iterators
-  if (list.size() > 1)
-  {
-    current = list.begin() + 1;
- }
+  if (list.size() > 1){current = list.begin() + 1;} /// FAIRE SLT  current = list.begin() + 1;
   else current = list.begin();
 }
 
@@ -113,8 +114,6 @@ void RandomIndices_MD::next_prune() { ++current; }
 // remove current index and its pointer
 void RandomIndices_MD::prune_current() { current = list.erase(current); }
 
-// break check for pruning step
-bool RandomIndices_MD::check_prune() { return current != list.end(); }
 
 
 ////////////////
@@ -143,5 +142,4 @@ std::vector<unsigned int> RandomIndices_MD::get_constraints_r()
   for (unsigned int i = 0; i < nb_r; i++)
     constraints.push_back(list[list.size() - std::ceil(dist(rng) * nbC_r)]);
   return constraints;
-
 }

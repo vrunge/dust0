@@ -35,10 +35,12 @@ void DUST_reg::init_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(constraint_indices == 10){indices = new RandomIndices_2D(n, alpha);}
+  if(constraint_indices == 10){indices = new RandomIndices_2D;}
+  if(constraint_indices == 20){indices = new RandomIndices_2D2;}
+
   if(constraint_indices == 11){indices = new DeterministicIndices_2D;}
-  if(constraint_indices == 20){indices = new Random2Indices_2D(n, alpha);}
-  if(constraint_indices == 21){indices = new Deterministic2Indices_2D;}
+  if(constraint_indices == 21){indices = new DeterministicIndices_2D2;}
+
 
   /// /// ///
   /// /// /// dual_max METHOD
@@ -219,7 +221,7 @@ void DUST_reg::compute()
     minCost = std::numeric_limits<double>::infinity();
     do
     {
-      s = indices->get_current();
+      s = *(indices->current);
       lastCost = costRecord[s] + Cost(t, s);
       if (lastCost < minCost)
       {
@@ -240,9 +242,9 @@ void DUST_reg::compute()
     indices->reset_prune();
 
     // DUST loop
-    while (indices->check_prune())
+    while (indices->check())
     {
-      if ((this->*current_test)(minCost, t, indices->get_current(), indices->get_constraint())) // prune as needs pruning
+      if ((this->*current_test)(minCost, t, *(indices->current), indices->get_constraint_l())) // prune as needs pruning
       {
         // remove the pruned index and its pointer
         // removing the elements increments the cursors i and pointersCurrent, while before stands still
@@ -296,7 +298,7 @@ std::forward_list<unsigned int> DUST_reg::backtrack_changepoints()
 List DUST_reg::get_partition()
 {
   costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
-  indices->remove_first(); ///// REMOVE FIRST ELEMENT /////
+  indices->remove_last(); ///// REMOVE FIRST ELEMENT /////
 
   std::forward_list<unsigned int> chpts = backtrack_changepoints();
 
