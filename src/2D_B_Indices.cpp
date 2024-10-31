@@ -13,36 +13,13 @@ using namespace Rcpp;
 
 Indices_2D::~Indices_2D() {}
 
-void Indices_2D::reset()
-{
-  current = list.begin();
-}
+void Indices_2D::reset(){current = list.begin();}
+void Indices_2D::next(){++current;}
+bool Indices_2D::check(){return current != list.end();}
 
-void Indices_2D::next()
-{
-  ++current;
-}
-
-void Indices_2D::remove_first()
-{
-  list.pop_front();
-}
-
-bool Indices_2D::check()
-{
-  return current != list.end();
-}
-
-unsigned int Indices_2D::get_current()
-{
-  return *current;
-}
-
-std::forward_list<unsigned int> Indices_2D::get_list()
-{
-  return list;
-}
-
+unsigned int Indices_2D::get_current(){return *current;}
+std::forward_list<unsigned int> Indices_2D::get_list(){return list;}
+void Indices_2D::remove_first(){list.pop_front();}
 
 // --------------------------- //
 // --- /////////////////// --- //

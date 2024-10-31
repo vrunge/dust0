@@ -12,6 +12,7 @@ double Exp_1D::Cost(unsigned int t, unsigned int s) const
 {
   double delta_t = t - s;
   double diff_cumsum = cumsum[t] - cumsum[s];
+  if(diff_cumsum <= 0){diff_cumsum = 1e-100;} /// choice  1e-100 to avoid -Inf
   return delta_t * (1.0 + std::log(diff_cumsum / delta_t));
 }
 

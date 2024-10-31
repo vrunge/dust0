@@ -72,22 +72,28 @@ and imported with:
 
 We generate some 1D time series of length `400` from the Gaussian model and one change in the middle of the sequence.
 
-`data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")`
+```{r, message=FALSE}
+library(dust)
+set.seed(2)
+data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")
+```
 
 We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"` (additional parameter `nbSuccess`) and `variance`. See next [Section](#Models).
 
-`dust.1D(data, penalty = 2*log(length(data)), model = "gauss")`
+```{r, message=FALSE}
+dust.1D(data, penalty = 2*log(length(data)), model = "gauss")
+```
+
 
 The result is a list whose elements are:
 
-- `changepoints `A vector of change points (the index ending each of the segments)
+- `changepoints `: A vector of change points (the index ending each of the segments)
 
-- `lastIndexSet`The list of non-pruned indices at the end of the analysis 
+- `lastIndexSet`: The list of non-pruned indices at the end of the analysis 
 
-- `nb` The number of indices to consider at each time step (its length is equal to data length) 
+- `nb`:  The number of indices to consider at each time step (its length is equal to data length) 
 
-- `costQ` The minimal cost of the optimization problem at each time step.
-
+- `costQ` The minimal (penalized) cost of the optimization problem at each time step.
 
 [(Back to Top)](#top)
 
@@ -150,8 +156,6 @@ Additional information and examples are easily accessible in the help of these f
 [(Back to Top)](#top)
 
 
-
-
 <center>
 <img src="man/figures/sep.png" alt="" style="width:100%;"/>
 </center>
@@ -160,23 +164,18 @@ Additional information and examples are easily accessible in the help of these f
 
 ## dust 1D and MD Algorithms
 
-One simple example with the `variance` model:
+One simple example with the `exp` model:
 
 ```{r, message=FALSE}
-library(dust)
-set.seed(2)
-data <- dataGenerator_1D(chpts = c(50,100), parameters = c(2,1), type = "variance")
-dust.1D(data = data, model = "variance")
+data <- dataGenerator_1D(chpts = c(5*1e5,1e6), parameters = c(2,1), type = "exp")
+system.time(res <- dust.1D(data = data, model = "exp"))[[1]]
+
+res$changepoints
 ```
 
 
-The dust.1D function has the following main arguments: 
 
-- `data`: the 1D time series to be segmented
 
-- `penalty`: the linear penalty value (often set to `2*sd(data)*log(n)`)
-
-- `model`: the data model to use: "gauss", "poisson", "exp", "geom", "bern", "binom", "negbin", "variance".
 
 
 [(Back to Top)](#top)

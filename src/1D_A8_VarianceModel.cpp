@@ -10,9 +10,10 @@ Variance_1D::Variance_1D(int dual_max, bool random_constraint, Nullable<double> 
 
 double Variance_1D::Cost(unsigned int t, unsigned int s) const
 {
-  double delta_t = t - s;
+  double delta_t = 1.0*(t - s);
   double diff_cumsum = cumsum[t] - cumsum[s];
-  return 0.5 * delta_t * (1.0 + std::log(diff_cumsum / delta_t));
+  if(diff_cumsum <= 0){diff_cumsum = 1e-100;} /// choice  1e-100 to avoid -Inf
+  return 0.5 * delta_t * (1.0 + std::log(std::abs(diff_cumsum / delta_t)));
 }
 
 double Variance_1D::statistic(double& data) const

@@ -72,7 +72,6 @@ List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty = R_NilValu
     minCost = std::numeric_limits<double>::infinity();
     for (unsigned int s = 0; s < t; s++)
     {
-      // Rcout << "t = " << t << "; s = " << s << std::endl;
       lastCost = costRecord[s] + CostGauss_MD(t, s, cumsum);
       if (lastCost < minCost)
       {

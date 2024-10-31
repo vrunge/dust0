@@ -2,11 +2,8 @@
 #define INDICES2C_H
 
 #include <Rcpp.h>
-
 #include <forward_list>
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
-
-
 using namespace Rcpp;
 
 class Indices_2D
@@ -15,12 +12,15 @@ public:
   virtual ~Indices_2D();
 
   // --- // Methods // --- //
-  virtual void add(unsigned int value) = 0;
-
   void reset();
   void next();
-  void remove_first();
   bool check();
+
+  unsigned int get_current();
+  std::forward_list<unsigned int> get_list();
+  void remove_first();
+
+  virtual void add(unsigned int value) = 0;
 
   virtual void reset_prune() = 0;
   virtual void next_prune() = 0;
@@ -29,10 +29,9 @@ public:
 
   virtual void prune_last() = 0;
 
-  unsigned int get_current();
   virtual void new_constraint() = 0;
   virtual unsigned int get_constraint() = 0;
-  std::forward_list<unsigned int> get_list();
+
 
   // --- // Fields // --- //
   std::forward_list<unsigned int> list;

@@ -12,7 +12,7 @@ double Negbin_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
-  if(m != 0)
+  if(m > 0)
   {res = double(t - s) * std::log(1 + m) - (cumsum[t] - cumsum[s]) * std::log(m / (1 + m));}
   return res;
 }

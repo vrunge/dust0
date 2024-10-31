@@ -8,7 +8,6 @@ using namespace Rcpp;
 
 class Indices_MD
 {
-
 public:
   Indices_MD();
   Indices_MD(const unsigned int& nb_l_, const unsigned int& nb_r_);

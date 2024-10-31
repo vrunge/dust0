@@ -12,7 +12,7 @@ double Geom_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
   double m = (cumsum[t] - cumsum[s])/(t - s);
-  if(m != 1)
+  if(m > 1)
   {res = (t - s) * std::log(m - 1) - (cumsum[t] - cumsum[s]) * std::log((m - 1) / m);}
   return res;
 }

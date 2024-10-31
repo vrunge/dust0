@@ -12,7 +12,7 @@ double Binom_1D::Cost(unsigned int t, unsigned int s) const
 {
   double res = 0;
   double m = (cumsum[t] - cumsum[s]) / (t - s);
-  if(m != 0 && m != 1)
+  if(m > 0 && m < 1)
   {res = - double(t - s) * (m * std::log(m) + (1 - m) *  std::log(1 - m));}
   return res;
 }
