@@ -13,14 +13,14 @@ test_that("constant data = no change",
           })
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(0, 100)
             res <- dust.1D(data, penalty = 1, model = "poisson")
             expect_equal(res$changepoints, 100)
           })
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(1, 100)
             res <- dust.1D(data, penalty = 1, model = "exp")
@@ -29,7 +29,7 @@ test_that("zero penalty => each index is a change",
 
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(1,100)
             res <- dust.1D(data, penalty = 1, model = "variance")
@@ -38,7 +38,7 @@ test_that("zero penalty => each index is a change",
 
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(1,100)
             res <- dust.1D(data, penalty = 1, model = "geom")
@@ -46,7 +46,7 @@ test_that("zero penalty => each index is a change",
           })
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(0,100)
             res <- dust.1D(data, penalty = 1, model = "bern")
@@ -54,7 +54,7 @@ test_that("zero penalty => each index is a change",
           })
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(0,100)
             res <- dust.1D(data, penalty = 1, model = "binom")
@@ -62,7 +62,7 @@ test_that("zero penalty => each index is a change",
           })
 
 
-test_that("zero penalty => each index is a change",
+test_that("constant data = no change",
           {
             data <- rep(0,100)
             res <- dust.1D(data, penalty = 1, model = "negbin")
