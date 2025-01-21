@@ -40,7 +40,7 @@ void DUST_1D::pruning_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint){indices = new RandomIndices_1D(n);}
+  if(random_constraint){indices = new RandomIndices_1D();}
   else{indices = new DeterministicIndices_1D;}
 
   /// /// ///

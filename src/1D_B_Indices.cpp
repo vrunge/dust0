@@ -31,21 +31,9 @@ void Indices_1D::remove_first(){list.pop_front();}
 // --- /////////////////// --- //
 // --------------------------- //
 
-RandomIndices_1D::RandomIndices_1D(unsigned int size, double alpha)
-{
-  // length of the random vector
-  double k = std::max(2., ceil(pow(size, .2)));
-  int len = std::log(alpha) / std::log(1 - 1/k);
-
-  randomU = std::vector<double>(len, 0.);
-
-  // Random number engine
-  std::minstd_rand0  engine(std::random_device{}());
-  std::uniform_real_distribution<double> dist(0.0, 1.0);
-
-  for(int i = 0; i < len; ++i) {randomU[i] = dist(engine);}
-  u = randomU.begin();
-}
+RandomIndices_1D::RandomIndices_1D() :
+  engine(std::random_device{}()), dist(0.0, 1.0)
+{}
 
 /////////////////////
 
@@ -105,10 +93,7 @@ void RandomIndices_1D::new_constraint()
 
 unsigned int RandomIndices_1D::get_constraint()
 {
-  constraint = pointers[floor(nbC * (*u))];
-  ++u;
-  if (u == randomU.end()){u = randomU.begin();}
-  return *constraint;
+  return *pointers[floor(nbC * dist(engine))];
 }
 
 

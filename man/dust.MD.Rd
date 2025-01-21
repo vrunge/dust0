@@ -11,7 +11,6 @@ dust.MD(
   constraints_r = 0,
   model = "gauss",
   method = "fastest",
-  alpha = 1e-09,
   nbLoops = 10
 )
 }
@@ -42,9 +41,9 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval6"}:
 }}
 
-\item{alpha}{A numeric value. For randomness level. Default is \code{1e-9}.}
-
 \item{nbLoops}{An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.}
+
+\item{alpha}{A numeric value. For randomness level. Default is \code{1e-9}.}
 }
 \value{
 A list containing the information computed by the DUST algorithm.

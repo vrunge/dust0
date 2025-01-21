@@ -61,7 +61,7 @@ the lower the value of alpha, the larger this vector, meaning a selection of ind
 \value{
 a DUST partitioner object that provides methods:
 \itemize{
-  \item \\code{fit}, for fitting the data;
+  \item \code{fit}, for fitting the data;
   \item \code{compute}, once fit has been called, for computing the optimal partition of the data;
   \item \code{get_partition}, for retrieving the optimal partition once it has been computed; and
   \item \code{quick}, a wrapper for the 3 methods.

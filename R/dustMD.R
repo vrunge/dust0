@@ -24,7 +24,6 @@
 #'   \item \code{"Eval5"}:
 #'   \item \code{"Eval6"}:
 #' }
-#' @param alpha A numeric value. For randomness level. Default is \code{1e-9}.
 #' @param nbLoops An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.
 #'
 #' @return A list containing the information computed by the DUST algorithm.
