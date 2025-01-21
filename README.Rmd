@@ -48,7 +48,7 @@ The `dust` package contains methods **for detecting multiple change-points withi
 
 We called this method the **DUST** pruning rule, standing for **Du**ality **S**imple **T**est. This method is based on considering some optimization problems under inequality constraints and its dual for discarding indices in the search for the last change-point index.
 
-Data are modeled by a cost derived from the **exponential family** (Gauss, Poisson, Exponential...). 
+We propose change-point detection algorithms working with different models derived from the **exponential family** (Gauss, Poisson, Exponential...). 
 
 We provide a polymorphic structure in Rcpp that enables users **to easily add custom cost functions of their choice**. Detailed instructions are available [in this Section](#rcpp), and users only need to define a few Rcpp functions: the minimal cost function, the dual function, and its derivative, along with some domain information for the dual.
 
@@ -87,9 +87,12 @@ data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")
 We segment data using the dust 1D method coded in Rcpp. We give data, the penalty value and the type of cost to be used. It can be one of the following: `"gauss"` (additional parameters `sdNoise` and `gamma`), `"exp"`, `"poisson"`, `"geom"`, `"bern"`, `"binom"` (additional parameter `nbTrials`), `"negbin"` (additional parameter `nbSuccess`) and `variance`. See next [Section](#Models).
 
 ```{r, message=FALSE}
-dust.1D(data, penalty = 2*log(length(data)), model = "gauss")
+dust.1D(data)
 ```
 
+Here the penalty value is by default set to `2 log(n)` for `n` data points and the model to `gauss`. That is, we did
+`dust.1D(data,  penalty = 2*log(length(data)), model = "gauss")`
+ 
 
 The result is a list whose elements are:
 
@@ -100,6 +103,9 @@ The result is a list whose elements are:
 - `nb`:  The number of indices to consider at each time step (its length is equal to data length) 
 
 - `costQ` The minimal (penalized) cost of the optimization problem at each time step.
+
+Vector `nb` is a kind of complexity control vector, its values are directly related to the algorithm's time complexity.
+
 
 [(Back to Top)](#top)
 
