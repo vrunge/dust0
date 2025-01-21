@@ -26,6 +26,7 @@ bool Indices_MD::check() { return current != list.end(); }
 void Indices_MD::set_init_size(const unsigned int& size) { list.reserve(size); }
 void Indices_MD::add(const unsigned int& value){list.push_back(value);}
 
+unsigned int Indices_MD::get_first() { return list.back(); }
 std::vector<unsigned int> Indices_MD::get_list() { return list; }
 void Indices_MD::remove_last() { list.pop_back(); }
 
@@ -51,7 +52,7 @@ void DeterministicIndices_MD::reset_prune()
     if (list.size() >= nb_r + 2) begin_r = list.end() - nb_r;
     else begin_r = current + 1;
   }
-  else current = list.begin();
+  else current = list.end();
 }
 
 ////
@@ -143,3 +144,73 @@ std::vector<unsigned int> RandomIndices_MD::get_constraints_r()
     constraints.push_back(list[list.size() - std::ceil(dist(rng) * nbC_r)]);
   return constraints;
 }
+
+//[[Rcpp::export]]
+void test_indices()
+{
+  // // Initialize deterministic indices
+  // DeterministicIndices_MD detIndices(2, 3);
+  // detIndices.set_init_size(10);
+  //
+  // // Add values to the list
+  // for (unsigned int i = 0; i < 1; ++i)
+  // {
+  //   detIndices.add(i + 1);
+  // }
+  //
+  // // Test DeterministicIndices_MD
+  // std::cout << "Testing DeterministicIndices_MD\n";
+  // detIndices.reset_prune();
+  // while (detIndices.check())
+  // {
+  //   std::cout << "Current: " << *detIndices.current << "\n";
+  //
+  //   std::vector<unsigned int> constraints_l = detIndices.get_constraints_l();
+  //   std::vector<unsigned int> constraints_r = detIndices.get_constraints_r();
+  //
+  //   // std::cout << "Constraints L: ";
+  //   // for (const auto& val : constraints_l) std::cout << val << " ";
+  //   // std::cout << "\n";
+  //   //
+  //   // std::cout << "Constraints R: ";
+  //   // for (const auto& val : constraints_r) std::cout << val << " ";
+  //   // std::cout << "\n";
+  //   //
+  //   // detIndices.next_prune();
+  // }
+
+  // Initialize random indices
+  RandomIndices_MD randIndices(2, 3);
+  randIndices.set_init_size(10);
+
+  // Add values to the list
+  for (unsigned int i = 0; i < 1; ++i)
+  {
+    randIndices.add(i + 1);
+  }
+
+  // Test RandomIndices_MD
+  std::cout << "\nTesting RandomIndices_MD\n";
+  randIndices.reset_prune();
+  while (randIndices.check())
+  {
+    std::cout << "Current: " << *randIndices.current << "\n";
+
+    std::vector<unsigned int> constraints_l = randIndices.get_constraints_l();
+    std::vector<unsigned int> constraints_r = randIndices.get_constraints_r();
+
+    std::cout << "Constraints L: ";
+    for (const auto& val : constraints_l) std::cout << val << " ";
+    std::cout << "\n";
+
+    std::cout << "Constraints R: ";
+    for (const auto& val : constraints_r) std::cout << val << " ";
+    std::cout << "\n";
+
+    randIndices.next_prune();
+  }
+
+  std::vector<unsigned> test = { 0 };
+  std::vector<unsigned> test2(test.begin() + 1, test.end());
+}
+

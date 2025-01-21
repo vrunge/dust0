@@ -21,6 +21,7 @@ public:
   void set_init_size(const unsigned int& size);
   void add(const unsigned int& value);
 
+  unsigned int get_first();
   std::vector<unsigned int> get_list();
   void remove_last();
 
