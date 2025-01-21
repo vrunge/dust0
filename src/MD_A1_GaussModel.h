@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 class Gauss_MD : public DUST_MD {
 public:
-  Gauss_MD(int dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
+  Gauss_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(const unsigned int& t, const unsigned int& s) const override;
   double statistic(const double& value) const override;

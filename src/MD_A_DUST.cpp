@@ -7,12 +7,11 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
   : dual_max(dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
 {
-  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
   if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
 
@@ -653,7 +652,7 @@ bool DUST_MD::dualMaxAlgo6(const double& minCost, const unsigned int& t,
 
 
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
-void DUST_MD::init(const arma::dmat& inData,
+void DUST_MD::prepare(const arma::dmat& inData,
                     Nullable<double> inPenalty,
                     Nullable<unsigned int> inNbL,
                     Nullable<unsigned int> inNbR)
@@ -836,12 +835,12 @@ List DUST_MD::get_partition()
 
 // --- // Wrapper method for quickly computing               // --- //
 // --- // and retrieving the optimal partition of input data // --- //
-List DUST_MD::quick(const arma::dmat& inData,
+List DUST_MD::one_dust(const arma::dmat& inData,
                      Nullable<double> inPenalty,
                      Nullable<unsigned int> inNbL,
                      Nullable<unsigned int> inNbR)
 {
-  init(inData, inPenalty, inNbL, inNbR);
+  prepare(inData, inPenalty, inNbL, inNbR);
   compute(inData);
   return get_partition();
 }

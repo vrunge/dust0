@@ -17,14 +17,13 @@ class DUST_MD
 public:
   DUST_MD(int dual_max,
           bool random_constraint,
-          Nullable<double> alpha = Nullable<double>(),
           Nullable<int> nbLoops = Nullable<int>());
 
   virtual ~DUST_MD();
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(const arma::dmat& inData,
+  void prepare(const arma::dmat& inData,
             Nullable<double> inPenalty = Nullable<double>(),
             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
@@ -37,8 +36,8 @@ public:
   List get_partition();
 
   // --- // Wrapper method for quick use of the class // --- //
-  // quick is accessible by user
-  List quick(const arma::dmat& inData,
+  // one_dust is accessible by user
+  List one_dust(const arma::dmat& inData,
              Nullable<double> inPenalty = Nullable<double>(),
              Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
              Nullable<unsigned int> inNbR = Nullable<unsigned int>());
@@ -112,7 +111,6 @@ private:
   // --- // Private fields // --- //
   int dual_max;
   bool random_constraint;
-  double alpha;
 
   Indices_MD* indices;
   std::vector<int> nb_indices;

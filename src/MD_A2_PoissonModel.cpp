@@ -2,8 +2,8 @@
 
 using namespace Rcpp;
 
-Poisson_MD::Poisson_MD(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_MD(dual_max, random_constraint, alpha, nbLoops) {}
+Poisson_MD::Poisson_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+  : DUST_MD(dual_max, random_constraint, nbLoops) {}
 
 double Poisson_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
