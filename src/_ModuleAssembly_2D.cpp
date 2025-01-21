@@ -13,7 +13,6 @@ using namespace std;
 // ---------------------------- //
 
 DUST_meanVar *newModuleMeanVar(const std::string& method,
-                               Nullable<double> alpha,
                                Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
@@ -48,7 +47,7 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
   if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
   if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
-  return new DUST_meanVar(dual_max, constraint_indices, alpha, nbLoops);
+  return new DUST_meanVar(dual_max, constraint_indices, nbLoops);
 }
 
 
@@ -71,7 +70,7 @@ RCPP_MODULE(DUSTMODULEMeanVar)
 {
   class_<DUST_meanVar>("DUST_meanVar")
 
-  .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleMeanVar)
+  .factory<const std::string&, Nullable<int>>(newModuleMeanVar)
 
   .method("init_raw", &DUST_meanVar::init)
   .method("compute", &DUST_meanVar::compute)
@@ -93,7 +92,6 @@ RCPP_MODULE(DUSTMODULEMeanVar)
 
 
 DUST_reg *newModuleReg(const std::string& method,
-                       Nullable<double> alpha,
                        Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
@@ -128,7 +126,7 @@ DUST_reg *newModuleReg(const std::string& method,
   if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
   if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
-  return new DUST_reg(dual_max, constraint_indices, alpha, nbLoops);
+  return new DUST_reg(dual_max, constraint_indices, nbLoops);
 }
 
 
@@ -151,7 +149,7 @@ RCPP_MODULE(DUSTMODULEreg)
 {
   class_<DUST_reg>("DUST_reg")
 
-  .factory<const std::string&, Nullable<double>, Nullable<int>>(newModuleReg)
+  .factory<const std::string&, Nullable<int>>(newModuleReg)
 
   .method("init_raw", &DUST_reg::init)
   .method("compute", &DUST_reg::compute)

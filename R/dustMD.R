@@ -9,7 +9,7 @@
 #' @param constraints_l An integer. The number of left constraints to be considered in the DUST pruning test.
 #' @param constraints_r An integer. The number of right constraints to be considered in the DUST pruning test.
 #' @param model A character string. Specifies the model used for change point detection. Default is \code{"gauss"}. Possible values could include \code{"gauss"}, \code{"poisson"}, \code{"exp"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}, \code{"variance"}.
-#' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{"fastest"}, which automatically selects the quickest method for the chosen model. Other available methods are:
+#' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{"detIndex_Eval4"}, which is the fastest method for the chosen model. Other available methods are:
 #' \itemize{
 #'   \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval6"}: Random index-based methods with different dual maximization algorithm (0 through 6).
 #'   \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval6"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 6).
@@ -48,7 +48,7 @@ dust.MD <- function(
     , constraints_l = nrow(data)
     , constraints_r = 0
     , model = "gauss"
-    , method = "fastest"
+    , method = "detIndex_Eval4"
     , nbLoops = 10
 )
 {

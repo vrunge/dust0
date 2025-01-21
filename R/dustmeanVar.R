@@ -12,7 +12,7 @@ dust.meanVar <- function(
     , nbLoops = 10
 )
 {
-  partitioner <- new(DUST_meanVar, "", alpha, nbLoops)
+  partitioner <- new(DUST_meanVar, "", nbLoops)
   return(partitioner$quick_raw(data, penalty))
 }
 

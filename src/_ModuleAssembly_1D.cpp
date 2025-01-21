@@ -40,12 +40,11 @@ DUST_1D *newModule1D(const std::string& model,
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
   ///////////////////  DEFAULT CHOICE  = best choice ///////////////////
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
-  /// FASTEST CHOICE
-  /// FASTEST CHOICE
+  /// DEFAULT FASTEST CHOICE
+  /// DEFAULT FASTEST CHOICE
   int dual_max = 4; /// quasi newton
   bool random_constraint = false; /// deterministic choice for constraint
   if(model == "gauss"){dual_max = 1;} /// exact max eval
-
 
   if (indices_max[0] == "randIndex"){random_constraint = true;}
   else if (indices_max[0] == "detIndex"){random_constraint = false;}

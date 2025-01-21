@@ -217,16 +217,13 @@ std::forward_list<unsigned int> DUST_1D::backtrack_changepoints()
 // --- // Retrieves optimal partition // --- //
 List DUST_1D::get_partition()
 {
-  // costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
-  // indices->remove_first(); ///// REMOVE FIRST ELEMENT /////
-
   std::forward_list<unsigned int> chpts = backtrack_changepoints();
 
   return List::create(
     _["changepoints"] = chpts,
     _["lastIndexSet"] = indices->get_list(),
-    _["nb"] = nb_indices,
-    _["costQ"] = costRecord
+    _["nb"] = std::vector<unsigned>(nb_indices.begin() + 1, nb_indices.end()),
+    _["costQ"] = std::vector<double>(costRecord.begin() + 1, costRecord.end())
   );
 }
 
