@@ -7,12 +7,11 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
   : dual_max(dual_max),
     random_constraint(random_constraint),
     indices(nullptr)
 {
-  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
   if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
 

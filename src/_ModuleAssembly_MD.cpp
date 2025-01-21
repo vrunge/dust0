@@ -18,7 +18,6 @@ using namespace Rcpp;
 
 DUST_MD *newModuleMD(const std::string& model,
                      const std::string& method,
-                     Nullable<double> alpha,
                      Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
@@ -57,21 +56,21 @@ DUST_MD *newModuleMD(const std::string& model,
   else if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   if (model == "gauss")
-    return new Gauss_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Gauss_MD(dual_max, random_constraint, nbLoops);
   if (model == "poisson")
-    return new Poisson_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Poisson_MD(dual_max, random_constraint, nbLoops);
   if (model == "exp")
-    return new Exp_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Exp_MD(dual_max, random_constraint, nbLoops);
   if (model == "geom")
-    return new Geom_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Geom_MD(dual_max, random_constraint, nbLoops);
   if (model == "bern")
-    return new Bern_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Bern_MD(dual_max, random_constraint, nbLoops);
   if (model == "binom")
-    return new Binom_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Binom_MD(dual_max, random_constraint, nbLoops);
   if (model == "negbin")
-    return new Negbin_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Negbin_MD(dual_max, random_constraint, nbLoops);
   if (model == "variance")
-    return new Variance_MD(dual_max, random_constraint, alpha, nbLoops);
+    return new Variance_MD(dual_max, random_constraint, nbLoops);
   return nullptr;
 }
 
@@ -95,7 +94,7 @@ RCPP_MODULE(DUSTMODULEMD)
 {
   class_<DUST_MD>("DUST_MD")
 
-  .factory<const std::string&, const std::string&, Nullable<double>, Nullable<int>>(newModuleMD)
+  .factory<const std::string&, const std::string&, Nullable<int>>(newModuleMD)
 
   .method("init_raw", &DUST_MD::init)
   .method("compute", &DUST_MD::compute)

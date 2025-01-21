@@ -4,8 +4,8 @@
 
 using namespace Rcpp;
 
-Exp_MD::Exp_MD(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_MD(dual_max, random_constraint, alpha, nbLoops) {}
+Exp_MD::Exp_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+  : DUST_MD(dual_max, random_constraint, nbLoops) {}
 
 double Exp_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {

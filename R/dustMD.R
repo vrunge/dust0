@@ -50,11 +50,10 @@ dust.MD <- function(
     , constraints_r = 0
     , model = "gauss"
     , method = "fastest"
-    , alpha = 1e-9
     , nbLoops = 10
 )
 {
-  partitioner <- new(DUST_MD, model, method, alpha, nbLoops)
+  partitioner <- new(DUST_MD, model, method, nbLoops)
   return(partitioner$quick_raw(data, penalty, constraints_l, constraints_r))
 }
 

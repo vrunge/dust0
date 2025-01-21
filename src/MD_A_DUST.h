@@ -17,7 +17,6 @@ class DUST_MD
 public:
   DUST_MD(int dual_max,
           bool random_constraint,
-          Nullable<double> alpha = Nullable<double>(),
           Nullable<int> nbLoops = Nullable<int>());
 
   virtual ~DUST_MD();
@@ -112,7 +111,6 @@ private:
   // --- // Private fields // --- //
   int dual_max;
   bool random_constraint;
-  double alpha;
 
   Indices_MD* indices;
   std::vector<int> nb_indices;
