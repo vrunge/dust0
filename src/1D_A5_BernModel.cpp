@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Bern_1D::Bern_1D(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_1D(dual_max, random_constraint, alpha, nbLoops) {}
+Bern_1D::Bern_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+  : DUST_1D(dual_max, random_constraint, nbLoops) {}
 
 double Bern_1D::Cost(unsigned int t, unsigned int s) const
 {

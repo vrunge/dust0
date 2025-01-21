@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Geom_1D::Geom_1D(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_1D(dual_max, random_constraint, alpha, nbLoops) {}
+Geom_1D::Geom_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+  : DUST_1D(dual_max, random_constraint, nbLoops) {}
 
 double Geom_1D::Cost(unsigned int t, unsigned int s) const
 {

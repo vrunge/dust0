@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 class Negbin_1D : public DUST_1D {
 public:
-  Negbin_1D(int dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
+  Negbin_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(unsigned int t, unsigned int s) const override;
   double statistic(double& data) const override;

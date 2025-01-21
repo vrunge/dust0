@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Negbin_1D::Negbin_1D(int dual_max, bool random_constraint, Nullable<double> alpha, Nullable<int> nbLoops)
-  : DUST_1D(dual_max, random_constraint, alpha, nbLoops) {}
+Negbin_1D::Negbin_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+  : DUST_1D(dual_max, random_constraint, nbLoops) {}
 
 double Negbin_1D::Cost(unsigned int t, unsigned int s) const
 {

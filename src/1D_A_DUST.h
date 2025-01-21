@@ -15,14 +15,13 @@ class DUST_1D
 public:
   DUST_1D(int dual_max,
           bool random_constraint,
-          Nullable<double> alpha = Nullable<double>(),
           Nullable<int> nbLoops = Nullable<int>());
 
   virtual ~DUST_1D();
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
+  void allocate(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
 
   // --- // Main computation // --- //
   void compute(std::vector<double>& inData);
@@ -33,7 +32,7 @@ public:
 
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
-  List quick(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
+  List one_dust(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
 
   ////////////////////////////////
   ////////////////////////////////
@@ -69,7 +68,7 @@ protected:
 
 private:
   // --- // Test and Indices init // --- //
-  void init_method();
+  void pruning_method();
 
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
@@ -96,7 +95,6 @@ private:
   // --- // Private fields // --- //
   int dual_max;
   bool random_constraint;
-  double alpha;
 
   Indices_1D* indices;
   std::vector<int> nb_indices;

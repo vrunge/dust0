@@ -20,7 +20,6 @@ using namespace Rcpp;
 
 DUST_1D *newModule1D(const std::string& model,
                      const std::string& method,
-                     Nullable<double> alpha,
                      Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
@@ -60,21 +59,21 @@ DUST_1D *newModule1D(const std::string& model,
   else if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
 
   if (model == "gauss")
-    return new Gauss_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Gauss_1D(dual_max, random_constraint, nbLoops);
   if (model == "poisson")
-    return new Poisson_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Poisson_1D(dual_max, random_constraint, nbLoops);
   if (model == "exp")
-    return new Exp_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Exp_1D(dual_max, random_constraint, nbLoops);
   if (model == "geom")
-    return new Geom_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Geom_1D(dual_max, random_constraint, nbLoops);
   if (model == "bern")
-    return new Bern_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Bern_1D(dual_max, random_constraint, nbLoops);
   if (model == "binom")
-    return new Binom_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Binom_1D(dual_max, random_constraint, nbLoops);
   if (model == "negbin")
-    return new Negbin_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Negbin_1D(dual_max, random_constraint, nbLoops);
   if (model == "variance")
-    return new Variance_1D(dual_max, random_constraint, alpha, nbLoops);
+    return new Variance_1D(dual_max, random_constraint, nbLoops);
   return nullptr;
 }
 
@@ -98,12 +97,12 @@ RCPP_MODULE(DUSTMODULE1D)
 {
   class_<DUST_1D>("DUST_1D")
 
-    .factory<const std::string&, const std::string&, Nullable<double>, Nullable<int>>(newModule1D)
+    .factory<const std::string&, const std::string&, Nullable<int>>(newModule1D)
 
-    .method("init_raw", &DUST_1D::init)
+    .method("allocate", &DUST_1D::allocate)
     .method("compute", &DUST_1D::compute)
     .method("get_partition", &DUST_1D::get_partition)
-    .method("quick_raw", &DUST_1D::quick)
+    .method("one_dust", &DUST_1D::one_dust)
   ;
 }
 

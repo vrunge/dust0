@@ -9,14 +9,13 @@ dust.1D(
   penalty = 2 * log(length(data)),
   model = "gauss",
   method = "fastest",
-  alpha = 1e-09,
   nbLoops = 10
 )
 }
 \arguments{
-\item{data}{A numeric vector. The time series data on which change point detection is performed.}
+\item{data}{A numeric vector. The time series data on which change point detection is performed. There is no data copy and no possibility to append new data to complete the analysis.}
 
-\item{penalty}{A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{2 * log(length(data))}.}
+\item{penalty}{A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{2 sdDiff(data) log(length(data))}.}
 
 \item{model}{A character string. Specifies the model used for change point detection. Default is "gauss". Possible values could include "gauss", "poisson", "exp", "geom", "bern", "binom", "negbin", "variance".}
 
@@ -36,17 +35,24 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval6"}: OP rule
 }}
 
-\item{alpha}{A numeric value. For randomness level. Default is \code{1e-9}.}
-
 \item{nbLoops}{An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.}
 }
 \value{
 A list containing the change points detected by the DUST algorithm.
 }
 \description{
-This function performs change point detection on one-dimensional data using the DUST algorithm.
+This function performs change point detection on one-dimensional data using the DUST algorithm
+}
+\note{
+The input data should be first normalized by function \code{data_normalization_1D} to use the default penalty in Gaussian model, instead of value `2*sdDiff(data)^2*log(length(data))`
 }
 \examples{
 data <- rnorm(1000)
+data <- data_normalization_1D(data)
 result <- dust.1D(data = data)
+}
+\seealso{
+\code{\link{dataGenerator_1D}} for easy 1D data generation with change points and different data types
+  \code{\link{data_normalization_1D}} for normalizing data before using \code{dust.1D}
+  \code{\link{dust.partitioner.1D}} A function similar to \code{dust.1D} but utilizes a class-based structure. This approach copies data into an object, allowing incremental analysis by appending new data with \code{\link{append_dust}}.
 }

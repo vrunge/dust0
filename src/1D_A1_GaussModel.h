@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 class Gauss_1D : public DUST_1D {
 public:
-  Gauss_1D(int dual_max, bool random_constraint, Nullable<double> alpha = Nullable<double>(), Nullable<int> nbLoops = Nullable<int>());
+  Gauss_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(unsigned int t, unsigned int s) const override;
   double statistic(double& data) const override;
