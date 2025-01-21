@@ -65,15 +65,9 @@ dust.object.1D <- function(
 {
   object <- new(DUST_1D, model, method, nbLoops)
   assign(
-    "append_dust",
+    "append",
     function(data, penalty = NULL)
-      object$append_dust(data, penalty),
-    envir = object
-  )
-  assign(
-    "get_result",
-    function()
-      object$get_partition(),
+      object$append_c(data, penalty),
     envir = object
   )
   return(object)

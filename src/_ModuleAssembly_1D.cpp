@@ -99,8 +99,8 @@ RCPP_MODULE(DUSTMODULE1D)
 
     .factory<const std::string&, const std::string&, Nullable<int>>(newModule1D)
 
-    .method("allocate", &DUST_1D::allocate)
-    .method("compute", &DUST_1D::compute)
+    .method("append_c", &DUST_1D::append)
+    .method("update_partition", &DUST_1D::update_partition)
     .method("get_partition", &DUST_1D::get_partition)
     .method("one_dust", &DUST_1D::one_dust)
   ;

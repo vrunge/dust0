@@ -20,6 +20,7 @@ public:
   void next(); //current++
   bool check(); //no the end
 
+  unsigned int get_first();
   void remove_first(); //remove the first element
   std::forward_list<unsigned int> get_list();
 

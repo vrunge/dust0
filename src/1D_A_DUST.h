@@ -21,10 +21,10 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void allocate(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
+  void append(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
 
   // --- // Main computation // --- //
-  void compute(std::vector<double>& inData);
+  void update_partition();
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
