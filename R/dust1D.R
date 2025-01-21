@@ -1,10 +1,10 @@
 
 #' Run the 1D Dust Change Point Detection
 #'
-#' This function performs change point detection on one-dimensional data using the DUST algorithm.
+#' This function performs change point detection on one-dimensional data using the DUST algorithm
 #'
-#' @param data A numeric vector. The time series data on which change point detection is performed.
-#' @param penalty A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{2 * log(length(data))}.
+#' @param data A numeric vector. The time series data on which change point detection is performed. There is no data copy and no possibility to append new data to complete the analysis.
+#' @param penalty A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{2 sdDiff(data) log(length(data))}.
 #' @param model A character string. Specifies the model used for change point detection. Default is "gauss". Possible values could include "gauss", "poisson", "exp", "geom", "bern", "binom", "negbin", "variance".
 #' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{fastest}, which automatically selects the quickest method for the chosen model. Other available methods are:
 #' \itemize{
@@ -21,13 +21,18 @@
 #'   \item \code{"Eval5"}: PELT rule
 #'   \item \code{"Eval6"}: OP rule
 #' }
-#' @param alpha A numeric value. For randomness level. Default is \code{1e-9}.
 #' @param nbLoops An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.
 #'
 #' @return A list containing the change points detected by the DUST algorithm.
 #'
+#' @note The input data should be first normalized by function \code{data_normalization_1D} to use the default penalty in Gaussian model, instead of value `2*sdDiff(data)^2*log(length(data))`
+#'
+#' @seealso  \code{\link{dataGenerator_1D}} for easy 1D data generation with change points and different data types
+#'   \code{\link{data_normalization_1D}} for normalizing data before using \code{dust.1D}
+#'   \code{\link{dust.partitioner.1D}} A function similar to \code{dust.1D} but utilizes a class-based structure. This approach copies data into an object, allowing incremental analysis by appending new data with \code{\link{append_dust}}.
 #' @examples
 #' data <- rnorm(1000)
+#' data <- data_normalization_1D(data)
 #' result <- dust.1D(data = data)
 #' @export
 dust.1D <- function(
@@ -35,13 +40,12 @@ dust.1D <- function(
     , penalty = 2*log(length(data))
     , model = "gauss"
     , method = "fastest"
-    , alpha = 1e-9
     , nbLoops = 10
 )
 {
-  partitioner <- new(DUST_1D, model, method, alpha, nbLoops)
-  return(partitioner$quick_raw(data, penalty))
+  partitioner <- new(DUST_1D, model, method, nbLoops)
+  partitioner$one_dust(data, penalty)
+  return(partitioner$get_partition())
 }
-
 
 
