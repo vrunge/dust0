@@ -96,10 +96,10 @@ RCPP_MODULE(DUSTMODULEMD)
 
   .factory<const std::string&, const std::string&, Nullable<int>>(newModuleMD)
 
-  .method("init_raw", &DUST_MD::init)
+  .method("prepare", &DUST_MD::prepare)
   .method("compute", &DUST_MD::compute)
   .method("get_partition", &DUST_MD::get_partition)
-  .method("quick_raw", &DUST_MD::quick)
+  .method("one_dust", &DUST_MD::one_dust)
   ;
 }
 

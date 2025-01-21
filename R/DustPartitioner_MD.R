@@ -62,16 +62,16 @@ dust.partitioner.MD <- function(
   partitioner <- new(DUST_MD, model, method, nbLoops)
 
   assign(
-    "init",
+    "prepare",
     function(data, penalty = NULL, nb_l = NULL, nb_r = NULL)
-      partitioner$init_raw(data, penalty, nb_l, nb_r),
+      partitioner$prepare(data, penalty, nb_l, nb_r),
     envir = partitioner
   )
 
   assign(
-    "quick",
+    "one_dust",
     function(data, penalty = NULL, nb_l = NULL, nb_r = NULL)
-      partitioner$quick_raw(data, penalty, nb_l, nb_r),
+      partitioner$one_dust(data, penalty, nb_l, nb_r),
     envir = partitioner
   )
   return(partitioner)

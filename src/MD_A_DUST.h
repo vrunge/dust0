@@ -23,7 +23,7 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void init(const arma::dmat& inData,
+  void prepare(const arma::dmat& inData,
             Nullable<double> inPenalty = Nullable<double>(),
             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
@@ -36,8 +36,8 @@ public:
   List get_partition();
 
   // --- // Wrapper method for quick use of the class // --- //
-  // quick is accessible by user
-  List quick(const arma::dmat& inData,
+  // one_dust is accessible by user
+  List one_dust(const arma::dmat& inData,
              Nullable<double> inPenalty = Nullable<double>(),
              Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
              Nullable<unsigned int> inNbR = Nullable<unsigned int>());
