@@ -21,6 +21,7 @@ unsigned int Indices_1D::get_current(){return *current;}
 
 
 std::forward_list<unsigned int> Indices_1D::get_list(){return list;}
+unsigned Indices_1D::get_first() { return list.front(); }
 void Indices_1D::remove_first(){list.pop_front();}
 
 
