@@ -44,5 +44,7 @@ double Gauss_MD::DstarSecond(const double& x) const
   return 1.;
 }
 
+std::string Gauss_MD::get_model() const { return "gauss"; }
+
 
 

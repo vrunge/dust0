@@ -77,3 +77,4 @@ double Poisson_1D::DstarSecond(double x) const
   return pow(x, -1);
 }
 
+std::string Poisson_1D::get_model() const { return "poisson"; }

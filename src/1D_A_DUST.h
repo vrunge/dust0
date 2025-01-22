@@ -30,6 +30,8 @@ public:
   // get_partition is accessible by user
   List get_partition();
 
+  List get_info();
+
   // --- // Wrapper method for quick use of the class // --- //
   // quick is accessible by user
   List one_dust(std::vector<double>& inData, Nullable<double> inPenalty = Nullable<double>());
@@ -56,6 +58,8 @@ protected:
   virtual double Dstar(double x) const = 0;
   virtual double DstarPrime(double x) const = 0;
   virtual double DstarSecond(double x) const = 0;
+
+  virtual std::string get_model() const = 0;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 

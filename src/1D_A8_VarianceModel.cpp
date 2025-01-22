@@ -72,4 +72,4 @@ double Variance_1D::DstarSecond(double x) const
   return 0.5/std::pow(x,2);
 }
 
-
+std::string Variance_1D::get_model() const { return "variance"; }

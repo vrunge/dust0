@@ -51,5 +51,6 @@ double Poisson_MD::DstarSecond(const double& x) const
   return pow(x, -1);
 }
 
+std::string Poisson_MD::get_model() const { return "poisson"; }
 
 

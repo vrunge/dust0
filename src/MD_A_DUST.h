@@ -35,12 +35,15 @@ public:
   // get_partition is accessible by user
   List get_partition();
 
+  List get_info();
+
   // --- // Wrapper method for quick use of the class // --- //
   // one_dust is accessible by user
   List one_dust(const arma::dmat& inData,
              Nullable<double> inPenalty = Nullable<double>(),
              Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
              Nullable<unsigned int> inNbR = Nullable<unsigned int>());
+
 
   ////////////////////////////////
   ////////////////////////////////
@@ -71,6 +74,8 @@ protected:
   virtual double Dstar(const double& x) const = 0;
   virtual double DstarPrime(const double& x) const = 0;
   virtual double DstarSecond(const double& x) const = 0;
+
+  virtual std::string get_model() const = 0;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 

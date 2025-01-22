@@ -52,4 +52,6 @@ double Exp_MD::DstarSecond(const double& x) const
   return 1.0/std::pow(x,2);
 }
 
+std::string Exp_MD::get_model() const { return "exp"; }
+
 

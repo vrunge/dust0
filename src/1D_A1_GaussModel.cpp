@@ -78,5 +78,4 @@ double Gauss_1D::DstarSecond(double x) const
   return 1.0;
 }
 
-
-
+std::string Gauss_1D::get_model() const { return "gauss"; }

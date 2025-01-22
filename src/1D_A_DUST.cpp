@@ -227,6 +227,19 @@ List DUST_1D::get_partition()
   );
 }
 
+List DUST_1D::get_info()
+{
+  return List::create(
+    _["data_statistic"] = cumsum,
+    _["data_length"] = n,
+    _["current_penalty"] = penalty,
+    _["model"] = get_model(),
+    _["pruning_algo"] = dual_max,
+    _["pruning_random_constraint"] = random_constraint,
+    _["pruning_nb_loops"] = nb_Loops
+  );
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

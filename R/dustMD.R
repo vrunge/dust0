@@ -53,7 +53,8 @@ dust.MD <- function(
 )
 {
   partitioner <- new(DUST_MD, model, method, nbLoops)
-  return(partitioner$one_dust(data, penalty, constraints_l, constraints_r))
+  partition <- partitioner$one_dust(data, penalty, constraints_l, constraints_r)
+  return(c(partition, partitioner$get_info()))
 }
 
 

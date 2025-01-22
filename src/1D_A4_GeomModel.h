@@ -22,6 +22,8 @@ protected:
   double Dstar(double x) const override;
   double DstarPrime(double x) const override;
   double DstarSecond(double x) const override;
+
+  std::string get_model() const override;
 };
 
 #endif

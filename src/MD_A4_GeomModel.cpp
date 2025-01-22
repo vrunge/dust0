@@ -56,7 +56,4 @@ double Geom_MD::DstarSecond(const double& x) const
   return 1.0/(x - 1.0) - 1.0/x;
 }
 
-
-
-
-
+std::string Geom_MD::get_model() const { return "geom"; }
