@@ -23,13 +23,13 @@ public:
 
   // --- // Setup // --- //
   // fit is accessible by user
-  void prepare(const arma::dmat& inData,
+  void append(const arma::dmat& inData,
             Nullable<double> inPenalty = Nullable<double>(),
             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
   // --- // Main computation // --- //
-  void compute(const arma::dmat& inData); /// some day, remove the inData, i.e. save the pointer to inData in the class
+  void update_partition(); /// some day, remove the inData, i.e. save the pointer to inData in the class
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
