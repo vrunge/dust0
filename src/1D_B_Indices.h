@@ -51,7 +51,7 @@ protected:
 class RandomIndices_1D : public Indices_1D
 {
 public:
-  RandomIndices_1D(unsigned int size, double alpha = 1e-9);
+  RandomIndices_1D();
 
   void add(unsigned int value) override;
 
@@ -73,9 +73,9 @@ private:
   std::vector<unsigned int*> pointers; // all pointers for the list of indices
   std::vector<unsigned int*>::reverse_iterator pointersCurrent; // to move on pointers
 
-  std::vector<double> randomU; // vector of random uniform numbers (length determined by alpha)
-  std::vector<double>::iterator u;
-
+  //////////// RANDOM NUMBER GENERATOR ////////////
+  std::minstd_rand0 engine;  // Random number engine
+  std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 };
 
 ////////////////

@@ -14,12 +14,11 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_meanVar::DUST_meanVar(int dual_max, int constraint_indices, Nullable<double> alpha_, Nullable<int> nbLoops)
+DUST_meanVar::DUST_meanVar(int dual_max, int constraint_indices, Nullable<int> nbLoops)
   : dual_max(dual_max),
     constraint_indices(constraint_indices),
     indices(nullptr)
 {
-  if(alpha_.isNull()){alpha = 1e-9;}else{alpha = as<double>(alpha_);}
   if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
 

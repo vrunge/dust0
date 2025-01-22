@@ -28,13 +28,13 @@ using a model specified in the \code{model} parameter.
 The function supports several models, including:
 
 \itemize{
-  \item{\code{"gauss"}}: {Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.}
-  \item{\code{"poisson"}}: {Poisson model.}
-  \item{\code{"exp"}}: {Exponential model.}
-  \item{\code{"geom"}}: {Geometric model.}
-  \item{\code{"bern"}}: {Bernoulli model.}
-  \item{\code{"binom"}}: {Binomial model.}
-  \item{\code{"negbin"}}: {Negative Binomial model.}
-  \item{\code{"variance"}}: {Variance-based cost model.}
+  \item{\code{"gauss"}}: Gaussian model, which computes the negative log-likelihood for a Gaussian distribution.
+  \item{\code{"poisson"}}: Poisson model.
+  \item{\code{"exp"}}: Exponential model.
+  \item{\code{"geom"}}: Geometric model.
+  \item{\code{"bern"}}: Bernoulli model.
+  \item{\code{"binom"}}: Binomial model.
+  \item{\code{"negbin"}}: Negative Binomial model.
+  \item{\code{"variance"}}: Variance-based cost model.
 }
 }

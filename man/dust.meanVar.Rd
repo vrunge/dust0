@@ -7,7 +7,6 @@
 dust.meanVar(
   data = data,
   penalty = 2 * nrow(data) * log(length(data)),
-  alpha = 1e-09,
   nbLoops = 10
 )
 }
@@ -15,8 +14,6 @@ dust.meanVar(
 \item{data}{A numeric matrix. The time series data on which change point detection is performed. Each row represents a time-series.}
 
 \item{penalty}{A numeric value. The penalty applied for adding a new change point. By default, it is set to \code{4 x log(length(data))}.}
-
-\item{alpha}{A numeric value. For randomness level. Default is \code{1e-9}.}
 
 \item{nbLoops}{An integer. The number of loops to run in the max dual optimization algorithm. Default is 10.}
 }

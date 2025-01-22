@@ -27,14 +27,14 @@ It computes the segmentation cost for each segment defined by change-points (\co
 For each segment defined by two consecutive change-points, the function applies \code{\link{Cost_1D}}, which calculates the cost of the segment based on the provided model. Supported models include:
 
 \itemize{
-  \item{\code{"gauss"}}: {Gaussian model, computes the negative log-likelihood under the Gaussian distribution.}
-  \item{\code{"poisson"}}: {Poisson model.}
-  \item{\code{"exp"}}: {Exponential model.}
-  \item{\code{"geom"}}: {Geometric model.}
-  \item{\code{"bern"}}: {Bernoulli model.}
-  \item{\code{"binom"}}: {Binomial model.}
-  \item{\code{"negbin"}}: {Negative Binomial model.}
-  \item{\code{"variance"}}: {Variance-based cost model.}
+  \item{\code{"gauss"}}: Gaussian model, computes the negative log-likelihood under the Gaussian distribution.
+  \item{\code{"poisson"}}: Poisson model.
+  \item{\code{"exp"}}: Exponential model.
+  \item{\code{"geom"}}: Geometric model.
+  \item{\code{"bern"}}: Bernoulli model.
+  \item{\code{"binom"}}: Binomial model.
+  \item{\code{"negbin"}}: Negative Binomial model.
+  \item{\code{"variance"}}: Variance-based cost model.
 }
 
 If the model is \code{"gauss"}, the function adds an additional term \code{sum(data^2)/2} to the total cost to ensure that the cost is zero when the data is perfectly segmented with no noise.

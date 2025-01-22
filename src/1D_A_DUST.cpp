@@ -40,7 +40,7 @@ void DUST_1D::pruning_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint){indices = new RandomIndices_1D(n);}
+  if(random_constraint){indices = new RandomIndices_1D();}
   else{indices = new DeterministicIndices_1D;}
 
   /// /// ///
@@ -217,9 +217,6 @@ std::forward_list<unsigned int> DUST_1D::backtrack_changepoints()
 // --- // Retrieves optimal partition // --- //
 List DUST_1D::get_partition()
 {
-  // costRecord.erase(costRecord.begin()); ///// REMOVE FIRST ELEMENT /////
-  // indices->remove_first(); ///// REMOVE FIRST ELEMENT /////
-
   std::forward_list<unsigned int> chpts = backtrack_changepoints();
 
   return List::create(

@@ -19,7 +19,6 @@ class DUST_meanVar
 public:
   DUST_meanVar(int dual_max,
                int constraint_indices,
-               Nullable<double> alpha = Nullable<double>(),
                Nullable<int> nbLoops = Nullable<int>());
 
   ~DUST_meanVar();
@@ -89,7 +88,6 @@ public:
   // --- // Private fields // --- //
   int dual_max;
   int constraint_indices;
-  double alpha;
 
   Indices_2D2* indices;
   std::vector<int> nb_indices;

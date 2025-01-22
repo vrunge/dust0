@@ -23,7 +23,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #'   \item \code{"negbin"}: Assumes the data follows a Negative Binomial distribution, for overdispersed count data.
 #'   \item \code{"variance"}: Assumes the data follows a Gaussian distribution with unknown variance and null mean.
 #' }
-#' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{fastest}, which automatically selects the quickest method for the chosen model. Other available methods are:
+#' @param method A character string specifying the method used to handle indices and pruning tests in the algorithm. The default is \code{detIndex_Eval4}, which automatically selects the quickest method for the chosen model. Other available methods are:
 #' \itemize{
 #'   \item \code{"randIndex_Eval0"} to \code{"randIndex_Eval5"}: Random index-based methods with different dual maximization algorithm (0 through 5).
 #'   \item \code{"detIndex_Eval0"} to \code{"detIndex_Eval5"}: Deterministic index-based methods  with different dual maximization algorithm (0 through 5).
@@ -44,7 +44,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #'
 #' @return a DUST partitioner object that provides methods:
 #' \itemize{
-#'   \item \\code{prepare}, for preparing the algorithm;
+#'   \item \code{prepare}, for preparing the algorithm;
 #'   \item \code{compute}, once fit has been called, for computing the optimal partition of the data;
 #'   \item \code{get_partition}, for retrieving the optimal partition once it has been computed; and
 #'   \item \code{quick}, a wrapper for the 3 methods.
@@ -53,7 +53,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #' dust.partitioner.MD()
 dust.partitioner.MD <- function(
     model = "gauss"
-    , method = "fastest"
+    , method = "detIndex_Eval4"
     , nb_l = NULL
     , nb_r = NULL
     , nbLoops = 10
