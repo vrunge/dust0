@@ -83,11 +83,4 @@ double Bern_1D::DstarSecond(double x) const
   return 1.0/x + 1.0/(1.0 - x);
 }
 
-
-
-
-
-
-
-
-
+std::string Bern_1D::get_model() const { return "bern"; }

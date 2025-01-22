@@ -101,6 +101,7 @@ RCPP_MODULE(DUSTMODULE1D)
     .method("append_c", &DUST_1D::append)
     .method("update_partition", &DUST_1D::update_partition)
     .method("get_partition", &DUST_1D::get_partition)
+    .method("get_info", &DUST_1D::get_info)
     .method("one_dust", &DUST_1D::one_dust)
   ;
 }

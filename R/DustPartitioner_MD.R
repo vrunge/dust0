@@ -51,7 +51,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #' }
 #' @examples
 #' dust.partitioner.MD()
-dust.partitioner.MD <- function(
+dust.object.MD <- function(
     model = "gauss"
     , method = "detIndex_Eval4"
     , nb_l = NULL

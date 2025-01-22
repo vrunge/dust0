@@ -20,6 +20,8 @@ protected:
   double Dstar(const double& x) const override;
   double DstarPrime(const double& x) const override;
   double DstarSecond(const double& x) const override;
+
+  std::string get_model() const override;
 };
 
 #endif

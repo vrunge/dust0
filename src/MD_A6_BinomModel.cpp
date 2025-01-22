@@ -60,4 +60,4 @@ double Binom_MD::DstarSecond(const double& x) const
   return 1.0/x + 1.0/(1.0 - x);
 }
 
-
+std::string Binom_MD::get_model() const { return "binom"; }

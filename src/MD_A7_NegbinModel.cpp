@@ -56,4 +56,4 @@ double Negbin_MD::DstarSecond(const double& x) const
   return 1.0/x + 1.0/(1.0 + x);
 }
 
-
+std::string Negbin_MD::get_model() const { return "negbin"; }

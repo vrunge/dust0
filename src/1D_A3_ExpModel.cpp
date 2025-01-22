@@ -73,4 +73,7 @@ double Exp_1D::DstarSecond(double x) const
   return 1.0/std::pow(x,2);
 }
 
-
+std::string Exp_1D::get_model() const
+{
+  return "exp";
+}

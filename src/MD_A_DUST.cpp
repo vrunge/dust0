@@ -231,6 +231,19 @@ std::forward_list<unsigned int> DUST_MD::backtrack_changepoints()
   return changepoints;
 }
 
+List DUST_MD::get_info()
+{
+  return List::create(
+    _["data_statistic"] = cumsum,
+    _["data_dimensions"] = std::vector<unsigned> { d, n },
+    _["current_penalty"] = penalty,
+    _["model"] = get_model(),
+    _["pruning_algo"] = dual_max,
+    _["pruning_random_constraint"] = random_constraint,
+    _["pruning_nb_constraints"] = std::vector<unsigned> { nb_l, nb_r },
+    _["pruning_nb_loops"] = nb_Loops
+  );
+}
 
 // --- // Retrieves optimal partition // --- //
 List DUST_MD::get_partition()
