@@ -468,12 +468,137 @@ bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t,
 {return(false);
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// COORDINATE DESCENT
+//// COORDINATE DESCENT
+//// COORDINATE DESCENT
+
+
 bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t,
                             const unsigned int& s,
                             std::vector<unsigned int> l,
                             std::vector<unsigned int> r)
-{return(false);
+{
+  unsigned int l_size = l.size();
+  unsigned int r_size = r.size();
+  unsigned int nb_l_r = l_size + r_size;
+
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+  /////// DUAL parameter CONSTRUCTION
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+
+  ///////
+  ///////  AAAAA SIGNS: vector of -1s and 1s depending on whether constraint is to the left or right resp.
+  ///////
+  std::vector<int> sign;
+  sign.reserve(nb_l_r); //// number of constraints
+  for (unsigned int i = 0; i < nb_l_r; i++)
+    sign.push_back(i < l_size ? -1 : 1);
+
+  ///////
+  /////// BBBBB: constantTerm AND objectiveMean
+  ///////
+  double constantTerm = - (minCost - costRecord[s]) / (t - s);
+  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+
+  ///////
+  /////// CCCCC: linearTerm AND constraintMean
+  ///////
+  linearTerm.resize(nb_l_r);
+  constraintMean.resize(d, nb_l_r);
+  for (unsigned int j = 0; j < l_size ; j++)
+  {
+    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
+    for (unsigned int row = 0; row < d; row++)
+      {constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);}
+  }
+  for (unsigned int j = 0; j < r_size ; j++)
+  {
+    linearTerm(l_size + j) = (costRecord[s] - costRecord[r[j]]) / (s - r[j]);
+    for (unsigned int row = 0; row < d; row++)
+      {constraintMean(row, l_size + j) = (cumsum(row,s) - cumsum(row,r[j])) / (s - r[j]);}
+  }
+
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+  /////// DUAL parameter CONSTRUCTION END
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+
+
+  ///////
+  /////// mu INITIAL = 0
+  ///////
+  mu.resize(nb_l_r);
+  for (unsigned int i = 0; i < nb_l_r; i++){mu(i) = 0;}
+  arma::colvec a = arma::colvec(d, arma::fill::zeros);
+  arma::colvec b = arma::colvec(d, arma::fill::zeros);
+  double c = 1;
+  double d;
+  double e;
+  double f = constantTerm;
+  /// the index to consider in the dual for mu
+  unsigned int k_dual;
+  std::array<double, 2> argmaxMax = { -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity() };
+
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+  /////// COORDINATE DESCENT MAIN LOOP
+  ///////  ///////  ///////  ///////  ///////  ///////
+  ///////  ///////  ///////  ///////  ///////  ///////
+  for (unsigned int k = 0; k < nb_Loops; k++)
+  {
+    //// THE index for mu to optimize
+    k_dual  = nb_Loops % nb_l_r;
+
+    //// UPDATE the coefficients a,b,c,d,e,f
+    //// UPDATE the coefficients a,b,c,d,e,f
+    //// UPDATE the coefficients a,b,c,d,e,f
+    /// a and b
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){for(unsigned int row = 0; row < d; row++){a(row) = a(row) + sign[j]*mu(j)*constraintMean(row,j);}}
+    }
+    for(unsigned int row = 0; row < d; row++)
+    {
+      b(row) = sign[k_dual]*constraintMean(row,k_dual);
+    }
+
+    /// c, d, e, f
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      c += sign[j]*mu(j);
+    }
+    c -= sign[k_dual]*mu(k_dual);
+    d = sign[k_dual];
+    e = sign[k_dual]*linearTerm[k_dual];
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){f += sign[j]*mu(j)*linearTerm[j];}
+    }
+
+    //// FIND ARGMAX AND MAX
+    //// FIND ARGMAX AND MAX
+    //// FIND ARGMAX AND MAX
+    //argmaxMax = dualMax(a, b, c, d, e, f);
+
+    //// early return and/or update mu
+    if (argmaxMax[1] > 0){return true;}
+
+    //// UPDATE MU
+    //// UPDATE MU
+    mu(k_dual) = argmaxMax[0];
+  }
+  return(false);
 }
+
+
 
 
 

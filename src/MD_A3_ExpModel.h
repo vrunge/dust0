@@ -16,6 +16,7 @@ public:
 
   double dualMax(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) override { return 0; }
   double dualEval(std::vector<unsigned int> point, const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) override { return 0; }
+  double dualMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const override;
 
   double Dstar(const double& x) const override;
   double DstarPrime(const double& x) const override;

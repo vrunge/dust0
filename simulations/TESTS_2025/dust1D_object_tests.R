@@ -5,10 +5,6 @@
 ### TEST dust.1D
 
 
-data = dataGenerator_1D(chpts = c(500,1000), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
-
-penalty = 2*log(length(data))/200
-data2 <- rep(data, 2)
 model = "gauss"
 method = "randIndex_Eval2"
 nbLoops = 10
@@ -20,10 +16,30 @@ plot(data2)
 plot(res$costQ)
 
 ######
-obj_dust <- new(DUST_1D, model, method, nbLoops)
 
-obj_dust$append_c(data, penalty)
-obj_dust$update_partition()
+
+obj_dust <- new(DUST_1D, "variance", "randIndex_Eval4", 5)
+penalty <- 2*log(5)
+data_all <- NULL
+for(i in 1:5)
+{
+  data <- dataGenerator_1D(chpts = c(500,1000), parameters = c(1,1.5), type = "variance")
+  data_all <- c(data_all, data)
+  obj_dust$append_c(data, penalty)
+  obj_dust$update_partition()
+}
+resObject <- obj_dust$get_partition()
+res <- dust.1D(data = data_all,
+               penalty = penalty,
+               model = "variance",
+               method = "randIndex_Eval4", nbLoops = 5)
+all(res$changepoints == resObject$changepoints)
+all(res$costQ == resObject$costQ)
+
+res$changepoints
+plot(data_all)
+
+
 
 obj_dust$append_c(data, penalty)
 obj_dust$update_partition()
