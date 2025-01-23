@@ -28,7 +28,7 @@ DUST_MD::~DUST_MD()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void DUST_MD::init_method()
+void DUST_MD::pruning_method()
 {
   delete indices;
 
@@ -99,7 +99,7 @@ void DUST_MD::append(const arma::dmat& inData,
     if (inNbR.isNull()){nb_r = 1;}else{nb_r = std::min(d - nb_l, as<unsigned int>(inNbR));}
     nb_max = nb_l + nb_r;
 
-    init_method();
+    pruning_method();
     indices->set_init_size(n);
     indices->add(0);
 

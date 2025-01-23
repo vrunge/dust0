@@ -89,7 +89,7 @@ protected:
 
 private:
   // --- // Test and Indices init // --- //
-  void init_method();
+  void pruning_method();
 
   ////////////////////////////////////
   // --- // MAX DUAL METHODS // --- //
