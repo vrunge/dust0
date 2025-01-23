@@ -49,6 +49,8 @@ void DeterministicIndices_MD::reset_prune()
   {
     begin_l = list.begin();
     current = begin_l + 1;
+
+    // if we want smallest possible r-side constraints -> begin_r -> end_r (in class)
     int right_size = list.size() - 2;
     if (right_size <= nb_r)
     {
@@ -58,6 +60,10 @@ void DeterministicIndices_MD::reset_prune()
     {
       end_r = current + nb_r + 1;
     }
+
+    // // if we want largest possible r-side constraints -> end_r -> begin_r (in class)
+    // if (list.size() >= nb_r + 2) begin_r = list.end() - nb_r;
+    // else begin_r = current + 1;
   }
   else current = list.end();
 }
@@ -68,15 +74,15 @@ void DeterministicIndices_MD::next_prune()
   ++current;
   /// move begin_l if too many indices bwn begin_l and current
   if (current - begin_l > nb_l) ++begin_l;
-  if (end_r != list.end()) ++end_r;
+  if (end_r != list.end()) ++end_r; // comment if "begin_r"
 }
 
 // remove current index and its pointer VERY TECHNIK for begin_r
 void DeterministicIndices_MD::prune_current()
 {
-  unsigned int gap_r = end_r - current;
+  unsigned int gap_r = end_r - current; // end_r -> begin_r
   current = list.erase(current);
-  end_r = current + gap_r - 1;
+  end_r = current + gap_r - 1; // same
 }
 
 ////////////////
@@ -89,6 +95,11 @@ std::vector<unsigned int> DeterministicIndices_MD::get_constraints_l()
 
 std::vector<unsigned int> DeterministicIndices_MD::get_constraints_r()
 {
+  // // if begin_r:
+  // if (begin_r == current) ++begin_r;
+  // return std::vector(begin_r, list.end());
+
+  // if end_r:
   return std::vector(current + 1, end_r);
 }
 
