@@ -94,14 +94,14 @@ void DUST_MD::append(const arma::dmat& inData,
     for (unsigned row = 0; row < d; row++)
       cumsum(row, 0) = 0.;
 
-    init_method();
-    indices->set_init_size(n);
-    indices->add(0);
-
     // read the number of constraints + default choice
     if (inNbL.isNull()){nb_l = d - 1;}else{nb_l = std::min(d, as<unsigned int>(inNbL));}
     if (inNbR.isNull()){nb_r = 1;}else{nb_r = std::min(d - nb_l, as<unsigned int>(inNbR));}
     nb_max = nb_l + nb_r;
+
+    init_method();
+    indices->set_init_size(n);
+    indices->add(0);
 
     // Initialize optim objects
     mu             = arma::rowvec(nb_max);
@@ -141,6 +141,13 @@ void DUST_MD::append(const arma::dmat& inData,
 // --- // Algorithm-specific method // --- //
 void DUST_MD::update_partition()
 {
+  std::ofstream log_file;
+  log_file.close();
+  log_file.open("output.log", std::ofstream::out | std::ofstream::app);
+  log_file.clear();
+  auto cout_buf = Rcout.rdbuf(log_file.rdbuf());
+  Rcout << "correctly setup log_file" << std::endl;
+
   int nbt = nb_indices.back();
 
   // Main loop
@@ -180,6 +187,9 @@ void DUST_MD::update_partition()
     // DUST loop
     while (indices->check())
     {
+      auto l = indices->get_constraints_l();
+      auto r = indices->get_constraints_r();
+      Rcout << l.size() << ", " << r.size() << std::endl;
       if ((this->*current_test)(minCost, t,
            *(indices->current),
            indices->get_constraints_l(),
@@ -209,6 +219,9 @@ void DUST_MD::update_partition()
     nb_indices.push_back(nbt);
     nbt++;
   }
+
+  Rcout.rdbuf(cout_buf);
+  log_file.close();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -500,8 +513,8 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
 
   double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
-  auto col_t = cumsum.col(t);
-  auto col_s = cumsum.col(s);
+  arma::subview_col col_t = cumsum.col(t);
+  arma::subview_col col_s = cumsum.col(s);
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
   for (unsigned int row = 0; row < d; row++)
@@ -830,6 +843,8 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   // ############################################## //
   // ############################################## //
 
+  Rcout << "testing" << std::endl;
+
 
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
@@ -848,6 +863,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
   double test_value = constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
 
+  Rcout << "Pelt test" << std::endl;
   if (test_value > 0) { return true; } // PELT test
   //
   //
@@ -867,7 +883,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   std::vector<unsigned> a;
   a.reserve(total_size);
   std::copy(l.begin(), l.end(), std::back_inserter(a));
-  std::copy(r.begin(), l.end(), std::back_inserter(a));
+  std::copy(r.begin(), r.end(), std::back_inserter(a));
 
   // vector of -1s and 1s depending on whether constraint is to the left or right resp.
   std::vector<int> sign;
@@ -892,6 +908,8 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
     j++;
   }
 
+  Rcout << "Linear and constraint mean" << std::endl;
+
   for (unsigned int row = 0; row < d; row++)
     nonLinearGrad(row) = DstarPrime(objectiveMean(row));
 
@@ -915,6 +933,8 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
       neg_grad = false;
     }
   }
+
+  Rcout << "grad" << grad << std::endl;
 
   if (neg_grad)
   {
@@ -943,10 +963,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   // Initialize inverseHessian as minus identity
   for (unsigned int row = 0; row < total_size; row++)
     for(unsigned int col = 0; col < total_size; col++)
-    {
-      if (row == col) inverseHessian(row, col) = -1;
-      else inverseHessian(row, col) = 0;
-    }
+      inverseHessian(row, col) = row == col ? -1 : 0;
 
     // // ######################################### //
     // // ######################################### //
@@ -1042,7 +1059,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
         {
           dot_product += nonLinearGrad(row) * (col_k(row) - objectiveMean(row));
         }
-        grad(col) = - sign[col] * (nonLinear + dot_product + linearTerm(col));
+        grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
 
 
         if (grad(col) > 0)
@@ -1074,20 +1091,40 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
     {
       // Update direction and intensity then clip it to stay within the bounds of the positive simplex
       direction = (-grad) * inverseHessian;
-      direction_scale = FindBoundaryCoef(mu, direction, inv_max); // may trigger shrink if pushing past boundary
+      direction_scale = 1.;
 
-      if (direction_scale == 0) { return false; } // stops optimization if no movement is produced
+      Rcout << "direction " << direction << std::endl;
+
+      double direction_sum ;
+      clip_stepsize_to_negative_element(mu, direction, direction_scale);
+      clip_stepsize_to_negative_sum(sign, mu_sum, direction, direction_sum, direction_scale);
+
+      for (auto row = 0; row < d; row++)
+      {
+        clipStepSizeModel(m_value(row), constraintMean.row(row), mu_sum, direction, direction_sum, direction_scale);
+      }
+
+      Rcout << "direction scale " << direction_scale << std::endl;
+
+      if (direction_scale <= 0) { return false; } // stops optimization if no movement is produced
 
       // update mu and D(mu) + check for shrink
       updateTestValue();
+
+      Rcout << "mu " << mu << std::endl;
 
       if(test_value > 0) { return true; } // success, index s is pruned
 
       // update grad and tangent max location
       updateGrad();
 
+      Rcout << "grad " << grad << std::endl;
+
       // Update inverse hessian estimation
       updateHessian(inverseHessian, mu_diff, grad_diff, I);
+
+      Rcout << "Inverse hessian " << inverseHessian << std::endl;
+
       grad_diff = -grad;
       iter++;
     } while (iter < nb_Loops);
@@ -1143,7 +1180,8 @@ bool DUST_MD::dualMaxAlgo6(const double& minCost, const unsigned int& t,
                            const unsigned int& s,
                            std::vector<unsigned int> l,
                            std::vector<unsigned int> r)
-{return(false);
+{
+  return(false);
 }
 
 bool DUST_MD::dualMaxAlgo7(const double& minCost, const unsigned int& t,

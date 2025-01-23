@@ -63,7 +63,7 @@ public:
 
 private:
   std::vector<unsigned int>::iterator begin_l;
-  std::vector<unsigned int>::iterator begin_r;
+  std::vector<unsigned int>::iterator end_r;
 };
 
 ////////////////////////////////////////////////

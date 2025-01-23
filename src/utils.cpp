@@ -6,6 +6,34 @@ using namespace Rcpp;
 // ######### // FINDBOUNDARY // ######### //
 // -> clip direction to restrict optimization within the simplex / distorted simplex (i.e. if mu_max not 1)
 
+void clip_stepsize_to_negative_element(const arma::rowvec& mu, const arma::rowvec& direction, double& max_stepsize)
+{
+  unsigned size = mu.n_elem;
+  for (auto i = 0; i < size; i++)
+  {
+    double distance_to_zero = -mu(i) / direction(i);
+    if (distance_to_zero < max_stepsize)
+      max_stepsize = distance_to_zero;
+  }
+}
+
+void clip_stepsize_to_negative_sum(const std::vector<int>& sign, const double& mu_sum, const arma::rowvec& direction, double& direction_sum, double& max_stepsize)
+{
+  for (auto i = 0; i < direction.n_elem; i++)
+  {
+    direction_sum += sign[i] * direction(i);
+  }
+
+  if (direction_sum < 0)
+  {
+    double new_stepsize = -(1 + mu_sum)/direction_sum;
+    if (new_stepsize < max_stepsize)
+    {
+      max_stepsize = new_stepsize;
+    }
+  }
+}
+
 double FindBoundaryCoef(const arma::rowvec& x,
                         const arma::rowvec& dk,
                         const arma::rowvec& weights,

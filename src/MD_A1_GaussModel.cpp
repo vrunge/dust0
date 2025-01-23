@@ -29,6 +29,11 @@ double Gauss_MD::muMax(const double& a, const double& b) const
   return 1.;
 }
 
+void Gauss_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
+{
+  // DIRECTION_SUM MUST BE POSITIVE HERE
+}
+
 double Gauss_MD::Dstar(const double& x) const
 {
   return .5 * pow(x, 2);
@@ -45,6 +50,8 @@ double Gauss_MD::DstarSecond(const double& x) const
 }
 
 std::string Gauss_MD::get_model() const { return "gauss"; }
+
+
 
 
 
