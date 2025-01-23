@@ -40,6 +40,26 @@ double Bern_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
+void Bern_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
+{
+  double dot_product = arma::dot(constraint_means, direction);
+  double sum_diff = dot_product - direction_sum;
+
+  if (dot_product < 0)
+  {
+    double new_stepsize = -(1 + mu_sum) * m_elem / dot_product;
+    if (new_stepsize < max_stepsize)
+      max_stepsize = new_stepsize;
+  }
+
+  if (sum_diff > 0)
+  {
+    double new_stepsize = (1 + mu_sum) * (1 - m_elem) / sum_diff;
+    if (new_stepsize < max_stepsize)
+      max_stepsize = new_stepsize;
+  }
+}
+
 double Bern_MD::Dstar(const double& x) const
 {
   return x*std::log(x) + (1.0 - x)*std::log(1.0 - x);

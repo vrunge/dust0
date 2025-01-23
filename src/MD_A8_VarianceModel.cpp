@@ -36,6 +36,17 @@ double Variance_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
+void Variance_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
+{
+  double dot_product = arma::dot(constraint_means, direction);
+  if (dot_product > 0)
+    return;
+
+  double new_stepsize = -(1 + mu_sum) * m_elem / dot_product;
+  if (new_stepsize < max_stepsize)
+    max_stepsize = new_stepsize;
+}
+
 double Variance_MD::Dstar(const double& x) const
 {
   return -0.5 * (std::log(x) + 1.0);

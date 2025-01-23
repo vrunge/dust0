@@ -45,7 +45,7 @@ dust.1D <- function(
 {
   partitioner <- new(DUST_1D, model, method, nbLoops)
   partitioner$one_dust(data, penalty)
-  return(c(partitioner$get_partition(), partitioner$get_info()))
+  return(partitioner$get_partition())
 }
 
 

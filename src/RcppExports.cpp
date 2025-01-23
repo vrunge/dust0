@@ -11,15 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// test_indices
-void test_indices();
-RcppExport SEXP _dust_test_indices() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    test_indices();
-    return R_NilValue;
-END_RCPP
-}
 // flat_OP_1D
 List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty);
 RcppExport SEXP _dust_flat_OP_1D(SEXP inDataSEXP, SEXP inPenaltySEXP) {
@@ -146,7 +137,6 @@ RcppExport SEXP _rcpp_module_boot_FLATDUST1D();
 RcppExport SEXP _rcpp_module_boot_FLAT2DUST1D();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dust_test_indices", (DL_FUNC) &_dust_test_indices, 0},
     {"_dust_flat_OP_1D", (DL_FUNC) &_dust_flat_OP_1D, 2},
     {"_dust_flat_OP_MD", (DL_FUNC) &_dust_flat_OP_MD, 2},
     {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
