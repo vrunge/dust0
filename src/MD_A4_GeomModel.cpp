@@ -33,7 +33,7 @@ double Geom_MD::statistic(const double& data) const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Geom_MD::dualMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Geom_MD::dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   return 0.;
 }
@@ -48,6 +48,18 @@ double Geom_MD::muMax(const double& a, const double& b) const
   if(b != 1){res = std::min(1.0, (a-1)/(b-1));}
   return res;
 }
+
+std::array<double, 2> Geom_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+{
+  std::array<double, 2> interval = { -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity() };
+  return(interval);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 void Geom_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
 {

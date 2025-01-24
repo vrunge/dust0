@@ -58,8 +58,8 @@ This function performs change point detection on multi-dimensional data using th
 \examples{
 mu <- c(rep(0,100), rep(1, 100))
 data <- matrix(rnorm(100 * 2, mu), nrow = 2, ncol = 100, byrow = FALSE)
-dust.MD(data)
-param <- data.frame(c(1,1,1), c(2,1,1),c(1,0.1,2))
-data <- dataGenerator_MD(chpts = c(40,60,100), parameters = param, type = "exp")
-dust.MD(data, penalty =  6*log(100), model = "exp", method = "detIndex_Eval4")
+# dust.MD(data)
+# param <- data.frame(c(1,1,1), c(2,1,1),c(1,0.1,2))
+# data <- dataGenerator_MD(chpts = c(40,60,100), parameters = param, type = "exp")
+# dust.MD(data, penalty =  6*log(100), model = "exp", method = "detIndex_Eval4")
 }

@@ -490,22 +490,21 @@ bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t,
 //// COORDINATE DESCENT
 //// COORDINATE DESCENT
 
-
-bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t,
-                            const unsigned int& s,
-                            std::vector<unsigned int> l,
-                            std::vector<unsigned int> r)
+bool DUST_MD::dualMaxAlgo3(const double& minCost,
+                           const unsigned int& t,
+                           const unsigned int& s,
+                           std::vector<unsigned int> l,
+                           std::vector<unsigned int> r)
 {
   unsigned int l_size = l.size();
   unsigned int r_size = r.size();
-  unsigned int nb_l_r = l_size + r_size;
+  unsigned int nb_l_r = l_size + r_size; /// not equal to nb_max (if no size for getting constraints)
 
   ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
   /////// DUAL parameter CONSTRUCTION
   ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
-
   ///////
   ///////  AAAAA SIGNS: vector of -1s and 1s depending on whether constraint is to the left or right resp.
   ///////
@@ -513,13 +512,11 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t,
   sign.reserve(nb_l_r); //// number of constraints
   for (unsigned int i = 0; i < nb_l_r; i++)
     sign.push_back(i < l_size ? -1 : 1);
-
   ///////
   /////// BBBBB: constantTerm AND objectiveMean
   ///////
   double constantTerm = - (minCost - costRecord[s]) / (t - s);
   for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
-
   ///////
   /////// CCCCC: linearTerm AND constraintMean
   ///////
@@ -543,7 +540,6 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t,
   /////// DUAL parameter CONSTRUCTION END
   ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
-
 
   ///////
   /////// mu INITIAL = 0
@@ -570,7 +566,6 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost, const unsigned int& t,
     //// THE index for mu to optimize
     k_dual  = nb_Loops % nb_l_r;
 
-    //// UPDATE the coefficients a,b,c,d,e,f
     //// UPDATE the coefficients a,b,c,d,e,f
     //// UPDATE the coefficients a,b,c,d,e,f
     /// a and b

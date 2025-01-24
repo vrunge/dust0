@@ -25,11 +25,10 @@ double Gauss_MD::statistic(const double& value) const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Gauss_MD::dualMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Gauss_MD::dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   /// Find mu_l and mu_r = dualInterval
-  //std::array<double, 2>  mu_interval = dualInterval(a,b);
-  //std::array<double, 2>  mu_interval = dualInterval(a,b);
+  //std::array<double, 2>  mu_interval = muInterval(a,b,c,d);
 
   // function -0.5 sum (a_i + X b_i)^2/(c + x d) -e X - f
   double A2 = arma::dot(a,a);
@@ -54,6 +53,29 @@ double Gauss_MD::muMax(const double& a, const double& b) const
 {
   return 1.;
 }
+
+
+std::array<double, 2> Gauss_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+{
+  std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
+  if (c > 0 && d < 0)
+  {
+    interval[1] = -c / d;
+  }
+  else if (c < 0 && d > 0)
+  {
+    interval[0] = -c / d;
+  }
+  return(interval);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 void Gauss_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
 {

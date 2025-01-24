@@ -32,7 +32,7 @@ double Negbin_MD::statistic(const double& data) const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Negbin_MD::dualMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Negbin_MD::dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   return 0.;
 }
@@ -47,6 +47,19 @@ double Negbin_MD::muMax(const double& a, const double& b) const
   if(b != 0){res = std::min(1.0, a/b);}
   return res;
 }
+
+
+std::array<double, 2> Negbin_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+{
+  std::array<double, 2> interval = { -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity() };
+  return(interval);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 void Negbin_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const
 {

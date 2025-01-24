@@ -275,16 +275,16 @@ bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  double a = (cumsum[t] - cumsum[s])/(t - s);
-  double b = (cumsum[s] - cumsum[r])/(s - r);
+  double a = (cumsum[t] - cumsum[s]) * pow(t - s, -1);
+  double b = (cumsum[s] - cumsum[r]) * pow(s - r, -1);
 
   double lt = 0.0;
   double rt = muMax(a, b);
   double c = (1 - 1/phi) * rt;
   double d = 1/phi;
 
-  double linear = (costRecord[s] - costRecord[r])/(s - r);
-  double cst = (costRecord[s] - minCost)/(t - s);
+  double linear = (costRecord[s] - costRecord[r]) * pow(s - r, -1);
+  double cst = (costRecord[s] - minCost) * pow(t - s, -1);
 
   double fc = - (1.0 - c) * Dstar((a - c*b)/(1 - c)) + c * linear + cst;
   double fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
@@ -320,6 +320,8 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+// binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
 
 bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {

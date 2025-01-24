@@ -5,7 +5,6 @@
 
 using namespace Rcpp;
 
-
 // --------- // MAD Estimator // --------- //
 //
 // Provided some data vector, computes the Median Absolute Deviation estimator

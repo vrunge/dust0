@@ -1,6 +1,6 @@
 Package: dust
 Type: Package
-Title: Optimal Partitioning Algorithm for Univarite Data using Duality Simple Tests (DUST)
+Title: Multiple Change Point Detection in Multivariate Time Series
 Version: 0.3.0
 Authors@R: c(
     person("Simon", "Querné", email = "simon.querne@gmail.com", role = c("aut")),

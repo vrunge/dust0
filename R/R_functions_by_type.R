@@ -101,18 +101,18 @@ mu_max <- function(S, s1, s2, t, type)
 }
 
 
-#####################################
-#############  eval  ################
-#####################################
+###########################################
+#############  evalPrimal  ################
+###########################################
 
-#' eval
+#' evalPrimal
 #'
 #' @description Evaluation of the primal function
 #' @param nat_theta the value of the natural parameter theta
 #' @param A the nonlinear function
 #' @param data the data to use in sum
 #' @param const the constant term
-eval <- function(nat_theta, A, data, const)
+evalPrimal <- function(nat_theta, A, data, const)
 {
   ### data transformed by function statistic (often = identity)
   ### nat_theta = natural parameter (not theta, but its transformation)
@@ -160,11 +160,11 @@ min_cost <- function(A, B, S, s, t, const)
 #############   denominator and ratio  ################
 #######################################################
 
-#' D
+#' DD
 #'
 #' @description denominator value
 #' @param mu the mu value
-D <- function(mu){return(1 - mu)}
+DD <- function(mu){return(1 - mu)}
 
 #' R
 #'
@@ -208,7 +208,7 @@ evalDual <- function(mu, A, B, S, s1, s2, t, const1, const2)
   Bratio2 <- B(Ratio)
   Bratio2[is.infinite(Bratio2)] <- 0 ### to solve Ratio * B(Ratio) = 0 * Inf
 
-  res1 <- (t-s1)* D(mu) * (A(B(Ratio)) - Ratio* Bratio2)
+  res1 <- (t-s1)* DD(mu) * (A(B(Ratio)) - Ratio* Bratio2)
   res2 <- const1 + mu * ((t-s1)/(s1-s2)) * (const1 - const2)
 
   return(res1 + res2)

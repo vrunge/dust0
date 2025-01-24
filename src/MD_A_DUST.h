@@ -62,18 +62,21 @@ protected:
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
 
+  /// computation on data
   virtual double Cost(const unsigned int& t, const unsigned int& s) const = 0;
   virtual double statistic(const double& value) const = 0;
 
+  /// dual domain bounds
   virtual double muMax(const double& a, const double& b) const = 0;
+  virtual std::array<double, 2> muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const = 0;
   virtual void clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const = 0;
 
+  /// dual evaluation
   virtual double dualMax(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
-
-  ///dualEval to do, for speeding up (instead of using the Dstar, DstarPrime)
   virtual double dualEval(std::vector<unsigned int> point, const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
-  virtual double dualMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
+  virtual double dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
 
+  /// dual non linear function
   virtual double Dstar(const double& x) const = 0;
   virtual double DstarPrime(const double& x) const = 0;
   virtual double DstarSecond(const double& x) const = 0;
@@ -128,20 +131,28 @@ private:
 
   std::vector<int> changepointRecord;
 
-  arma::rowvec mu;
-  arma::rowvec mu_max;
-  arma::rowvec inv_max;
-  arma::rowvec grad;
+  /////  /////  /////  /////
+  /////  /////  /////  ///// link to constraints (row )
+  /// vector size nb_l_r (= number of constraints)
+  ///
+  arma::rowvec mu; /// for the optimization step
+  arma::rowvec mu_max; /// constraints on mu (case no right constraint)
+  arma::rowvec inv_max;  /// 1/max
+  arma::rowvec grad;   /// grad in the optimization, of the dual
 
-  arma::rowvec linearTerm;
+  arma::rowvec linearTerm; /// sim (pm 1)mu Delta Q
+
+  /////  /////  /////  ///// link to dimension (column)
+  /// vector size d = dimension
+
+  arma::colvec objectiveMean; // mean between s and t
+  arma::dmat constraintMean; // mean between all r and s   /// size d x nb_l_r
 
   arma::colvec m_value; // m(mu)
-  arma::colvec objectiveMean;
-  arma::dmat constraintMean;
-  arma::colvec nonLinearGrad;
+  arma::colvec nonLinearGrad; // Dstar'(m(mu))
 
-  arma::dmat Identity;
-  arma::dmat inverseHessian; // for quasi newton optimizing
+  arma::dmat Identity; /// size nb_l_r x nb_l_r
+  arma::dmat inverseHessian; // for quasi newton optimizing /// size nb_l_r x nb_l_r
 
 };
 
