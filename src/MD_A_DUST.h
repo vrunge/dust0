@@ -74,7 +74,7 @@ protected:
   /// dual evaluation
   virtual double dualMax(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
   virtual double dualEval(std::vector<unsigned int> point, const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
-  virtual double dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
+  virtual std::array<double, 2> dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
 
   /// dual non linear function
   virtual double Dstar(const double& x) const = 0;

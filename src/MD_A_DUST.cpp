@@ -501,9 +501,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   unsigned int nb_l_r = l_size + r_size; /// not equal to nb_max (if no size for getting constraints)
 
   ///////  ///////  ///////  ///////  ///////  ///////
-  ///////  ///////  ///////  ///////  ///////  ///////
   /////// DUAL parameter CONSTRUCTION
-  ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
   ///////
   ///////  AAAAA SIGNS: vector of -1s and 1s depending on whether constraint is to the left or right resp.
@@ -534,11 +532,8 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     for (unsigned int row = 0; row < d; row++)
       {constraintMean(row, l_size + j) = (cumsum(row,s) - cumsum(row,r[j])) / (s - r[j]);}
   }
-
-  ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
   /////// DUAL parameter CONSTRUCTION END
-  ///////  ///////  ///////  ///////  ///////  ///////
   ///////  ///////  ///////  ///////  ///////  ///////
 
   ///////
@@ -553,36 +548,28 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   double e;
   double f = constantTerm;
   /// the index to consider in the dual for mu
-  unsigned int k_dual;
-  std::array<double, 2> argmaxMax = { -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity() };
 
-  ///////  ///////  ///////  ///////  ///////  ///////
+
   ///////  ///////  ///////  ///////  ///////  ///////
   /////// COORDINATE DESCENT MAIN LOOP
   ///////  ///////  ///////  ///////  ///////  ///////
-  ///////  ///////  ///////  ///////  ///////  ///////
+  unsigned int k_dual;
+  std::array<double, 2> argmaxMax = { 0, -std::numeric_limits<double>::infinity() };
+
   for (unsigned int k = 0; k < nb_Loops; k++)
   {
     //// THE index for mu to optimize
     k_dual  = nb_Loops % nb_l_r;
-
-    //// UPDATE the coefficients a,b,c,d,e,f
     //// UPDATE the coefficients a,b,c,d,e,f
     /// a and b
     for(unsigned int j = 0; j < nb_l_r; j++)
     {
       if(j != k_dual){for(unsigned int row = 0; row < d; row++){a(row) = a(row) + sign[j]*mu(j)*constraintMean(row,j);}}
     }
-    for(unsigned int row = 0; row < d; row++)
-    {
-      b(row) = sign[k_dual]*constraintMean(row,k_dual);
-    }
+    for(unsigned int row = 0; row < d; row++){b(row) = sign[k_dual]*constraintMean(row,k_dual);}
 
     /// c, d, e, f
-    for(unsigned int j = 0; j < nb_l_r; j++)
-    {
-      c += sign[j]*mu(j);
-    }
+    for(unsigned int j = 0; j < nb_l_r; j++){c += sign[j]*mu(j);}
     c -= sign[k_dual]*mu(k_dual);
     d = sign[k_dual];
     e = sign[k_dual]*linearTerm[k_dual];
@@ -591,17 +578,9 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
       if(j != k_dual){f += sign[j]*mu(j)*linearTerm[j];}
     }
 
-    //// FIND ARGMAX AND MAX
-    //// FIND ARGMAX AND MAX
-    //// FIND ARGMAX AND MAX
-    //argmaxMax = dualMax(a, b, c, d, e, f);
-
-    //// early return and/or update mu
-    if (argmaxMax[1] > 0){return true;}
-
-    //// UPDATE MU
-    //// UPDATE MU
-    mu(k_dual) = argmaxMax[0];
+    argmaxMax = dual1D_ArgmaxMax(a, b, c, d, e, f);  //// FIND ARGMAX AND MAX
+    if(argmaxMax[1] > 0){return true;}  /// early return and/or update mu
+    mu(k_dual) = argmaxMax[0];          //// UPDATE MU
   }
   return(false);
 }

@@ -84,9 +84,11 @@ void Negbin_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& cons
 ////////////////////////////////////////////////////////////////////////////////
 
 
-double Negbin_MD::dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+std::array<double, 2> Negbin_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
-  return 0.;
+  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
+
+  return(ArgmaxMax);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

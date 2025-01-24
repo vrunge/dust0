@@ -25,23 +25,65 @@ double Gauss_MD::statistic(const double& value) const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Gauss_MD::dual1DMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+std::array<double, 2> Gauss_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
-  /// Find mu_l and mu_r = dualInterval
-  //std::array<double, 2>  mu_interval = muInterval(a,b,c,d);
+
+  auto dual1D = [](const arma::colvec& a,
+                   const arma::colvec& b,
+                   double& c,
+                   double& d,
+                   double& e,
+                   double& f,
+                   double point) -> double
+    {
+
+                     double res = 0;
+                     for (unsigned int i = 0; i < a.n_elem; ++i)
+                     {
+                       res -= 0.5*(a[i] + point*b[i])*(a[i] + point*b[i])/(c + point*d);
+                     }
+                     res -=  e*point + f;
+                     return(res);
+    };
+
+  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
+
+  /// Find mu_min - mu_max
+  std::array<double, 2>  mu_interval = muInterval(a,b,c,d);
 
   // function -0.5 sum (a_i + X b_i)^2/(c + x d) -e X - f
   double A2 = arma::dot(a,a);
   double B2 = arma::dot(b,b);
   double AB = arma::dot(a,b);
+
   // roots of Ax^2 + Bx + C ?
   double A = d*B2 + 2*e*d*d;
   double B = 2*c*B2 + 4*c*d*e;
   double C = 2*c*AB - d*A2 + 2*c*c*e;
 
   double delta = B*B - 4*A*C;
+  if(delta < 0)
+  {
+    if(A > 0)
+    {
+      ArgmaxMax[0] = mu_interval[1];
+      ArgmaxMax[1] = dual1D(a,b,c,d,e,f,mu_interval[1]);
+      return(ArgmaxMax);
+    }
+    else if(A < 0)
+    {
+      ArgmaxMax[0] = mu_interval[0];
+      ArgmaxMax[1] = dual1D(a,b,c,d,e,f,mu_interval[0]);
+      return(ArgmaxMax);
+    }
+  }
+  else
+  {
 
-  return 0.;
+  }
+
+
+  return(ArgmaxMax);
 }
 
 
