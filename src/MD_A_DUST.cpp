@@ -71,6 +71,8 @@ void DUST_MD::append(const arma::dmat& inData,
 
   n += inData.n_cols;
 
+  /// Exception
+  /// Exception
   if (!first_execution)
   {
     if (d != inData.n_rows)
@@ -78,12 +80,15 @@ void DUST_MD::append(const arma::dmat& inData,
   }
   else { d = inData.n_rows; }
 
+  /// PENALTY value default
   if (inPenalty.isNull()){penalty = 2 * d * std::log(n);}else{penalty = as<double>(inPenalty);}
 
+  /// RETURN
   changepointRecord.reserve(n + 1);
   nb_indices.reserve(n);
   costRecord.reserve(n + 1);
 
+  /// CUMSUM => statistics
   cumsum.resize(d, n + 1);
 
   if (first_execution)
@@ -120,7 +125,7 @@ void DUST_MD::append(const arma::dmat& inData,
     inverseHessian = arma::dmat(nb_max, nb_max);
 
   }
-  else{ indices->set_init_size(n); }
+  else{indices -> set_init_size(n);}
 
   // store the data as cumsum
   unsigned current_filled_cols = cumsum.n_cols - inData.n_cols - 1; // -1 for correct indexing first column
@@ -133,14 +138,17 @@ void DUST_MD::append(const arma::dmat& inData,
     }
   }
 }
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // --- // Algorithm-specific method // --- //
 void DUST_MD::update_partition()
 {
+  /////
+  ///// output
+  /////
   std::ofstream log_file;
   log_file.close();
   log_file.open("output.log", std::ofstream::out | std::ofstream::app);
@@ -189,11 +197,13 @@ void DUST_MD::update_partition()
     {
       auto l = indices->get_constraints_l();
       auto r = indices->get_constraints_r();
+      ///// OUTPUTLOG
       Rcout << l.size() << ", " << r.size() << std::endl;
-      if ((this->*current_test)(minCost, t,
-           *(indices->current),
-           indices->get_constraints_l(),
-           indices->get_constraints_r())) // prune as needs pruning
+      if ((this->*current_test)(minCost,
+                                t,
+                                *(indices->current),
+                                indices->get_constraints_l(),
+                                indices->get_constraints_r())) // prune as needs pruning
       {
         // remove the pruned index
         indices->prune_current();
@@ -202,24 +212,26 @@ void DUST_MD::update_partition()
       else
       {
         // increment all cursors
-        indices->next_prune();
+        indices -> next_prune();
       }
     }
     // END (DUST loop)
     // END (DUST loop)
 
-    // Prune the last index (analogous with a null (mu* = 0) duality simple test)
+    // Prune the last index (analogous with (mu* = 0) duality simple test in mu = zero)
     // if (lastCost > minCost)
     // {
     //   indices->prune_last();
     //   nbt--;
     // }
 
+
     indices->add(t);
     nb_indices.push_back(nbt);
     nbt++;
   }
 
+  /////  OUTPUT
   Rcout.rdbuf(cout_buf);
   log_file.close();
 }
@@ -289,15 +301,34 @@ List DUST_MD::one_dust(const arma::dmat& inData,
   return get_partition();
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // arma::colvec objectiveMean;
 // arma::dmat constraintMean;
 // arma::rowvec linearTerm;
 // double constantTerm;
 // arma::rowvec mu;
-double dual_Eval()
+//
+// COMPUTE :  - [(1 + mu_sum) * nonLinear + linDot + constantTerm]
+// sign in front of mu already included
+//
+double DUST_MD::dual_Eval()
 {
+  double mu_sum = 0;
+  for (unsigned int i = 0; i < mu.n_elem; i++){mu_sum += mu(i);}
+  double coeff = pow(1 + mu_sum, -1);
 
-  return(-std::numeric_limits<double>::infinity());
+  double Linear = arma::dot(mu, linearTerm);
+  double nonLinear = 0;
+  for (unsigned int i = 0; i < d; i++)
+    nonLinear += Dstar(coeff * (objectiveMean(i) + arma::dot(mu, constraintMean.row(i))));
+
+  return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
 
@@ -315,67 +346,42 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
   // Draw a random point and evaluate the corresponding dual value
   unsigned int r_size = l.size();
 
-  constantTerm =  - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
-
-  for (unsigned int row = 0; row < d; row++)
-    objectiveMean(row) = (cumsum(t,row) - cumsum(s,row)) / (t - s);
-
   /// resize the elements:
   linearTerm.resize(r_size);
   constraintMean.resize(d, r_size);
   mu_max.resize(r_size);
-  inv_max.resize(r_size);
+  mu.resize(r_size);
 
+
+  constantTerm =  (minCost - costRecord[s]) / (t - s);
+  for (unsigned int row = 0; row < d; row++)
+    objectiveMean(row) = (cumsum(t,row) - cumsum(s,row)) / (t - s);
+  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+
+  for (unsigned int j = 0; j < r_size ; j++)
+  {
+    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
+    for (unsigned int row = 0; row < r_size; row++)
+    {constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);}
+  }
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
-  // Compute constraintMean matrix and mu_max
-  unsigned int j = 0;
-  for (auto k: l)
-  {
-    double constraint_mean_sum = 0;
-    linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
 
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraintMean(row, j) = (cumsum(s,row) - cumsum(k,row)) / (s - k);
-      constraint_mean_sum += constraintMean(row, j);
-    }
-
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
-    inv_max(j) = pow(mu_max(j), -1);
-    j++;
-  }
 
   // Uniform random vector u that sums to 1, scaled depending on mu_max
   std::vector<double> u;
   u.reserve(r_size + 2);
   u.push_back(0.);
-
-  for (unsigned int i = 1; i < r_size + 1; i++)
-    u.push_back(dist(engine));
+  for (unsigned int i = 1; i < r_size + 1; i++){u.push_back(dist(engine));}
 
   // mu
-  mu.resize(r_size);
-
-  double mu_sum = 0;
   std::sort(u.begin() + 1, u.end());
   for (unsigned int i = 0; i < r_size; i++)
   {
     mu(i) = mu_max(i) * (u[i + 1] - u[i]); /// change if constraint s < l
-    mu_sum += mu(i); /// change if constraint s < l
   }
-  double inv_sum = pow(mu_sum, -1); ///???
 
-  double linDot = 0;
-  for (unsigned int col = 0; col < r_size; col++)
-    linDot += mu(col) * linearTerm(col);
-
-  inv_sum = pow(1 - mu_sum, -1);
-  double nonLinear = 0;
-  for (unsigned int row = 0; row < d; row++)
-    nonLinear += Dstar(inv_sum * (objectiveMean(row) - arma::dot(mu, constraintMean.row(row))));
-
-  return constantTerm + linDot - (1 - mu_sum) * nonLinear > 0;
+  return(dual_Eval() > 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
