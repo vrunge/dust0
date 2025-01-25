@@ -22,19 +22,18 @@ public:
   virtual ~DUST_MD();
 
   // --- // Setup // --- //
-  // fit is accessible by user
+  // append is accessible by user
   void append(const arma::dmat& inData,
             Nullable<double> inPenalty = Nullable<double>(),
             Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
             Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
-  // --- // Main computation // --- //
-  void update_partition(); /// some day, remove the inData, i.e. save the pointer to inData in the class
+  // --- // Main computation accessible by user
+  void update_partition(); ///
 
   // --- // Result retrieval // --- //
   // get_partition is accessible by user
   List get_partition();
-
   List get_info();
 
   // --- // Wrapper method for quick use of the class // --- //
@@ -44,10 +43,8 @@ public:
              Nullable<unsigned int> inNbL = Nullable<unsigned int>(),
              Nullable<unsigned int> inNbR = Nullable<unsigned int>());
 
-
-  ////////////////////////////////
-  ////////////////////////////////
-  ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
 
 protected:
   unsigned int n; // number of observations
@@ -72,9 +69,15 @@ protected:
   virtual void clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const = 0;
 
   /// dual evaluation
-  virtual double dualMax(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
-  virtual double dualEval(std::vector<unsigned int> point, const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> r) = 0;
+  virtual double dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
   virtual std::array<double, 2> dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
+
+  // arma::colvec objectiveMean;
+  // arma::dmat constraintMean;
+  // arma::rowvec linearTerm;
+  // double constantTerm;
+  // arma::rowvec mu;
+  double dual_Eval();
 
   /// dual non linear function
   virtual double Dstar(const double& x) const = 0;
@@ -88,9 +91,8 @@ protected:
   std::minstd_rand0 engine;  // Random number engine
   std::uniform_real_distribution<double> dist;  // Uniform distribution [0, 1)
 
-  ////////////////////////////////
-  ////////////////////////////////
-  ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
 
 private:
   // --- // Test and Indices init // --- //
@@ -102,7 +104,7 @@ private:
   // 0: random eval
   // 1: exact eval (if possible, otherwise, -inf (OP))
   // 2:
-  // 3:
+  // 3: coordinate descent
   // 4: Quasi-Newton
   // 5: PELT
   // 6: OP
@@ -140,8 +142,8 @@ private:
   arma::rowvec inv_max;  /// 1/max
   arma::rowvec grad;   /// grad in the optimization, of the dual
 
-  arma::rowvec linearTerm; /// sim (pm 1)mu Delta Q
-
+  arma::rowvec linearTerm; /// sum (pm 1)mu Delta Q
+  double constantTerm;
   /////  /////  /////  ///// link to dimension (column)
   /// vector size d = dimension
 

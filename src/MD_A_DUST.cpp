@@ -289,6 +289,17 @@ List DUST_MD::one_dust(const arma::dmat& inData,
   return get_partition();
 }
 
+// arma::colvec objectiveMean;
+// arma::dmat constraintMean;
+// arma::rowvec linearTerm;
+// double constantTerm;
+// arma::rowvec mu;
+double dual_Eval()
+{
+
+  return(-std::numeric_limits<double>::infinity());
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,12 +315,10 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
   // Draw a random point and evaluate the corresponding dual value
   unsigned int r_size = l.size();
 
-  double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  constantTerm =  - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
-  auto col_t = cumsum.col(t);
-  auto col_s = cumsum.col(s);
   for (unsigned int row = 0; row < d; row++)
-    objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
+    objectiveMean(row) = (cumsum(t,row) - cumsum(s,row)) / (t - s);
 
   /// resize the elements:
   linearTerm.resize(r_size);
@@ -325,10 +334,10 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
   {
     double constraint_mean_sum = 0;
     linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
-    auto col_k = cumsum.col(k);
+
     for (unsigned int row = 0; row < d; row++)
     {
-      constraintMean(row, j) = (col_s(row) - col_k(row)) / (s - k);
+      constraintMean(row, j) = (cumsum(s,row) - cumsum(k,row)) / (s - k);
       constraint_mean_sum += constraintMean(row, j);
     }
 
@@ -388,7 +397,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   ///////
   /////// constantTerm AND objectiveMean
   ///////
-  double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
   auto col_t = cumsum.col(t);
   auto col_s = cumsum.col(s);
@@ -478,7 +487,8 @@ bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t,
                             const unsigned int& s,
                             std::vector<unsigned int> l,
                             std::vector<unsigned int> r)
-{return(false);
+{
+  return(false);
 }
 
 
@@ -513,7 +523,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   ///////
   /////// BBBBB: constantTerm AND objectiveMean
   ///////
-  double constantTerm = - (minCost - costRecord[s]) / (t - s);
+  constantTerm = - (minCost - costRecord[s]) / (t - s);
   for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
   ///////
   /////// CCCCC: linearTerm AND constraintMean
@@ -610,7 +620,7 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
 
-  double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
   arma::subview_col col_t = cumsum.col(t);
   arma::subview_col col_s = cumsum.col(s);
@@ -948,7 +958,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
 
-  double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
   auto col_t = cumsum.col(t);
   auto col_s = cumsum.col(s);
@@ -1253,7 +1263,7 @@ bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t,
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
 
-  double constantTerm = (costRecord[s] - minCost) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
 
   auto col_t = cumsum.col(t);
   auto col_s = cumsum.col(s);

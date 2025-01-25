@@ -68,6 +68,12 @@ void Exp_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& constra
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+double Exp_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
+{
+  return(-std::numeric_limits<double>::infinity());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 std::array<double, 2> Exp_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {

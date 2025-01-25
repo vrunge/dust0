@@ -25,6 +25,14 @@ double Gauss_MD::statistic(const double& value) const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+double Gauss_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
+{
+  return(-std::numeric_limits<double>::infinity());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 std::array<double, 2> Gauss_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
 
@@ -36,17 +44,17 @@ std::array<double, 2> Gauss_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& 
                    double& f,
                    double point) -> double
     {
-
                      double res = 0;
                      for (unsigned int i = 0; i < a.n_elem; ++i)
                      {
-                       res -= 0.5*(a[i] + point*b[i])*(a[i] + point*b[i])/(c + point*d);
+                       res -= 0.5*(a[i] + point*b[i])*(a[i] + point*b[i]);
                      }
+                     res = res/(c + point*d);
                      res -=  e*point + f;
                      return(res);
     };
 
-  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
+  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity()};
 
   /// Find mu_min - mu_max
   std::array<double, 2>  mu_interval = muInterval(a,b,c,d);
@@ -81,7 +89,6 @@ std::array<double, 2> Gauss_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& 
   {
 
   }
-
 
   return(ArgmaxMax);
 }
