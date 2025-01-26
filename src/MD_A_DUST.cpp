@@ -149,12 +149,12 @@ void DUST_MD::update_partition()
   /////
   ///// output
   /////
-  std::ofstream log_file;
-  log_file.close();
-  log_file.open("output.log", std::ofstream::out | std::ofstream::app);
-  log_file.clear();
-  auto cout_buf = Rcout.rdbuf(log_file.rdbuf());
-  Rcout << "correctly setup log_file" << std::endl;
+  //std::ofstream log_file;
+  //log_file.close();
+  //log_file.open("output.log", std::ofstream::out | std::ofstream::app);
+  //log_file.clear();
+  //auto cout_buf = Rcout.rdbuf(log_file.rdbuf());
+  //Rcout << "correctly setup log_file" << std::endl;
 
   int nbt = nb_indices.back();
 
@@ -198,7 +198,7 @@ void DUST_MD::update_partition()
       auto l = indices->get_constraints_l();
       auto r = indices->get_constraints_r();
       ///// OUTPUTLOG
-      Rcout << l.size() << ", " << r.size() << std::endl;
+      //Rcout << l.size() << ", " << r.size() << std::endl;
       if ((this->*current_test)(minCost,
                                 t,
                                 *(indices->current),
@@ -232,8 +232,8 @@ void DUST_MD::update_partition()
   }
 
   /////  OUTPUT
-  Rcout.rdbuf(cout_buf);
-  log_file.close();
+  //Rcout.rdbuf(cout_buf);
+  //log_file.close();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -338,48 +338,52 @@ double DUST_MD::dual_Eval()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Draw a random point and evaluate the corresponding dual value
+
 bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
                             const unsigned int& s,
                             std::vector<unsigned int> l,
                             std::vector<unsigned int> r)
 {
-  // Draw a random point and evaluate the corresponding dual value
+  //Rcout << "sfgsfgfsg"  <<  std::endl;
+
   unsigned int r_size = l.size();
 
-  /// resize the elements:
+  /// RESIZE
+  mu.resize(r_size);
+  mu_max.resize(r_size);
+  mu_max.fill(1.0);
   linearTerm.resize(r_size);
   constraintMean.resize(d, r_size);
-  mu_max.resize(r_size);
-  mu.resize(r_size);
 
-
+  /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++)
-    objectiveMean(row) = (cumsum(t,row) - cumsum(s,row)) / (t - s);
   for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
 
   for (unsigned int j = 0; j < r_size ; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
-    for (unsigned int row = 0; row < r_size; row++)
-    {constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);}
+    for (unsigned int row = 0; row < d; row++)
+    {
+      constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
+      mu_max(j) = std::min(mu_max(j), muMax(objectiveMean(row), constraintMean(row, j)));
+    }
   }
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
-
-
-  // Uniform random vector u that sums to 1, scaled depending on mu_max
+  // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
   std::vector<double> u;
-  u.reserve(r_size + 2);
-  u.push_back(0.);
-  for (unsigned int i = 1; i < r_size + 1; i++){u.push_back(dist(engine));}
+  u.reserve(r_size);
+  for (unsigned int i = 0; i < r_size; i++){u.push_back(dist(engine));}
 
-  // mu
-  std::sort(u.begin() + 1, u.end());
-  for (unsigned int i = 0; i < r_size; i++)
-  {
-    mu(i) = mu_max(i) * (u[i + 1] - u[i]); /// change if constraint s < l
-  }
+  double sum_all = 0;
+  double scaling_factor = dist(engine); // Uniform random number in [0, 1]
+  for (unsigned int i = 0; i < r_size; i++){sum_all = sum_all + u[i]/mu_max(i);}
+  for (unsigned int i = 0; i < r_size; i++){mu(i) = -scaling_factor*u[i]/sum_all;} // minus for r < s constraint
+
+  //double test = 0;
+  //for (unsigned int i = 0; i < r_size; i++){test = test +  mu(i)/mu_max(i);}
+  //Rcout << test  <<  std::endl;
+  //for (unsigned int i = 0; i < r_size; i++){Rcout << mu(i) << std::endl;}
 
   return(dual_Eval() > 0);
 }
