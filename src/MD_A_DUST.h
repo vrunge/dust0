@@ -78,7 +78,8 @@ protected:
   // double constantTerm;
   // arma::rowvec mu;
   double dual_Eval();
-
+  void update_dual_parameters_l(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l);
+  void update_dual_parameters_l_r(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
   /// dual non linear function
   virtual double Dstar(const double& x) const = 0;
   virtual double DstarPrime(const double& x) const = 0;

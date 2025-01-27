@@ -331,6 +331,89 @@ double DUST_MD::dual_Eval()
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void DUST_MD::update_dual_parameters_l(const double& minCost,
+                                       const unsigned int& t,
+                                       const unsigned int& s,
+                                       std::vector<unsigned int> l)
+{
+  nb_l = l.size();
+
+  /// RESIZE
+  mu.resize(nb_l);
+  mu_max.resize(nb_l);
+  mu_max.fill(1.0);
+  linearTerm.resize(nb_l);
+  constraintMean.resize(d, nb_l);
+
+  //Rcout << "test2"   <<  std::endl;
+  //Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
+
+  /// UDDATE DUAL FUNCTION parameters
+  constantTerm =  (minCost - costRecord[s]) / (t - s);
+  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+
+  for (unsigned int j = 0; j < nb_l; j++)
+  {
+    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
+    for (unsigned int row = 0; row < d; row++)
+    {
+      constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
+      mu_max(j) = std::min(mu_max(j), muMax(objectiveMean(row), constraintMean(row, j)));
+    }
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void DUST_MD::update_dual_parameters_l_r(const double& minCost,
+                                        const unsigned int& t,
+                                        const unsigned int& s,
+                                        std::vector<unsigned int> l,
+                                        std::vector<unsigned int> r)
+{
+  nb_l = l.size();
+  nb_r = r.size();
+
+  /// RESIZE
+  mu.resize(nb_l + nb_r);
+  mu_max.resize(nb_l + nb_r);
+  mu_max.fill(1.0);
+  linearTerm.resize(nb_l + nb_r);
+  constraintMean.resize(d, nb_l + nb_r);
+
+  /// UDDATE DUAL FUNCTION parameters
+  constantTerm =  (minCost - costRecord[s]) / (t - s);
+  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+  for (unsigned int j = 0; j < nb_l; j++)
+  {
+    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
+    for (unsigned int row = 0; row < d; row++)
+    {
+      constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
+    }
+  }
+  for (unsigned int j = 0; j < nb_r; j++)
+  {
+    linearTerm(nb_l + j) = (costRecord[s] - costRecord[r[j]]) / (s - r[j]);
+    for (unsigned int row = 0; row < d; row++)
+    {
+      constraintMean(row, nb_l + j) = (cumsum(row,s) - cumsum(row, r[j])) / (s - r[j]);
+    }
+  }
+
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,50 +423,24 @@ double DUST_MD::dual_Eval()
 
 // Draw a random point and evaluate the corresponding dual value
 
-bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
-                            const unsigned int& s,
-                            std::vector<unsigned int> l,
-                            std::vector<unsigned int> r)
+bool DUST_MD::dualMaxAlgo0(const double& minCost,
+                           const unsigned int& t,
+                           const unsigned int& s,
+                           std::vector<unsigned int> l,
+                           std::vector<unsigned int> r)
 {
-  //Rcout << "sfgsfgfsg"  <<  std::endl;
+  update_dual_parameters_l(minCost, t, s, l);
 
-  unsigned int r_size = l.size();
-
-  /// RESIZE
-  mu.resize(r_size);
-  mu_max.resize(r_size);
-  mu_max.fill(1.0);
-  linearTerm.resize(r_size);
-  constraintMean.resize(d, r_size);
-
-  /// UDDATE DUAL FUNCTION parameters
-  constantTerm =  (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
-
-  for (unsigned int j = 0; j < r_size ; j++)
-  {
-    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
-      mu_max(j) = std::min(mu_max(j), muMax(objectiveMean(row), constraintMean(row, j)));
-    }
-  }
-
+  /// CHOOSE ONE MU RANDOMLY
   // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
   std::vector<double> u;
-  u.reserve(r_size);
-  for (unsigned int i = 0; i < r_size; i++){u.push_back(dist(engine));}
+  u.reserve(nb_l);
+  for (unsigned int i = 0; i < nb_l; i++){u.push_back(dist(engine));}
 
   double sum_all = 0;
   double scaling_factor = dist(engine); // Uniform random number in [0, 1]
-  for (unsigned int i = 0; i < r_size; i++){sum_all = sum_all + u[i]/mu_max(i);}
-  for (unsigned int i = 0; i < r_size; i++){mu(i) = -scaling_factor*u[i]/sum_all;} // minus for r < s constraint
-
-  //double test = 0;
-  //for (unsigned int i = 0; i < r_size; i++){test = test +  mu(i)/mu_max(i);}
-  //Rcout << test  <<  std::endl;
-  //for (unsigned int i = 0; i < r_size; i++){Rcout << mu(i) << std::endl;}
+  for (unsigned int i = 0; i < nb_l; i++){sum_all = sum_all + u[i]/mu_max(i);}
+  for (unsigned int i = 0; i < nb_l; i++){mu(i) = -scaling_factor/sum_all*u[i];} // minus for r < s constraints
 
   return(dual_Eval() > 0);
 }
@@ -396,108 +453,71 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost, const unsigned int& t,
 // BARYCENTRE test
 // BARYCENTRE test
 
-bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
-                            const unsigned int& s,
-                            std::vector<unsigned int> l,
-                            std::vector<unsigned int> r)
+bool DUST_MD::dualMaxAlgo1(const double& minCost,
+                           const unsigned int& t,
+                           const unsigned int& s,
+                           std::vector<unsigned int> l,
+                           std::vector<unsigned int> r)
 {
-  unsigned int r_size = l.size();
-  unsigned int r2_size = r.size();
 
-  ///////
-  /////// constantTerm AND objectiveMean
-  ///////
-  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
-
-  auto col_t = cumsum.col(t);
-  auto col_s = cumsum.col(s);
-  for (unsigned int row = 0; row < d; row++)
-    objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
-
-  ///////
-  /////// resize vectors. r_size + r2_size constraints
-  ///////
-  linearTerm.resize(r_size + r2_size);
-  constraintMean.resize(d, r_size + r2_size);
-  mu_max.resize(r_size + r2_size);
-
+  update_dual_parameters_l_r(minCost, t, s, l, r);
   /// /d ????
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
   ///////
-  /////// constraintMean, constraint_mean_sum
-  ///////
-  unsigned int j = 0;
-  for (auto k: l) ///////// WITH l
-  {
-    double constraint_mean_sum = 0;
-    linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
-    auto col_k = cumsum.col(k);
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraintMean(row, j) = (col_s(row) - col_k(row)) / (s - k);
-      constraint_mean_sum += constraintMean(row, j);
-    }
-
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY? //// to be reviewed
-    j++;
-  }
-  for (auto k: r) ///////// SAME WITH r
-  {
-    double constraint_mean_sum = 0;
-    linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
-    auto col_k = cumsum.col(k);
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraintMean(row, j) = (col_s(row) - col_k(row)) / (s - k);
-      constraint_mean_sum += constraintMean(row, j);
-    }
-
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d); /// WHY? //// to be reviewed... (no mu_max)
-    j++;
-  }
-
-
-  ///////
   /////// mu
   ///////
-  mu.resize(r_size + r2_size);
+  mu.resize(nb_l + nb_r);
   double mu_sum = 0;
-  double x = pow(r_size + r2_size + 1, -1); ///
+  double x = pow(nb_l + nb_r + 1, -1); ///
 
-  for (unsigned int i = 0; i < r_size; i++) ///////// WITH l
+  for (unsigned int i = 0; i < nb_l; i++) ///////// WITH l
   {
     mu(i) = mu_max(i) * x;
     mu_sum += mu(i);
   }
-  for (unsigned int i = 0; i < r2_size; i++) ///////// WITH r
+  for (unsigned int i = 0; i < nb_r; i++) ///////// WITH r
   {
-    mu(r_size + i) = - mu_max(r_size + i) * x; /// with a minus here
-    mu_sum = mu(r_size + i);
+    mu(nb_l + i) = - mu_max(nb_l + i) * x; /// with a minus here
+    mu_sum = mu(nb_l + i);
   }
 
-  ///////
-  /////// dual value in mu
-  ///////
-  double inv_sum = pow(1 - mu_sum, -1);
-  double linDot = arma::dot(mu, linearTerm);
-  double nonLinear = 0;
-  for (unsigned int row = 0; row < d; row++)
-    nonLinear += Dstar(inv_sum * (objectiveMean(row) - arma::dot(mu, constraintMean.row(row))));
+  //Rcout << "test"  <<  std::endl;
+  //for (unsigned int i = 0; i < nb_l; i++){Rcout << mu(i) << " -- ";}
+  //Rcout << std::endl;
+  //Rcout << nb_l << std::endl;
+  //Rcout << dual_Eval() << std::endl;
 
-  return(constantTerm + linDot - (1 - mu_sum) * nonLinear > 0);
+  return(dual_Eval() > 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////
+////////// random direction in l constraints + 1D dual optimization
+//////////
 
 bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t,
                             const unsigned int& s,
                             std::vector<unsigned int> l,
                             std::vector<unsigned int> r)
 {
+  update_dual_parameters_l_r(minCost, t, s, l, r);
+
+  /// CHOOSE ONE MU RANDOMLY
+  // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
+
+  std::vector<double> u;
+  u.reserve(nb_l + nb_r);
+  for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
+  for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}
+
+  // build the 1D dual
+  // optimize it
+  //std::array<double, 2> res = dual1D_ArgmaxMax();
+
   return(false);
 }
 

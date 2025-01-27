@@ -8,9 +8,9 @@
 Rcpp::loadModule("FLATOPMD", TRUE)
 Rcpp::loadModule("DUSTMODULEMD", TRUE)
 
-#' dust.partitioner.MD
+#' dust.object.MD
 #'
-#' @description Generates a DUST partitioner
+#' @description Generates a DUST object
 #'
 #' @param model A character string specifying the model for the data. The default is \code{gauss}. Available models are:
 #' \itemize{
@@ -42,7 +42,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #' @param nb_r number of right constraints
 #' @param nbLoops number of iterations in the algorithm for maximizing the dual function
 #'
-#' @return a DUST partitioner object that provides methods:
+#' @return a DUST object that provides methods:
 #' \itemize{
 #'   \item \code{prepare}, for preparing the algorithm;
 #'   \item \code{compute}, once fit has been called, for computing the optimal partition of the data;
@@ -50,7 +50,7 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 #'   \item \code{quick}, a wrapper for the 3 methods.
 #' }
 #' @examples
-#' dust.partitioner.MD()
+#' dust.object.MD()
 dust.object.MD <- function(
     model = "gauss"
     , method = "detIndex_Eval4"
