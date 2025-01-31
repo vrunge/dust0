@@ -394,6 +394,7 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
   for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+  ///////
   for (unsigned int j = 0; j < nb_l; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
@@ -402,6 +403,7 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
       constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
     }
   }
+  ///////
   for (unsigned int j = 0; j < nb_r; j++)
   {
     linearTerm(nb_l + j) = (costRecord[s] - costRecord[r[j]]) / (s - r[j]);
@@ -410,7 +412,6 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
       constraintMean(row, nb_l + j) = (cumsum(row,s) - cumsum(row, r[j])) / (s - r[j]);
     }
   }
-
 }
 
 
@@ -431,7 +432,7 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost,
 {
   update_dual_parameters_l(minCost, t, s, l);
 
-  /// CHOOSE ONE MU RANDOMLY
+  /// CHOOSE ONE MU RANDOMLY. Only using left constraints
   // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
   std::vector<double> u;
   u.reserve(nb_l);
@@ -449,11 +450,76 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////
+////////// random direction in l constraints + 1D dual optimization
+//////////
+
+bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
+                           const unsigned int& s,
+                           std::vector<unsigned int> l,
+                           std::vector<unsigned int> r)
+{
+  update_dual_parameters_l_r(minCost, t, s, l, r);
+  /// CHOOSE ONE MU RANDOMLY
+  // Random direction u in the positive orthant with sign included:
+  /// (-1) mu for left constraint
+  /// (+1) mu for right constraint
+  std::vector<double> u;
+  u.reserve(nb_l + nb_r);
+
+  /// push_back => START by the end
+  for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
+  for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}
+
+  //Rcout << "start" << std::endl;
+  //for (unsigned int i = 0; i < nb_l + nb_r; i++){Rcout << u[i] << std::endl;}
+  //Rcout << "end" << std::endl;
+  //Rcout << "start2 " << t  << std::endl;
+  //for (unsigned int i = 0; i < nb_l; i++){Rcout << l[i] << std::endl;}
+  //Rcout <<  s  << std::endl;
+  //for (unsigned int i = 0; i < nb_r; i++){Rcout << r[i] << std::endl;}
+  //Rcout << "end2" << std::endl;
+  //
+  // build the 1D dual
+  //
+  arma::colvec b(d);
+  for (unsigned int row = 0; row < d; row++)
+  {
+    b(row) = 0;
+    for (unsigned int i = 0; i < nb_l + nb_r; i++)
+    {
+      b(row) += u[i] * constraintMean(row, i);
+    }
+  }
+  double D = 0;
+  double e = 0;
+  for (unsigned int i = 0; i < nb_l + nb_r; i++)
+  {
+    D += u[i];
+    e += u[i]*linearTerm(i);
+  }
+  double argmax = 0; // initial value for finding max
+  //
+  // optimize the 1D dual with dual1D_Max(argmax,a,b,c,d,e,f)
+  // a = objectiveMean
+  double c = 1;
+  // f = constantTerm
+
+  return(dual1D_Eval(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
+  //return(dual1D_Max(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // BARYCENTRE test
 // BARYCENTRE test
 // BARYCENTRE test
 
-bool DUST_MD::dualMaxAlgo1(const double& minCost,
+bool DUST_MD::dualMaxAlgo2(const double& minCost,
                            const unsigned int& t,
                            const unsigned int& s,
                            std::vector<unsigned int> l,
@@ -490,37 +556,6 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost,
 
   return(dual_Eval() > 0);
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////
-////////// random direction in l constraints + 1D dual optimization
-//////////
-
-bool DUST_MD::dualMaxAlgo2(const double& minCost, const unsigned int& t,
-                            const unsigned int& s,
-                            std::vector<unsigned int> l,
-                            std::vector<unsigned int> r)
-{
-  update_dual_parameters_l_r(minCost, t, s, l, r);
-
-  /// CHOOSE ONE MU RANDOMLY
-  // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
-
-  std::vector<double> u;
-  u.reserve(nb_l + nb_r);
-  for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
-  for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}
-
-  // build the 1D dual
-  // optimize it
-  //std::array<double, 2> res = dual1D_ArgmaxMax();
-
-  return(false);
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -584,7 +619,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   arma::colvec a = arma::colvec(d, arma::fill::zeros);
   arma::colvec b = arma::colvec(d, arma::fill::zeros);
   double c = 1;
-  double d;
+  double D;
   double e;
   double f = constantTerm;
   /// the index to consider in the dual for mu
@@ -594,7 +629,8 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   /////// COORDINATE DESCENT MAIN LOOP
   ///////  ///////  ///////  ///////  ///////  ///////
   unsigned int k_dual;
-  std::array<double, 2> argmaxMax = { 0, -std::numeric_limits<double>::infinity() };
+  double Max = -std::numeric_limits<double>::infinity();
+  double argmax = 0;
 
   for (unsigned int k = 0; k < nb_Loops; k++)
   {
@@ -611,16 +647,16 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     /// c, d, e, f
     for(unsigned int j = 0; j < nb_l_r; j++){c += sign[j]*mu(j);}
     c -= sign[k_dual]*mu(k_dual);
-    d = sign[k_dual];
+    D = sign[k_dual];
     e = sign[k_dual]*linearTerm[k_dual];
     for(unsigned int j = 0; j < nb_l_r; j++)
     {
       if(j != k_dual){f += sign[j]*mu(j)*linearTerm[j];}
     }
 
-    argmaxMax = dual1D_ArgmaxMax(a, b, c, d, e, f);  //// FIND ARGMAX AND MAX
-    if(argmaxMax[1] > 0){return true;}  /// early return and/or update mu
-    mu(k_dual) = argmaxMax[0];          //// UPDATE MU
+    Max = dual1D_Max(argmax, a, b, c, D, e, f);  //// FIND ARGMAX AND MAX
+    if(Max > 0){return true;}  /// early return and/or update mu
+    mu(k_dual) = argmax;          //// UPDATE MU
   }
   return(false);
 }

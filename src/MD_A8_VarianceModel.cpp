@@ -37,7 +37,7 @@ double Variance_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
-std::array<double, 2> Variance_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+std::array<double, 2> Variance_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
 
@@ -69,7 +69,7 @@ void Variance_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& co
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const
 {
   return(-std::numeric_limits<double>::infinity());
 }
@@ -77,11 +77,12 @@ double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma
 ////////////////////////////////////////////////////////////////////////////////
 
 
-std::array<double, 2> Variance_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
-{
-  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
 
-  return(ArgmaxMax);
+double Variance_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
+{
+  double Max = -std::numeric_limits<double>::infinity();
+
+  return(Max);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

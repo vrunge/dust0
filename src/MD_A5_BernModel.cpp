@@ -42,7 +42,7 @@ double Bern_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
-std::array<double, 2> Bern_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+std::array<double, 2> Bern_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
 
@@ -50,13 +50,13 @@ std::array<double, 2> Bern_MD::muInterval(const arma::colvec& a, const arma::col
   {
     if (a[i] > 0 && b[i] < 0){interval[1] = std::min(interval[1], -a[i]/b[i]);}
     else if (a[i] < 0 && b[i] > 0) {interval[0] = std::max(interval[0], -a[i]/b[i]);}
-    if (c-a[i] > 0 && d-b[i] < 0){interval[1] = std::min(interval[1], -(c-a[i])/(d-b[i]));}
-    else if (c-a[i] < 0 && d-b[i] > 0) {interval[0] = std::max(interval[0], -(c-a[i])/(d-b[i]));}
+    if (c-a[i] > 0 && d-b[i] < 0){interval[1] = std::min(interval[1], -(c-a[i])/(D-b[i]));}
+    else if (c-a[i] < 0 && d-b[i] > 0) {interval[0] = std::max(interval[0], -(c-a[i])/(D-b[i]));}
   }
 
-  if (c > 0 && d < 0)
-  {interval[1] = std::min(interval[1], -c / d);}
-  else if (c < 0 && d > 0){interval[0] = std::max(interval[0], -c / d);}
+  if (c > 0 && D < 0)
+  {interval[1] = std::min(interval[1], -c / D);}
+  else if (c < 0 && D > 0){interval[0] = std::max(interval[0], -c / D);}
 
   return(interval);
 }
@@ -92,12 +92,15 @@ double Bern_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::co
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::array<double, 2> Bern_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
-{
-  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
+////////////////////////////////////////////////////////////////////////////////
 
-  return(ArgmaxMax);
+double Bern_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
+{
+  double Max = -std::numeric_limits<double>::infinity();
+
+  return(Max);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

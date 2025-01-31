@@ -2,7 +2,7 @@
 % Please edit documentation in R/DustPartitioner_MD.R
 \name{dust.object.MD}
 \alias{dust.object.MD}
-\title{dust.partitioner.MD}
+\title{dust.object.MD}
 \usage{
 dust.object.MD(
   model = "gauss",
@@ -48,7 +48,7 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
 \item{nbLoops}{number of iterations in the algorithm for maximizing the dual function}
 }
 \value{
-a DUST partitioner object that provides methods:
+a DUST object that provides methods:
 \itemize{
   \item \code{prepare}, for preparing the algorithm;
   \item \code{compute}, once fit has been called, for computing the optimal partition of the data;
@@ -57,8 +57,8 @@ a DUST partitioner object that provides methods:
 }
 }
 \description{
-Generates a DUST partitioner
+Generates a DUST object
 }
 \examples{
-dust.partitioner.MD()
+dust.object.MD()
 }

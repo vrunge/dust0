@@ -59,18 +59,34 @@ protected:
   std::vector<double> costRecord;
   int nb_Loops; // number of loops in optimization step (For dual max)
 
+
+  ///////////////////////////////////////////////////////////////////////////
+  ///
+  /// VIRTUAL START
+  ///
   /// computation on data
   virtual double Cost(const unsigned int& t, const unsigned int& s) const = 0;
   virtual double statistic(const double& value) const = 0;
 
   /// dual domain bounds
   virtual double muMax(const double& a, const double& b) const = 0;
-  virtual std::array<double, 2> muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const = 0;
+  virtual std::array<double, 2> muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const = 0;
   virtual void clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const = 0;
 
   /// dual evaluation
-  virtual double dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
-  virtual std::array<double, 2> dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
+  virtual double dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const = 0;
+  virtual double dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const = 0;
+
+  /// dual non linear function
+  virtual double Dstar(const double& x) const = 0;
+  virtual double DstarPrime(const double& x) const = 0;
+  virtual double DstarSecond(const double& x) const = 0;
+
+  virtual std::string get_model() const = 0;
+  ///
+  /// VIRTUAL END
+  ///
+  ///////////////////////////////////////////////////////////////////////////
 
   // arma::colvec objectiveMean;
   // arma::dmat constraintMean;
@@ -80,12 +96,6 @@ protected:
   double dual_Eval();
   void update_dual_parameters_l(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l);
   void update_dual_parameters_l_r(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
-  /// dual non linear function
-  virtual double Dstar(const double& x) const = 0;
-  virtual double DstarPrime(const double& x) const = 0;
-  virtual double DstarSecond(const double& x) const = 0;
-
-  virtual std::string get_model() const = 0;
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 
@@ -103,8 +113,8 @@ private:
   // --- // MAX DUAL METHODS // --- //
   ////////////////////////////////////
   // 0: random eval
-  // 1: exact eval (if possible, otherwise, -inf (OP))
-  // 2:
+  // 1: random direction, exact evaluation in this direction
+  // 2: barycenter evaluation
   // 3: coordinate descent
   // 4: Quasi-Newton
   // 5: PELT
@@ -134,24 +144,30 @@ private:
 
   std::vector<int> changepointRecord;
 
-  /////  /////  /////  /////
-  /////  /////  /////  ///// link to constraints (row )
+  ///////////////////////////////////////
+  ///
+  /// PARAMETERS defining the DUAL FUNCTION
+  ///
+  /// link to constraints (row)
   /// vector size nb_l_r (= number of constraints)
   ///
   arma::rowvec mu; /// for the optimization step
   arma::rowvec mu_max; /// constraints on mu (case no right constraint)
-  arma::rowvec inv_max;  /// 1/max
-  arma::rowvec grad;   /// grad in the optimization, of the dual
-
-  arma::rowvec linearTerm; /// sum (pm 1)mu Delta Q
-  double constantTerm;
   /////  /////  /////  ///// link to dimension (column)
   /// vector size d = dimension
-
   arma::colvec objectiveMean; // mean between s and t
   arma::dmat constraintMean; // mean between all r and s   /// size d x nb_l_r
+  arma::rowvec linearTerm; /// sum (pm 1)mu Delta Q
+  double constantTerm;
+  ///
+  ///
+  ///
+  ///////////////////////////////////////
+
 
   arma::colvec m_value; // m(mu)
+  arma::rowvec inv_max;  /// 1/max
+  arma::rowvec grad;   /// grad in the optimization, of the dual
   arma::colvec nonLinearGrad; // Dstar'(m(mu))
 
   arma::dmat Identity; /// size nb_l_r x nb_l_r

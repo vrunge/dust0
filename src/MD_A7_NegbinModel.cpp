@@ -41,7 +41,7 @@ double Negbin_MD::muMax(const double& a, const double& b) const
 }
 
 
-std::array<double, 2> Negbin_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
+std::array<double, 2> Negbin_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
 
@@ -51,9 +51,9 @@ std::array<double, 2> Negbin_MD::muInterval(const arma::colvec& a, const arma::c
     else if (a[i] < 0 && b[i] > 0) {interval[0] = std::max(interval[0], -a[i]/b[i]);}
   }
 
-  if (c > 0 && d < 0)
-  {interval[1] = std::min(interval[1], -c / d);}
-  else if (c < 0 && d > 0){interval[0] = std::max(interval[0], -c / d);}
+  if (c > 0 && D < 0)
+  {interval[1] = std::min(interval[1], -c / D);}
+  else if (c < 0 && D > 0){interval[0] = std::max(interval[0], -c / D);}
 
   return(interval);
 }
@@ -84,7 +84,7 @@ void Negbin_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& cons
 ////////////////////////////////////////////////////////////////////////////////
 
 
-double Negbin_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Negbin_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const
 {
   return(-std::numeric_limits<double>::infinity());
 }
@@ -92,11 +92,11 @@ double Negbin_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::
 ////////////////////////////////////////////////////////////////////////////////
 
 
-std::array<double, 2> Negbin_MD::dual1D_ArgmaxMax(arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
+double Negbin_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
 {
-  std::array<double, 2> ArgmaxMax = {0, -std::numeric_limits<double>::infinity() };
+  double Max = -std::numeric_limits<double>::infinity();
 
-  return(ArgmaxMax);
+  return(Max);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
