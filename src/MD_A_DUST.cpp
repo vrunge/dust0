@@ -333,12 +333,15 @@ double DUST_MD::dual_Eval(double &nonLinear)
 {
   double mu_sum = 0;
   for (unsigned int i = 0; i < mu.n_elem; i++){mu_sum += mu(i);}
-  double coeff = pow(1 + mu_sum, -1);
+  const double coeff = pow(1 + mu_sum, -1);
 
-  double Linear = arma::dot(mu, linearTerm);
+  const double Linear = arma::dot(mu, linearTerm);
   nonLinear = 0;
   for (unsigned int i = 0; i < d; i++)
-    nonLinear += Dstar(coeff * (objectiveMean(i) + arma::dot(mu, constraintMean.row(i))));
+  {
+    m_value(i) = arma::dot(mu, constraintMean.row(i));
+    nonLinear += Dstar(coeff * (objectiveMean(i) + m_value(i)));
+  }
 
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
@@ -725,7 +728,6 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   double test_value = constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
 
   if (test_value > 0) { return true; } // PELT test
-  return false;
   //
   //
   // ######### // TANGENT HYPERPLANE TEST // ######### //
@@ -739,22 +741,12 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // First compute the constraint-related objects
   unsigned l_size = l.size(); // !!! UPDATED IN OPTIM !!! //
 
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0) / d;
-
   // Initialize the constraint mean matrix, which contains the mean-vectors associated with each constraint as columns
   // + Initialize mu_max, which is based on the value of the value of each mean-vector compared to the value of the "objective" mean-vector
-  unsigned int j = 0;
-  for (auto k: l)
+  inv_max.resize(l_size);
+  for (auto col = 0; col < l_size; col++)
   {
-    double constraint_mean_sum = 0;
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraint_mean_sum += constraintMean(row, j);
-    }
-
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
-    inv_max(j) = pow(mu_max(j), -1);
-    j++;
+    inv_max(col) = pow(mu_max(col), -1);
   }
 
   // Coordinates of the point that maximizes the hyperplane tangent defined at the current mu (init)
@@ -771,10 +763,9 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   for (unsigned int col = 0; col < l_size; col++)
   {
     double dot_product = 0;
-    auto col_k = constraintMean.col(col);
     for (unsigned int row = 0; row < d; row++)
     {
-      dot_product += nonLinearGrad(row) * (objectiveMean(row) - col_k(row));
+      dot_product += nonLinearGrad(row) * (objectiveMean(row) - constraintMean(row, col));
     }
     grad(col) = linearTerm(col) + nonLinear - dot_product;
 
