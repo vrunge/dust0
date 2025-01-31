@@ -11,6 +11,8 @@ void clip_stepsize_to_negative_element(const arma::rowvec& mu, const arma::rowve
   unsigned size = mu.n_elem;
   for (auto i = 0; i < size; i++)
   {
+    if (direction(i) > 0)
+      return;
     double distance_to_zero = -mu(i) / direction(i);
     if (distance_to_zero < max_stepsize)
       max_stepsize = distance_to_zero;
@@ -26,7 +28,7 @@ void clip_stepsize_to_negative_sum(const std::vector<int>& sign, const double& m
 
   if (direction_sum < 0)
   {
-    double new_stepsize = -(1 + mu_sum)/direction_sum;
+    double new_stepsize = -(1 + mu_sum) / direction_sum;
     if (new_stepsize < max_stepsize)
     {
       max_stepsize = new_stepsize;
