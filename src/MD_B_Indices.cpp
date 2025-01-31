@@ -47,11 +47,11 @@ void DeterministicIndices_MD::reset_prune()
   // reset iterators
   if (list.size() > 1)
   {
-    begin_l = list.begin();
-    current = begin_l + 1;
+    current = list.begin() + 1;
+    begin_l = nb_l > 0 ? current - 1 : current;
 
     // if we want smallest possible r-side constraints -> begin_r -> end_r (in class)
-    int right_size = list.size() - 2;
+    int right_size = list.end() - current;
     if (right_size <= nb_r)
     {
       end_r = list.end();
@@ -82,7 +82,7 @@ void DeterministicIndices_MD::prune_current()
 {
   unsigned int gap_r = end_r - current; // end_r -> begin_r
   current = list.erase(current);
-  end_r = current + gap_r - 1; // same
+  end_r = current + gap_r; // same
 }
 
 ////////////////

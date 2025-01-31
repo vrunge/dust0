@@ -195,10 +195,8 @@ void DUST_MD::update_partition()
     // DUST loop
     while (indices->check())
     {
-      auto l = indices->get_constraints_l();
-      auto r = indices->get_constraints_r();
       ///// OUTPUTLOG
-      //Rcout << l.size() << ", " << r.size() << std::endl;
+      Rcout << "fetching constraints" << std::endl;
       if ((this->*current_test)(minCost,
                                 t,
                                 *(indices->current),
@@ -703,7 +701,8 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
 
 
   // ######### // PELT TEST // ######### //
-  // Formula: Dst - D*(Sst)              //
+  // Formula: Dst - D*(Sst) //
+
 
   Rcout << std::endl << "t: " << t << "; s: " << s << std::endl;
   Rcout << "l: " << std::endl;
@@ -714,12 +713,14 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
     Rcout << rk << "; ";
 
   update_dual_parameters_l(minCost, t, s, l);
+  Rcout << "updated parameters..." << std::endl;
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
   for (unsigned int row = 0; row < d; row++)
   {
     nonLinear += Dstar(objectiveMean(row));
   }
+  Rcout << "computed nonLinear ..." << std::endl;
 
   double test_value = constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
 
