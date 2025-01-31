@@ -331,6 +331,25 @@ double DUST_MD::dual_Eval()
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
+double DUST_MD::dual_Eval(double &nonLinear)
+{
+  double mu_sum = 0;
+  for (unsigned int i = 0; i < mu.n_elem; i++){mu_sum += mu(i);}
+  double coeff = pow(1 + mu_sum, -1);
+
+  double Linear = arma::dot(mu, linearTerm);
+  nonLinear = 0;
+  for (unsigned int i = 0; i < d; i++)
+    nonLinear += Dstar(coeff * (objectiveMean(i) + arma::dot(mu, constraintMean.row(i))));
+
+  return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
+}
+
+void DUST_MD::grad_Eval()
+{
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +358,7 @@ double DUST_MD::dual_Eval()
 void DUST_MD::update_dual_parameters_l(const double& minCost,
                                        const unsigned int& t,
                                        const unsigned int& s,
-                                       std::vector<unsigned int> l)
+                                       std::vector<unsigned int>& l)
 {
   nb_l = l.size();
 
@@ -350,8 +369,8 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
   linearTerm.resize(nb_l);
   constraintMean.resize(d, nb_l);
 
-  //Rcout << "test2"   <<  std::endl;
-  //Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
+  Rcout << "test2"   <<  std::endl;
+  Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
@@ -378,8 +397,8 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
 void DUST_MD::update_dual_parameters_l_r(const double& minCost,
                                         const unsigned int& t,
                                         const unsigned int& s,
-                                        std::vector<unsigned int> l,
-                                        std::vector<unsigned int> r)
+                                        std::vector<unsigned int>& l,
+                                        std::vector<unsigned int>& r)
 {
   nb_l = l.size();
   nb_r = r.size();
@@ -686,21 +705,26 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
 
-  constantTerm = - (minCost - costRecord[s]) / (t - s); // Dst // !!! CAPTURED IN OPTIM !!! //
+  Rcout << std::endl << "t: " << t << "; s: " << s << std::endl;
+  Rcout << "l: " << std::endl;
+  for (auto lk: l)
+    Rcout << lk << "; ";
+  Rcout << "r: " << std::endl;
+  for (auto rk: r)
+    Rcout << rk << "; ";
 
-  arma::subview_col col_t = cumsum.col(t);
-  arma::subview_col col_s = cumsum.col(s);
+  update_dual_parameters_l(minCost, t, s, l);
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
   for (unsigned int row = 0; row < d; row++)
   {
-    objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
     nonLinear += Dstar(objectiveMean(row));
   }
 
   double test_value = constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
 
   if (test_value > 0) { return true; } // PELT test
+  return false;
   //
   //
   // ######### // TANGENT HYPERPLANE TEST // ######### //
@@ -714,12 +738,6 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // First compute the constraint-related objects
   unsigned l_size = l.size(); // !!! UPDATED IN OPTIM !!! //
 
-  linearTerm.resize(l_size);
-  constraintMean.resize(d, l_size);
-
-  mu_max.resize(l_size);
-  inv_max.resize(l_size);
-
   double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0) / d;
 
   // Initialize the constraint mean matrix, which contains the mean-vectors associated with each constraint as columns
@@ -728,11 +746,8 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   for (auto k: l)
   {
     double constraint_mean_sum = 0;
-    linearTerm(j) = (costRecord[s] - costRecord[k]) / (s - k);
-    auto col_k = cumsum.col(k);
     for (unsigned int row = 0; row < d; row++)
     {
-      constraintMean(row, j) = (col_s(row) - col_k(row)) / (s - k);
       constraint_mean_sum += constraintMean(row, j);
     }
 

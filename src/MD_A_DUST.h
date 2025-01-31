@@ -94,8 +94,10 @@ protected:
   // double constantTerm;
   // arma::rowvec mu;
   double dual_Eval();
-  void update_dual_parameters_l(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l);
-  void update_dual_parameters_l_r(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  double dual_Eval(double &nonLinear);
+  void grad_Eval();
+  void update_dual_parameters_l(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int>& l);
+  void update_dual_parameters_l_r(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int>& l, std::vector<unsigned int>& r);
 
   //////////// RANDOM NUMBER GENERATOR ////////////
 

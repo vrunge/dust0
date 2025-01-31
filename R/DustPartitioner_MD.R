@@ -54,8 +54,6 @@ Rcpp::loadModule("DUSTMODULEMD", TRUE)
 dust.object.MD <- function(
     model = "gauss"
     , method = "detIndex_Eval4"
-    , nb_l = NULL
-    , nb_r = NULL
     , nbLoops = 10
 )
 {
