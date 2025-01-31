@@ -1074,7 +1074,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   unsigned int j = 0;
   for (auto k: a)
   {
-    linearTerm(j) = (costRecord[s] - sign[j] * costRecord[k]) / (s - k);
+    linearTerm(j) = sign[j] * (costRecord[s] - costRecord[k]) / (s - k);
     auto col_k = cumsum.col(k);
     for (unsigned int row = 0; row < d; row++)
     {
@@ -1172,7 +1172,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
         linDot += mu(col) * linearTerm(col);
       }
 
-      inv_sum = pow(1 - mu_sum, -1);
+      inv_sum = pow(1 + mu_sum, -1);
       nonLinear = 0;
       for (unsigned int row = 0; row < d; row++)
       {
@@ -1189,7 +1189,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
       // 3. Scale dk until test is valid
       unsigned int iter = 0;
-      while(new_test < test_value + arma::dot(mu_diff, gradCondition) && iter < 100)
+      while(new_test < test_value + arma::dot(mu_diff, gradCondition) && iter < nb_Loops)
       {
         for(unsigned int col = 0; col < l_size; col++)
         {
@@ -1199,7 +1199,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
           mu_sum -= sign[col] * mu_diff(col);
         }
 
-        inv_sum = pow(1 - mu_sum, -1);
+        inv_sum = pow(1 + mu_sum, -1);
         nonLinear = 0;
         for (unsigned int row = 0; row < d; row++)
         {

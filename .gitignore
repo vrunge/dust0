@@ -6,4 +6,9 @@ src/*.o
 src/*.so
 src/*.dll
 .Rproj.user
+<<<<<<< HEAD
 output.log
+=======
+R/test_script.r
+*.log
+>>>>>>> 50cb4fd (created branch for reabse)
