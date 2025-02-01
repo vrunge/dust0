@@ -331,9 +331,8 @@ double DUST_MD::dual_Eval()
 
 double DUST_MD::dual_Eval(double &nonLinear)
 {
-  double mu_sum = 0;
-  for (unsigned int i = 0; i < mu.n_elem; i++){mu_sum += mu(i);}
-  double coeff = pow(1 + mu_sum, -1);
+  double mu_sum = std::accumulate(mu.begin(), mu.end(), 0.);
+  double coeff = pow(1+ mu_sum, -1);
 
   double Linear = arma::dot(mu, linearTerm);
   nonLinear = 0;
@@ -343,9 +342,17 @@ double DUST_MD::dual_Eval(double &nonLinear)
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
-void DUST_MD::grad_Eval()
-{
-
+void DUST_MD::grad_Eval(const double nonLinear)
+{  
+  for (auto col = 0; col < mu.size(); col++)
+  {
+    double dot_product = 0.;
+    for (auto row = 0; row < m_value.size(); row++)
+    {
+      dot_product += DstarPrime(m_value(row)) * (constraintMean(row, col) - m_value(row));
+    }
+    grad(col) = nonLinear + dot_product + linearTerm(col);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,11 +375,14 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
   constraintMean.resize(d, nb_l);
 
   Rcout << "test2"   <<  std::endl;
-  Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
+  Rcout << nb_l << " - "<< nb_r << " - "<< nb_max << std::endl;
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+  for (unsigned int row = 0; row < d; row++)
+  { 
+    objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);
+  }
 
   for (unsigned int j = 0; j < nb_l; j++)
   {
@@ -687,8 +697,8 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
-                           const unsigned int& s,
+bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
+                           const unsigned int &s,
                            std::vector<unsigned int> l,
                            std::vector<unsigned int> r)
 {
@@ -722,7 +732,7 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   }
   Rcout << "computed nonLinear ..." << std::endl;
 
-  double test_value = constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
+  double test_value = -constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
 
   if (test_value > 0) { return true; } // PELT test
   return false;
@@ -739,24 +749,6 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // First compute the constraint-related objects
   unsigned l_size = l.size(); // !!! UPDATED IN OPTIM !!! //
 
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0) / d;
-
-  // Initialize the constraint mean matrix, which contains the mean-vectors associated with each constraint as columns
-  // + Initialize mu_max, which is based on the value of the value of each mean-vector compared to the value of the "objective" mean-vector
-  unsigned int j = 0;
-  for (auto k: l)
-  {
-    double constraint_mean_sum = 0;
-    for (unsigned int row = 0; row < d; row++)
-    {
-      constraint_mean_sum += constraintMean(row, j);
-    }
-
-    mu_max(j) = muMax(mean_sum, constraint_mean_sum / d);
-    inv_max(j) = pow(mu_max(j), -1);
-    j++;
-  }
-
   // Coordinates of the point that maximizes the hyperplane tangent defined at the current mu (init)
   arma::rowvec tangent_max(l_size); // !!! SHRUNK IN OPTIM !!! //
   double grad_max = -std::numeric_limits<double>::infinity(); // !!! UPDATED IN OPTIM !!! //
@@ -765,19 +757,13 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   for (unsigned int row = 0; row < d; row++)
     nonLinearGrad(row) = DstarPrime(objectiveMean(row));
 
+  mu.fill(0.);
   grad.resize(l_size);
+  grad_Eval(nonLinear);
 
   // Grad and hyperplane tangent compuation (formula: linearTerm + nonLinear * t(1_p) + t(nonLinearGrad) * (Srs - Sst * t(1_p)))
   for (unsigned int col = 0; col < l_size; col++)
   {
-    double dot_product = 0;
-    auto col_k = constraintMean.col(col);
-    for (unsigned int row = 0; row < d; row++)
-    {
-      dot_product += nonLinearGrad(row) * (objectiveMean(row) - col_k(row));
-    }
-    grad(col) = linearTerm(col) + nonLinear - dot_product;
-
     double norm = grad(col) * inv_max(col);
     if (norm > grad_max)
     {
@@ -789,7 +775,10 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   if (grad_max > 0)
   {
     tangent_max(grad_argmax) = mu_max(grad_argmax); // maximum value on the hyperplane is at the corner of the simplex corresponding to the largest grad value
-    if (test_value + arma::dot(tangent_max, grad) <= 0) { return false; } // check if the tangent hyperplane ever reaches 0 on the simplex triangle (from concavity property of the dual)
+    if (test_value + arma::dot(tangent_max, grad) <= 0)
+    {
+      return false;
+    } // check if the tangent hyperplane ever reaches 0 on the simplex triangle (from concavity property of the dual)
   }
   else return false; // if grad is fully negative, then no improvement can be made on the test value
 
@@ -802,13 +791,6 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
   // Initialize all dynamic objects used in the op- //
   // timization recursion.                          //
   // ############################################## //
-
-  mu.resize(l_size);
-  for (unsigned int col = 0; col < l_size; col++)
-    mu(col) = 0;
-
-  double mu_sum = 0; // !!! UPDATED IN OPTIM !!! //
-  double inv_sum = 0; // !!! UPDATED IN OPTIM !!! //
 
   inverseHessian.resize(l_size, l_size);
   arma::dmat I = Identity.submat(0, 0, l_size - 1, l_size - 1);
@@ -827,7 +809,7 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
     // // ######################################### //
     // // ######################################### //
 
-    std::function<bool(std::vector<unsigned int>)> optim = [&] (std::vector<unsigned int> zero_index)
+    std::function<bool(std::vector<unsigned int>)> optim = [&] (std::vector<unsigned int> &&zero_index)
     {
       if (zero_index.size() > 0)
       {
@@ -876,55 +858,27 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
         // repeat until test is true
 
         // 1. Update mu and D(mu).
-        double linDot = 0; // mu.dot(linearTerm);
         for (unsigned int col = 0; col < l_size; col++)
         {
           mu_diff(col) = direction(col) * direction_scale;
-
-          mu(col) += mu_diff(col);
-          mu_sum += mu_diff(col);
-
-          linDot += mu(col) * linearTerm(col);
+          mu(col) -= mu_diff(col);
         }
 
-        inv_sum = pow(1 - mu_sum, -1);
-        nonLinear = 0;
-        for (unsigned int row = 0; row < d; row++)
-        {
-          m_value(row) = inv_sum * (objectiveMean(row) - arma::dot(mu, constraintMean.row(row)));
-          nonLinear += Dstar(m_value(row));
-        }
-
-        double new_test = constantTerm + linDot - (1 - mu_sum) * nonLinear;
+        double new_test = dual_Eval(nonLinear);
 
         // 2. define gradient condition
-        arma::rowvec gradCondition(l_size);
-        for (unsigned int col = 0; col < l_size; col++)
-          gradCondition(col) = m1 * grad(col);
+        arma::rowvec gradCondition = m1 * grad;
 
         // 3. Scale dk until test is valid
-        unsigned int iter = 0;
-        while(new_test < test_value + arma::dot(mu_diff, gradCondition) && iter < 100)
+        unsigned iter = 0;
+        while(new_test < test_value + arma::dot(mu_diff, gradCondition) && ++iter < 100)
         {
-          for(unsigned int col = 0; col < l_size; col++)
+          for(unsigned col = 0; col < l_size; col++)
           {
             mu_diff(col) *= .5;
-            mu(col) -= mu_diff(col);
-            linDot -= mu_diff(col) * linearTerm(col);
-            mu_sum -= mu_diff(col);
+            mu(col) += mu_diff(col);
           }
-
-          inv_sum = pow(1 - mu_sum, -1);
-          nonLinear = 0;
-          for (unsigned int row = 0; row < d; row++)
-          {
-            m_value(row) = inv_sum * (objectiveMean(row) - arma::dot(mu, constraintMean.row(row)));
-            nonLinear += Dstar(m_value(row));
-          }
-
-          new_test = constantTerm + linDot - (1 - mu_sum) * nonLinear; // update values
-
-          iter++;
+          new_test = dual_Eval(nonLinear);
         }
         test_value = new_test;
 
@@ -932,8 +886,8 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
         // If any null value, then shrink
         for (unsigned int col = 0; col < l_size; col++)
         {
-          if(mu(col) < 0) { mu_sum -= mu(col); mu(col) = 0; shrink = true; shrink_indices.push_back(col); }
-          else if(mu(col) == 0) { shrink = true; shrink_indices.push_back(col); }
+          if(mu(col) > 0) { mu(col) = 0.; shrink = true; shrink_indices.push_back(col); }
+          else if(mu(col) == 0.) { shrink = true; shrink_indices.push_back(col); }
         }
       };
 
@@ -943,17 +897,11 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
         grad_max = -std::numeric_limits<double>::infinity();
         grad_argmax = 0;
 
-        for (unsigned int row = 0; row < d; row++)
-          nonLinearGrad(row) = DstarPrime(m_value(row));
+        grad_Eval(nonLinear);
 
         // Update grad value.
         for (unsigned int col = 0; col < l_size; col++)
         {
-          double dot_product = 0;
-          auto col_k = constraintMean.col(col);
-          for (unsigned int row = 0; row < d; row++)
-            dot_product += nonLinearGrad(row) * (col_k(row) - m_value(row));
-          grad(col) = linearTerm(col) + nonLinear + dot_product;
           grad_diff(col) += grad(col);
           if (grad_diff(col) == 0)
           {
@@ -971,11 +919,13 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
 
         // maximum value on the hyperplane is at the corner of the simplex corresponding to the largest grad value. if no value positive, then it is at (0,...)
         if (grad_max > 0)
+        {
           tangent_max(grad_argmax) = mu_max(grad_argmax);
+        }
       };
 
       // Optim loop
-      unsigned int iter = 0;
+      unsigned iter = 0;
       do
       {
         // Update direction and intensity then clip it to stay within the bounds of the positive simplex
@@ -983,7 +933,7 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
         direction_scale = FindBoundaryCoef(mu, direction, inv_max, shrink, shrink_indices); // may trigger shrink if pushing past boundary
         if (shrink)
         {
-          return optim(shrink_indices);
+          return optim(std::move(shrink_indices));
         }
         if (direction_scale == 0) { return false; } // stops optimization if no movement is produced
 
@@ -998,20 +948,19 @@ bool DUST_MD::dualMaxAlgo4(const double& minCost, const unsigned int& t,
         // compute tangent max value
         double dot_product = 0;
         for (unsigned int col = 0; col < l_size; col++)
-          dot_product += grad(col) * (tangent_max(col) - mu(col));
+          dot_product += grad(col) * (tangent_max(col) + mu(col));
 
         if (test_value + dot_product <= 0) { return false; } // check if the tangent hyperplane ever reaches 0 on the simplex triangle (from concavity property of the dual)
 
         tangent_max(grad_argmax) = 0;
 
         // trigger shrinking, which reduces the dimension of the solution space by one
-        if (shrink) return optim(shrink_indices);
+        if (shrink) return optim(std::move(shrink_indices));
 
         // Update inverse hessian estimation
         updateHessian(inverseHessian, mu_diff, grad_diff, I);
         grad_diff = -grad;
-        iter++;
-      } while (iter < nb_Loops);
+      } while (++iter < nb_Loops);
 
       // Rcout << "Reached iter limit" << std::endl;
 
@@ -1248,7 +1197,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
         auto col_k = constraintMean.col(col);
         for (unsigned int row = 0; row < d; row++)
         {
-          dot_product += nonLinearGrad(row) * (col_k(row) - objectiveMean(row));
+          dot_product += nonLinearGrad(row) * (constraintMean(row, col) - objectiveMean(row));
         }
         grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
 

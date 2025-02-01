@@ -95,7 +95,7 @@ protected:
   // arma::rowvec mu;
   double dual_Eval();
   double dual_Eval(double &nonLinear);
-  void grad_Eval();
+  void grad_Eval(const double nonLinear);
   void update_dual_parameters_l(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int>& l);
   void update_dual_parameters_l_r(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int>& l, std::vector<unsigned int>& r);
 
