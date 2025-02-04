@@ -65,21 +65,24 @@ double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, do
   {
     if(D > 0)    ///  A mu^2 + B mu + C > 0, max in +INFTY
     {
-      Rcout << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
-      Rcout << c << " / " << D << " / " << e << " / " << f << std::endl;
+      //Rcout << "D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 " << std::endl;
       argmax = mu_interval[1];
-      Max = dual1D_Eval(mu_interval[1],a,b,c,D,e,f);
-      Rcout << argmax << std::endl;
-      Rcout << Max << std::endl;
-      Max = std::numeric_limits<double>::infinity();
-      return(Max);
+      //Rcout << argmax << std::endl;
+      //Rcout << Max << std::endl;
+      //Rcout << D << std::endl;
+      //Rcout << delta << std::endl;
+      //Rcout << DELTA2 << std::endl;
+      //throw std::runtime_error("Something went wrong! Stopping execution.");
+      return(std::numeric_limits<double>::infinity());
     }
     else if(D < 0)  ///  A mu^2 + B mu + C < 0, max in 0
     {
+      //Rcout << "D < 0 D < 0 D < 0 D < 0 D < 0 D < 0 " << std::endl;
       //Rcout << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
       //Rcout << c << " / " << D << " / " << e << " / " << f << std::endl;
       argmax = mu_interval[0];
-      Max = dual1D_Eval(mu_interval[0],a,b,c,D,e,f);
+      Max = dual1D_Eval(argmax,a,b,c,D,e,f);
+      //Rcout << Max << std::endl;
       //Rcout << argmax << std::endl;
       //Rcout << Max << std::endl;
       return(Max);
@@ -87,10 +90,12 @@ double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, do
   }
   else
   {
+    //Rcout << "root root root root root root root root root " << std::endl;
     double root = (-c + std::sqrt(DELTA2/delta))/D;
     argmax = (0 > root) ? 0 : root;
-    //Max = dual1D_Eval(argmax,a,b,c,D,e,f);
-    //return(Max);
+    Max = dual1D_Eval(argmax,a,b,c,D,e,f);
+    //Rcout << Max << std::endl;
+    return(Max);
   }
   return(Max);
 }

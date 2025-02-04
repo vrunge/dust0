@@ -4,13 +4,7 @@
 \alias{dust.object.MD}
 \title{dust.object.MD}
 \usage{
-dust.object.MD(
-  model = "gauss",
-  method = "detIndex_Eval4",
-  nb_l = NULL,
-  nb_r = NULL,
-  nbLoops = 10
-)
+dust.object.MD(model = "gauss", method = "detIndex_Eval4", nbLoops = 10)
 }
 \arguments{
 \item{model}{A character string specifying the model for the data. The default is \code{gauss}. Available models are:
@@ -41,11 +35,11 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
   \item \code{"Eval6"}:
 }}
 
+\item{nbLoops}{number of iterations in the algorithm for maximizing the dual function}
+
 \item{nb_l}{number of left constraints}
 
 \item{nb_r}{number of right constraints}
-
-\item{nbLoops}{number of iterations in the algorithm for maximizing the dual function}
 }
 \value{
 a DUST object that provides methods:

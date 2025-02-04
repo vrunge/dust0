@@ -196,7 +196,7 @@ void DUST_MD::update_partition()
     while (indices->check())
     {
       ///// OUTPUTLOG
-      Rcout << "fetching constraints" << std::endl;
+      //Rcout << "fetching constraints" << std::endl;
       if ((this->*current_test)(minCost,
                                 t,
                                 *(indices->current),
@@ -329,6 +329,9 @@ double DUST_MD::dual_Eval()
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 double DUST_MD::dual_Eval(double &nonLinear)
 {
   double mu_sum = 0;
@@ -367,8 +370,8 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
   linearTerm.resize(nb_l);
   constraintMean.resize(d, nb_l);
 
-  Rcout << "test2"   <<  std::endl;
-  Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
+  //Rcout << "test2"   <<  std::endl;
+  //Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
@@ -421,14 +424,18 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
     }
   }
   ///////
+  /// BIG DANGER = difference of two unsigned INT
+  /// BIG DANGER = difference of two unsigned INT
+  /// BIG DANGER = difference of two unsigned INT
   for (unsigned int j = 0; j < nb_r; j++)
   {
-    linearTerm(nb_l + j) = (costRecord[s] - costRecord[r[j]]) / (s - r[j]);
+    linearTerm(nb_l + j) = -(costRecord[s] - costRecord[r[j]]) / (r[j] - s);
     for (unsigned int row = 0; row < d; row++)
     {
-      constraintMean(row, nb_l + j) = (cumsum(row,s) - cumsum(row, r[j])) / (s - r[j]);
+      constraintMean(row, nb_l + j) = -(cumsum(row,s) - cumsum(row, r[j])) / (r[j] - s);
     }
   }
+
 }
 
 
@@ -488,14 +495,6 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
   for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}
 
-  //Rcout << "start" << std::endl;
-  //for (unsigned int i = 0; i < nb_l + nb_r; i++){Rcout << u[i] << std::endl;}
-  //Rcout << "end" << std::endl;
-  //Rcout << "start2 " << t  << std::endl;
-  //for (unsigned int i = 0; i < nb_l; i++){Rcout << l[i] << std::endl;}
-  //Rcout <<  s  << std::endl;
-  //for (unsigned int i = 0; i < nb_r; i++){Rcout << r[i] << std::endl;}
-  //Rcout << "end2" << std::endl;
   //
   // build the 1D dual
   //
@@ -521,9 +520,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   // a = objectiveMean
   double c = 1;
   // f = constantTerm
-
-  return(dual1D_Eval(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
-  //return(dual1D_Max(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
+  return(dual1D_Max(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
 }
 
 
@@ -588,58 +585,32 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
                            std::vector<unsigned int> l,
                            std::vector<unsigned int> r)
 {
-  unsigned int l_size = l.size();
-  unsigned int r_size = r.size();
-  unsigned int nb_l_r = l_size + r_size; /// not equal to nb_max (if no size for getting constraints)
+  //Rcout << "DUST_MD DUST_MD DUST_MD DUST_MD DUST_MD " << std::endl;
 
-  ///////  ///////  ///////  ///////  ///////  ///////
-  /////// DUAL parameter CONSTRUCTION
-  ///////  ///////  ///////  ///////  ///////  ///////
-  ///////
-  ///////  AAAAA SIGNS: vector of -1s and 1s depending on whether constraint is to the left or right resp.
-  ///////
+  update_dual_parameters_l_r(minCost, t, s, l, r);
+  unsigned int nb_l_r = nb_l + nb_r;
+
   std::vector<int> sign;
   sign.reserve(nb_l_r); //// number of constraints
   for (unsigned int i = 0; i < nb_l_r; i++)
-    sign.push_back(i < l_size ? -1 : 1);
-  ///////
-  /////// BBBBB: constantTerm AND objectiveMean
-  ///////
-  constantTerm = - (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
-  ///////
-  /////// CCCCC: linearTerm AND constraintMean
-  ///////
-  linearTerm.resize(nb_l_r);
-  constraintMean.resize(d, nb_l_r);
-  for (unsigned int j = 0; j < l_size ; j++)
-  {
-    linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
-    for (unsigned int row = 0; row < d; row++)
-      {constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);}
-  }
-  for (unsigned int j = 0; j < r_size ; j++)
-  {
-    linearTerm(l_size + j) = (costRecord[s] - costRecord[r[j]]) / (s - r[j]);
-    for (unsigned int row = 0; row < d; row++)
-      {constraintMean(row, l_size + j) = (cumsum(row,s) - cumsum(row,r[j])) / (s - r[j]);}
-  }
-  ///////  ///////  ///////  ///////  ///////  ///////
-  /////// DUAL parameter CONSTRUCTION END
-  ///////  ///////  ///////  ///////  ///////  ///////
+    sign.push_back(i < nb_l ? -1 : 1);
+
 
   ///////
-  /////// mu INITIAL = 0
+  /////// 1D dual parameters
   ///////
-  mu.resize(nb_l_r);
-  for (unsigned int i = 0; i < nb_l_r; i++){mu(i) = 0;}
   arma::colvec a = arma::colvec(d, arma::fill::zeros);
   arma::colvec b = arma::colvec(d, arma::fill::zeros);
   double c = 1;
   double D;
   double e;
   double f = constantTerm;
-  /// the index to consider in the dual for mu
+
+
+  ///////
+  /////// mu INITIAL = 0
+  ///////
+  for (unsigned int i = 0; i < nb_l_r; i++){mu(i) = 0;}
 
 
   ///////  ///////  ///////  ///////  ///////  ///////
@@ -651,8 +622,16 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
 
   for (unsigned int k = 0; k < nb_Loops; k++)
   {
+    for(unsigned int row = 0; row < d; row++)
+    {
+      a(row) = objectiveMean(row);
+    }
+    c = 1;
+    f = constantTerm;
+
+
     //// THE index for mu to optimize
-    k_dual  = nb_Loops % nb_l_r;
+    k_dual  = k % nb_l_r;
     //// UPDATE the coefficients a,b,c,d,e,f
     /// a and b
     for(unsigned int j = 0; j < nb_l_r; j++)
@@ -662,8 +641,10 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     for(unsigned int row = 0; row < d; row++){b(row) = sign[k_dual]*constraintMean(row,k_dual);}
 
     /// c, d, e, f
-    for(unsigned int j = 0; j < nb_l_r; j++){c += sign[j]*mu(j);}
-    c -= sign[k_dual]*mu(k_dual);
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){c += sign[j]*mu(j);}
+    }
     D = sign[k_dual];
     e = sign[k_dual]*linearTerm[k_dual];
     for(unsigned int j = 0; j < nb_l_r; j++)
@@ -672,6 +653,10 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     }
 
     Max = dual1D_Max(argmax, a, b, c, D, e, f);  //// FIND ARGMAX AND MAX
+    //Rcout << "dual1D_Max " << std::endl;
+    //Rcout << Max << std::endl;
+    //Rcout << argmax << std::endl;
+    //Rcout << f << " / " << constantTerm << std::endl;
     if(Max > 0){return true;}  /// early return and/or update mu
     mu(k_dual) = argmax;          //// UPDATE MU
   }
