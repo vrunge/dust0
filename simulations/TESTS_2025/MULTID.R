@@ -102,14 +102,14 @@ res4$nb
 #############################################
 
 d <- 5
-cl <- 2
-cr <- 3
-n <- 10000
+cl <- 1
+cr <- 4
+n <- 5000
 mu <- c(rep(4,n/2), rep(4, n/2))
 data <- matrix(rnorm(n* d, mu), nrow = n, ncol = d, byrow = FALSE)
 data <- t(data)
 #plot(data[1,])
-
+dim(data)
 pen <- 2*d*log(n)
 
 
@@ -124,7 +124,7 @@ res0$nb[length(res0$nb)]
 ###
 
 res1 <- dust.MD(data,
-                method = "detIndex_Eval1",
+                method = "randIndex_Eval1",
                 penalty = pen,
                 constraints_l = cl,
                 constraints_r = cr)
@@ -140,10 +140,10 @@ res1$nb - res0$nb
 
 
 res3 <- dust.MD(data,
-                method = "detIndex_Eval3",
+                method = "randIndex_Eval3",
                 penalty = pen,
                 constraints_l = cl,
-                constraints_r = cr, nbLoops = 20)
+                constraints_r = cr, nbLoops = d)
 res3$changepoints
 res3$nb
 res3$nb[length(res3$nb)]
@@ -174,9 +174,9 @@ df <- data.frame(
 
 # Plot with ggplot2
 ggplot(df, aes(x = x, y = y, color = group)) +
-  geom_line(size = 1) +
-  geom_point() +
-  labs(title = "Three Vectors on the Same Graph",
+  geom_line(size = 0.5) +
+  geom_point(size = 0) +
+  labs(title = "number of indices to save",
        x = "X-axis",
        y = "Values",
        color = "Legend") +
