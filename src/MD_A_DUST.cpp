@@ -729,7 +729,7 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
   }
   Rcout << "computed nonLinear ..." << std::endl;
 
-  double test_value = -constantTerm - nonLinear; // !!! UPDATED IN OPTIM !!! //
+  double test_value = -(constantTerm + nonLinear); // !!! UPDATED IN OPTIM !!! //
 
   if (test_value > 0) { return true; } // PELT test
   return false;
