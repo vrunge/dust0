@@ -17,7 +17,7 @@ class DUST_MD
 public:
   DUST_MD(int dual_max,
           bool random_constraint,
-          Nullable<int> nbLoops = Nullable<int>());
+          Nullable<unsigned> nbLoops = Nullable<unsigned>());
 
   virtual ~DUST_MD();
 
@@ -57,7 +57,7 @@ protected:
   const double m1 = 0.01;  // Armijo
   arma::dmat cumsum;
   std::vector<double> costRecord;
-  int nb_Loops; // number of loops in optimization step (For dual max)
+  unsigned nb_Loops; // number of loops in optimization step (For dual max)
 
 
   ///////////////////////////////////////////////////////////////////////////

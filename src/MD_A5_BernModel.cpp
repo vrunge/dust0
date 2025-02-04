@@ -4,7 +4,7 @@
 
 using namespace Rcpp;
 
-Bern_MD::Bern_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+Bern_MD::Bern_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
   : DUST_MD(dual_max, random_constraint, nbLoops) {}
 
 double Bern_MD::Cost(const unsigned int& t, const unsigned int& s) const
@@ -14,7 +14,7 @@ double Bern_MD::Cost(const unsigned int& t, const unsigned int& s) const
   for (unsigned int row = 0; row < d; row++)
   {
     ratio = (cumsum(row, t) - cumsum(row, s)) / (t - s);
-    if (ratio <= 0 | ratio >= 1)
+    if ((ratio <= 0) | (ratio >= 1))
       continue;
     res += - double(t - s) * (ratio * std::log(ratio) + (1 - ratio) * std::log(1 - ratio));
   }

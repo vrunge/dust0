@@ -4,3 +4,4 @@ simulations
 README.Rmd
 output.log
 ^LICENSE\.md$
+R/test_script.r

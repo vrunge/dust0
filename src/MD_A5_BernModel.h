@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 class Bern_MD : public DUST_MD {
 public:
-  Bern_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops = Nullable<int>());
+  Bern_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops = Nullable<unsigned>());
 protected:
   double Cost(const unsigned int& t, const unsigned int& s) const override;
   double statistic(const double& value) const override;

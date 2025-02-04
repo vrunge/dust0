@@ -8,7 +8,7 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<int> nbLoops)
+DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
   : n(0),
     d(0),
     dual_max(dual_max),
@@ -100,9 +100,26 @@ void DUST_MD::append(const arma::dmat& inData,
       cumsum(row, 0) = 0.;
 
     // read the number of constraints + default choice
-    if (inNbL.isNull()){nb_l = d - 1;}else{nb_l = std::min(d, as<unsigned int>(inNbL));}
-    if (inNbR.isNull()){nb_r = 1;}else{nb_r = std::min(d - nb_l, as<unsigned int>(inNbR));}
+    if (inNbL.isNull())
+    {
+      if (inNbR.isNotNull())
+      {
+        nb_r = std::min(d, as<unsigned>(inNbR));
+        nb_l = d - nb_r;
+      }
+      else 
+      {
+        nb_r = 0;
+        nb_l = d;
+      }
+    }
+    else
+    {
+      nb_l = std::min(d, as<unsigned>(inNbL));
+      nb_r = d - nb_l;
+    }
     nb_max = nb_l + nb_r;
+    Rcout << "nb_l = " << nb_l << "; nb_r = " << nb_r << "; nb_max = " << nb_max << std::endl;
 
     pruning_method();
     indices->set_init_size(n);
@@ -167,7 +184,7 @@ void DUST_MD::update_partition()
     indices->reset();
     double lastCost;
     double minCost = std::numeric_limits<double>::infinity();
-    unsigned argMin;
+    unsigned argMin = 0;
     do
     {
       unsigned s = *indices->current;
@@ -347,10 +364,10 @@ double DUST_MD::dual_Eval(double &nonLinear)
 
 void DUST_MD::grad_Eval(const double nonLinear)
 {  
-  for (auto col = 0; col < mu.size(); col++)
+  for (unsigned col = 0; col < mu.size(); col++)
   {
     double dot_product = 0.;
-    for (auto row = 0; row < m_value.size(); row++)
+    for (unsigned row = 0; row < m_value.size(); row++)
     {
       dot_product += DstarPrime(m_value(row)) * (constraintMean(row, col) - m_value(row));
     }
@@ -368,14 +385,14 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
                                        const unsigned int& s,
                                        std::vector<unsigned int>& l)
 {
-  nb_l = l.size();
+  unsigned size_l = l.size();
 
   /// RESIZE
-  mu.resize(nb_l);
-  mu_max.resize(nb_l);
+  mu.resize(size_l);
+  mu_max.resize(size_l);
   mu_max.fill(1.0);
-  linearTerm.resize(nb_l);
-  constraintMean.resize(d, nb_l);
+  linearTerm.resize(size_l);
+  constraintMean.resize(d, size_l);
 
 <<<<<<< HEAD
   Rcout << "test2"   <<  std::endl;
@@ -392,7 +409,7 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
     objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);
   }
 
-  for (unsigned int j = 0; j < nb_l; j++)
+  for (unsigned int j = 0; j < size_l; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
     for (unsigned int row = 0; row < d; row++)
@@ -416,21 +433,21 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
                                         std::vector<unsigned int>& l,
                                         std::vector<unsigned int>& r)
 {
-  nb_l = l.size();
-  nb_r = r.size();
+  unsigned size_l = l.size();
+  unsigned size_r = r.size();
 
   /// RESIZE
-  mu.resize(nb_l + nb_r);
-  mu_max.resize(nb_l + nb_r);
+  mu.resize(size_l + size_r);
+  mu_max.resize(size_l + size_r);
   mu_max.fill(1.0);
-  linearTerm.resize(nb_l + nb_r);
-  constraintMean.resize(d, nb_l + nb_r);
+  linearTerm.resize(size_l + size_r);
+  constraintMean.resize(d, size_l + size_r);
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
   for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
   ///////
-  for (unsigned int j = 0; j < nb_l; j++)
+  for (unsigned int j = 0; j < size_l; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
     for (unsigned int row = 0; row < d; row++)
@@ -442,12 +459,12 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
   /// BIG DANGER = difference of two unsigned INT
   /// BIG DANGER = difference of two unsigned INT
   /// BIG DANGER = difference of two unsigned INT
-  for (unsigned int j = 0; j < nb_r; j++)
+  for (unsigned int j = 0; j < size_r; j++)
   {
-    linearTerm(nb_l + j) = -(costRecord[s] - costRecord[r[j]]) / (r[j] - s);
+    linearTerm(size_l + j) = -(costRecord[s] - costRecord[r[j]]) / (r[j] - s);
     for (unsigned int row = 0; row < d; row++)
     {
-      constraintMean(row, nb_l + j) = -(cumsum(row,s) - cumsum(row, r[j])) / (r[j] - s);
+      constraintMean(row, size_l + j) = -(cumsum(row,s) - cumsum(row, r[j])) / (r[j] - s);
     }
   }
 
@@ -474,13 +491,13 @@ bool DUST_MD::dualMaxAlgo0(const double& minCost,
   /// CHOOSE ONE MU RANDOMLY. Only using left constraints
   // Random vector u in the SIMPLEX with boundary mu(i) = mu_max(i) on the i-th axis
   std::vector<double> u;
-  u.reserve(nb_l);
-  for (unsigned int i = 0; i < nb_l; i++){u.push_back(dist(engine));}
+  u.reserve(l.size());
+  for (unsigned int i = 0; i < l.size(); i++){u.push_back(dist(engine));}
 
   double sum_all = 0;
   double scaling_factor = dist(engine); // Uniform random number in [0, 1]
-  for (unsigned int i = 0; i < nb_l; i++){sum_all = sum_all + u[i]/mu_max(i);}
-  for (unsigned int i = 0; i < nb_l; i++){mu(i) = -scaling_factor/sum_all*u[i];} // minus for r < s constraints
+  for (unsigned int i = 0; i < l.size(); i++){sum_all = sum_all + u[i]/mu_max(i);}
+  for (unsigned int i = 0; i < l.size(); i++){mu(i) = -scaling_factor/sum_all*u[i];} // minus for r < s constraints
 
   return(dual_Eval() > 0);
 }
@@ -504,18 +521,17 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   /// (-1) mu for left constraint
   /// (+1) mu for right constraint
   std::vector<double> u;
-  u.reserve(nb_l + nb_r);
+  u.reserve(l.size() + r.size());
 
   Rcout << "ALL INDEX "<< std::endl;
-  for (unsigned int i = 0; i < nb_l; i++){Rcout << "l: " << l[i]<< std::endl;}
+  for (unsigned int i = 0; i < l.size(); i++){Rcout << "l: " << l[i]<< std::endl;}
   Rcout << "s: " << s << std::endl;
-  for (unsigned int i = 0; i < nb_r; i++){Rcout << "r: "  << r[i]<< std::endl;}
+  for (unsigned int i = 0; i < r.size(); i++){Rcout << "r: "  << r[i]<< std::endl;}
   Rcout << t<< std::endl;
 
-
   /// push_back => START by the end
-  for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
-  for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}
+  for (unsigned int i = 0; i < l.size(); i++){u.push_back(-dist(engine));}
+  for (unsigned int i = 0; i < r.size(); i++){u.push_back(dist(engine));}
 
   //
   // build the 1D dual
@@ -524,14 +540,14 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   for (unsigned int row = 0; row < d; row++)
   {
     b(row) = 0;
-    for (unsigned int i = 0; i < nb_l + nb_r; i++)
+    for (unsigned int i = 0; i < u.size(); i++)
     {
       b(row) += u[i] * constraintMean(row, i);
     }
   }
   double D = 0;
   double e = 0;
-  for (unsigned int i = 0; i < nb_l + nb_r; i++)
+  for (unsigned int i = 0; i < u.size(); i++)
   {
     D += u[i];
     e += u[i]*linearTerm(i);
@@ -563,25 +579,23 @@ bool DUST_MD::dualMaxAlgo2(const double& minCost,
 {
 
   update_dual_parameters_l_r(minCost, t, s, l, r);
-  /// /d ????
-  double mean_sum = std::accumulate(objectiveMean.begin(), objectiveMean.end(), 0.0)/d;
 
   ///////
   /////// mu
   ///////
-  mu.resize(nb_l + nb_r);
+  mu.resize(l.size() + r.size());
   double mu_sum = 0;
-  double x = pow(nb_l + nb_r + 1, -1); ///
+  double x = pow(l.size() + r.size() + 1, -1); ///
 
-  for (unsigned int i = 0; i < nb_l; i++) ///////// WITH l
+  for (unsigned int i = 0; i < l.size(); i++) ///////// WITH l
   {
     mu(i) = mu_max(i) * x;
     mu_sum += mu(i);
   }
-  for (unsigned int i = 0; i < nb_r; i++) ///////// WITH r
+  for (unsigned int i = 0; i < r.size(); i++) ///////// WITH r
   {
-    mu(nb_l + i) = - mu_max(nb_l + i) * x; /// with a minus here
-    mu_sum = mu(nb_l + i);
+    mu(l.size() + i) = - mu_max(l.size() + i) * x; /// with a minus here
+    mu_sum = mu(l.size() + i);
   }
 
   //Rcout << "test"  <<  std::endl;
@@ -609,13 +623,14 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
 {
   //Rcout << "DUST_MD DUST_MD DUST_MD DUST_MD DUST_MD " << std::endl;
 
+
   update_dual_parameters_l_r(minCost, t, s, l, r);
-  unsigned int nb_l_r = nb_l + nb_r;
+  unsigned int nb_l_r = l.size() + r.size();
 
   std::vector<int> sign;
   sign.reserve(nb_l_r); //// number of constraints
   for (unsigned int i = 0; i < nb_l_r; i++)
-    sign.push_back(i < nb_l ? -1 : 1);
+    sign.push_back(i < l.size() ? -1 : 1);
 
 
   ///////
@@ -794,178 +809,180 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
 
   // Initialize inverseHessian as minus identity
   for (unsigned int row = 0; row < l_size; row++)
+  {
     for(unsigned int col = 0; col < l_size; col++)
     {
       if (row == col) inverseHessian(row, col) = -1;
       else inverseHessian(row, col) = 0;
     }
+  }
 
-    // // ######################################### //
-    // // ######################################### //
-    // // ######### // OPTIM RECURSION // ######### //
-    // // ######################################### //
-    // // ######################################### //
+  // // ######################################### //
+  // // ######################################### //
+  // // ######### // OPTIM RECURSION // ######### //
+  // // ######################################### //
+  // // ######################################### //
 
-    std::function<bool(std::vector<unsigned int>)> optim = [&] (std::vector<unsigned int> &&zero_index)
+  std::function<bool(std::vector<unsigned int>)> optim = [&] (std::vector<unsigned int> &&zero_index)
+  {
+    if (zero_index.size() > 0)
     {
-      if (zero_index.size() > 0)
+      // Shrink all relevant objects
+      l_size -= zero_index.size();
+      if (l_size <= 0) { return false; }
+
+      grad_argmax = 0;
+      for (auto k = zero_index.rbegin(); k != zero_index.rend(); ++k)
       {
-        // Shrink all relevant objects
-        l_size -= zero_index.size();
-        if (l_size <= 0) { return false; }
+        l.erase(l.begin() + *k);
 
-        grad_argmax = 0;
-        for (auto k = zero_index.rbegin(); k != zero_index.rend(); ++k)
-        {
-          l.erase(l.begin() + *k);
+        linearTerm.shed_col(*k);
+        constraintMean.shed_col(*k);
 
-          linearTerm.shed_col(*k);
-          constraintMean.shed_col(*k);
+        tangent_max.shed_col(*k);
 
-          tangent_max.shed_col(*k);
+        mu.shed_col(*k);
+        grad.shed_col(*k);
 
-          mu.shed_col(*k);
-          grad.shed_col(*k);
+        mu_max.shed_col(*k);
+        inv_max.shed_col(*k);
 
-          mu_max.shed_col(*k);
-          inv_max.shed_col(*k);
+        inverseHessian.shed_col(*k);
+        inverseHessian.shed_row(*k);
 
-          inverseHessian.shed_col(*k);
-          inverseHessian.shed_row(*k);
+      }
+      I = Identity.submat(0, 0, l_size - 1, l_size - 1);
+    }
 
-        }
-        I = Identity.submat(0, 0, l_size - 1, l_size - 1);
+    bool shrink = false;
+    std::vector<unsigned int> shrink_indices;
+    shrink_indices.reserve(l_size);
+
+    arma::rowvec direction(l_size); // direction and intensity of the update
+    double direction_scale; // scaling applied to direction when direction pushes past boundaries
+    arma::rowvec mu_diff(l_size); // (mu+) - mu
+    arma::rowvec grad_diff = -grad; // (g+) - g; initialized as -g to avoid storing 2 values of gradient.
+
+    auto updateTestValue = [&] ()
+    {
+      // Armijo step-size:
+      // evaluate D at mu + dk
+      // test based on gradient value and m1
+      // if false, scale dk by half
+      // repeat until test is true
+
+      // 1. Update mu and D(mu).
+      for (unsigned int col = 0; col < l_size; col++)
+      {
+        mu_diff(col) = direction(col) * direction_scale;
+        mu(col) -= mu_diff(col);
       }
 
-      bool shrink = false;
-      std::vector<unsigned int> shrink_indices;
-      shrink_indices.reserve(l_size);
+      double new_test = dual_Eval(nonLinear);
 
-      arma::rowvec direction(l_size); // direction and intensity of the update
-      double direction_scale; // scaling applied to direction when direction pushes past boundaries
-      arma::rowvec mu_diff(l_size); // (mu+) - mu
-      arma::rowvec grad_diff = -grad; // (g+) - g; initialized as -g to avoid storing 2 values of gradient.
+      // 2. define gradient condition
+      arma::rowvec gradCondition = m1 * grad;
 
-      auto updateTestValue = [&] ()
-      {
-        // Armijo step-size:
-        // evaluate D at mu + dk
-        // test based on gradient value and m1
-        // if false, scale dk by half
-        // repeat until test is true
-
-        // 1. Update mu and D(mu).
-        for (unsigned int col = 0; col < l_size; col++)
-        {
-          mu_diff(col) = direction(col) * direction_scale;
-          mu(col) -= mu_diff(col);
-        }
-
-        double new_test = dual_Eval(nonLinear);
-
-        // 2. define gradient condition
-        arma::rowvec gradCondition = m1 * grad;
-
-        // 3. Scale dk until test is valid
-        unsigned iter = 0;
-        while(new_test < test_value + arma::dot(mu_diff, gradCondition) && ++iter < 100)
-        {
-          for(unsigned col = 0; col < l_size; col++)
-          {
-            mu_diff(col) *= .5;
-            mu(col) += mu_diff(col);
-          }
-          new_test = dual_Eval(nonLinear);
-        }
-        test_value = new_test;
-
-        // Project mu onto the interior simplex
-        // If any null value, then shrink
-        for (unsigned int col = 0; col < l_size; col++)
-        {
-          if(mu(col) > 0) { mu(col) = 0.; shrink = true; shrink_indices.push_back(col); }
-          else if(mu(col) == 0.) { shrink = true; shrink_indices.push_back(col); }
-        }
-      };
-
-      auto updateGrad = [&] ()
-      {
-        // Initialize tangent max search.
-        grad_max = -std::numeric_limits<double>::infinity();
-        grad_argmax = 0;
-
-        grad_Eval(nonLinear);
-
-        // Update grad value.
-        for (unsigned int col = 0; col < l_size; col++)
-        {
-          grad_diff(col) += grad(col);
-          if (grad_diff(col) == 0)
-          {
-            if (grad(col) > 0) { grad_diff(col) = -1e-16; }
-            else { grad_diff(col) = 1e-16; }
-          }
-
-          double norm = grad(col) * inv_max(col);
-          if (norm > grad_max)
-          {
-            grad_max = norm;
-            grad_argmax = col;
-          }
-        }
-
-        // maximum value on the hyperplane is at the corner of the simplex corresponding to the largest grad value. if no value positive, then it is at (0,...)
-        if (grad_max > 0)
-        {
-          tangent_max(grad_argmax) = mu_max(grad_argmax);
-        }
-      };
-
-      // Optim loop
+      // 3. Scale dk until test is valid
       unsigned iter = 0;
-      do
+      while(new_test < test_value + arma::dot(mu_diff, gradCondition) && ++iter < 100)
       {
-        // Update direction and intensity then clip it to stay within the bounds of the positive simplex
-        direction = (-grad) * inverseHessian;
-        direction_scale = FindBoundaryCoef(mu, direction, inv_max, shrink, shrink_indices); // may trigger shrink if pushing past boundary
-        if (shrink)
+        for(unsigned col = 0; col < l_size; col++)
         {
-          return optim(std::move(shrink_indices));
+          mu_diff(col) *= .5;
+          mu(col) += mu_diff(col);
         }
-        if (direction_scale == 0) { return false; } // stops optimization if no movement is produced
+        new_test = dual_Eval(nonLinear);
+      }
+      test_value = new_test;
 
-        // update mu and D(mu) + check for shrink
-        updateTestValue();
-
-        if(test_value > 0) { return true; } // success, index s is pruned
-
-        // update grad and tangent max location
-        updateGrad();
-
-        // compute tangent max value
-        double dot_product = 0;
-        for (unsigned int col = 0; col < l_size; col++)
-          dot_product += grad(col) * (tangent_max(col) + mu(col));
-
-        if (test_value + dot_product <= 0) { return false; } // check if the tangent hyperplane ever reaches 0 on the simplex triangle (from concavity property of the dual)
-
-        tangent_max(grad_argmax) = 0;
-
-        // trigger shrinking, which reduces the dimension of the solution space by one
-        if (shrink) return optim(std::move(shrink_indices));
-
-        // Update inverse hessian estimation
-        updateHessian(inverseHessian, mu_diff, grad_diff, I);
-        grad_diff = -grad;
-      } while (++iter < nb_Loops);
-
-      // Rcout << "Reached iter limit" << std::endl;
-
-      return false;
+      // Project mu onto the interior simplex
+      // If any null value, then shrink
+      for (unsigned int col = 0; col < l_size; col++)
+      {
+        if(mu(col) > 0) { mu(col) = 0.; shrink = true; shrink_indices.push_back(col); }
+        else if(mu(col) == 0.) { shrink = true; shrink_indices.push_back(col); }
+      }
     };
 
-    // return false;
-    return optim(std::vector<unsigned int>());
+    auto updateGrad = [&] ()
+    {
+      // Initialize tangent max search.
+      grad_max = -std::numeric_limits<double>::infinity();
+      grad_argmax = 0;
+
+      grad_Eval(nonLinear);
+
+      // Update grad value.
+      for (unsigned int col = 0; col < l_size; col++)
+      {
+        grad_diff(col) += grad(col);
+        if (grad_diff(col) == 0)
+        {
+          if (grad(col) > 0) { grad_diff(col) = -1e-16; }
+          else { grad_diff(col) = 1e-16; }
+        }
+
+        double norm = grad(col) * inv_max(col);
+        if (norm > grad_max)
+        {
+          grad_max = norm;
+          grad_argmax = col;
+        }
+      }
+
+      // maximum value on the hyperplane is at the corner of the simplex corresponding to the largest grad value. if no value positive, then it is at (0,...)
+      if (grad_max > 0)
+      {
+        tangent_max(grad_argmax) = mu_max(grad_argmax);
+      }
+    };
+
+    // Optim loop
+    unsigned iter = 0;
+    do
+    {
+      // Update direction and intensity then clip it to stay within the bounds of the positive simplex
+      direction = (-grad) * inverseHessian;
+      direction_scale = FindBoundaryCoef(mu, direction, inv_max, shrink, shrink_indices); // may trigger shrink if pushing past boundary
+      if (shrink)
+      {
+        return optim(std::move(shrink_indices));
+      }
+      if (direction_scale == 0) { return false; } // stops optimization if no movement is produced
+
+      // update mu and D(mu) + check for shrink
+      updateTestValue();
+
+      if(test_value > 0) { return true; } // success, index s is pruned
+
+      // update grad and tangent max location
+      updateGrad();
+
+      // compute tangent max value
+      double dot_product = 0;
+      for (unsigned int col = 0; col < l_size; col++)
+        dot_product += grad(col) * (tangent_max(col) + mu(col));
+
+      if (test_value + dot_product <= 0) { return false; } // check if the tangent hyperplane ever reaches 0 on the simplex triangle (from concavity property of the dual)
+
+      tangent_max(grad_argmax) = 0;
+
+      // trigger shrinking, which reduces the dimension of the solution space by one
+      if (shrink) return optim(std::move(shrink_indices));
+
+      // Update inverse hessian estimation
+      updateHessian(inverseHessian, mu_diff, grad_diff, I);
+      grad_diff = -grad;
+    } while (++iter < nb_Loops);
+
+    // Rcout << "Reached iter limit" << std::endl;
+
+    return false;
+  };
+
+  // return false;
+  return optim(std::vector<unsigned int>());
 }
 
 bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
@@ -1025,8 +1042,10 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   // vector of -1s and 1s depending on whether constraint is to the left or right resp.
   std::vector<int> sign;
   sign.reserve(total_size);
-  for (auto i = 0; i < total_size; i++)
+  for (unsigned i = 0; i < total_size; i++)
+  {
     sign.push_back(i < l_size ? -1 : 1);
+  }
 
   linearTerm.resize(total_size);
   constraintMean.resize(d, total_size);
@@ -1099,39 +1118,68 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
   // Initialize inverseHessian as minus identity
   for (unsigned int row = 0; row < total_size; row++)
+  {
     for(unsigned int col = 0; col < total_size; col++)
       inverseHessian(row, col) = row == col ? -1 : 0;
+  }
 
-    // // ######################################### //
-    // // ######################################### //
-    // // ######### // OPTIM RECURSION // ######### //
-    // // ######################################### //
-    // // ######################################### //
+  // // ######################################### //
+  // // ######################################### //
+  // // ######### // OPTIM RECURSION // ######### //
+  // // ######################################### //
+  // // ######################################### //
 
 
-    arma::rowvec direction(total_size); // direction and intensity of the update
-    double direction_scale; // scaling applied to direction when direction pushes past boundaries
-    arma::rowvec mu_diff(l_size); // (mu+) - mu
-    arma::rowvec grad_diff = -grad; // (g+) - g; initialized as -g to avoid storing 2 values of gradient.
+  arma::rowvec direction(total_size); // direction and intensity of the update
+  double direction_scale; // scaling applied to direction when direction pushes past boundaries
+  arma::rowvec mu_diff(l_size); // (mu+) - mu
+  arma::rowvec grad_diff = -grad; // (g+) - g; initialized as -g to avoid storing 2 values of gradient.
 
-    auto updateTestValue = [&] ()
+  auto updateTestValue = [&] ()
+  {
+    // Armijo step-size:
+    // evaluate D at mu + dk
+    // test based on gradient value and m1
+    // if false, scale dk by half
+    // repeat until test is true
+
+    // 1. Update mu and D(mu).
+    double linDot = 0; // mu.dot(linearTerm);
+    for (unsigned int col = 0; col < total_size; col++)
     {
-      // Armijo step-size:
-      // evaluate D at mu + dk
-      // test based on gradient value and m1
-      // if false, scale dk by half
-      // repeat until test is true
+      mu_diff(col) = direction(col) * direction_scale;
 
-      // 1. Update mu and D(mu).
-      double linDot = 0; // mu.dot(linearTerm);
-      for (unsigned int col = 0; col < total_size; col++)
+      mu(col) += mu_diff(col);
+      mu_sum += sign[col] * mu_diff(col);
+
+      linDot += mu(col) * linearTerm(col);
+    }
+
+    inv_sum = pow(1 + mu_sum, -1);
+    nonLinear = 0;
+    for (unsigned int row = 0; row < d; row++)
+    {
+      m_value(row) = inv_sum * (objectiveMean(row) + arma::dot(mu, constraintMean.row(row)));
+      nonLinear += Dstar(m_value(row));
+    }
+
+    double new_test = -(1 + mu_sum) * nonLinear - linDot + constantTerm;
+
+    // 2. define gradient condition
+    arma::rowvec gradCondition(l_size);
+    for (unsigned int col = 0; col < l_size; col++)
+      gradCondition(col) = m1 * grad(col);
+
+    // 3. Scale dk until test is valid
+    unsigned int iter = 0;
+    while(new_test < test_value + arma::dot(mu_diff, gradCondition) && iter < nb_Loops)
+    {
+      for(unsigned int col = 0; col < l_size; col++)
       {
-        mu_diff(col) = direction(col) * direction_scale;
-
-        mu(col) += mu_diff(col);
-        mu_sum += sign[col] * mu_diff(col);
-
-        linDot += mu(col) * linearTerm(col);
+        mu_diff(col) *= .5;
+        mu(col) -= mu_diff(col);
+        linDot -= mu_diff(col) * linearTerm(col);
+        mu_sum -= sign[col] * mu_diff(col);
       }
 
       inv_sum = pow(1 + mu_sum, -1);
@@ -1142,132 +1190,105 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
         nonLinear += Dstar(m_value(row));
       }
 
-      double new_test = -(1 + mu_sum) * nonLinear - linDot + constantTerm;
+      new_test = -(1 + mu_sum) * nonLinear - linDot + constantTerm; // update values
 
-      // 2. define gradient condition
-      arma::rowvec gradCondition(l_size);
-      for (unsigned int col = 0; col < l_size; col++)
-        gradCondition(col) = m1 * grad(col);
-
-      // 3. Scale dk until test is valid
-      unsigned int iter = 0;
-      while(new_test < test_value + arma::dot(mu_diff, gradCondition) && iter < nb_Loops)
-      {
-        for(unsigned int col = 0; col < l_size; col++)
-        {
-          mu_diff(col) *= .5;
-          mu(col) -= mu_diff(col);
-          linDot -= mu_diff(col) * linearTerm(col);
-          mu_sum -= sign[col] * mu_diff(col);
-        }
-
-        inv_sum = pow(1 + mu_sum, -1);
-        nonLinear = 0;
-        for (unsigned int row = 0; row < d; row++)
-        {
-          m_value(row) = inv_sum * (objectiveMean(row) + arma::dot(mu, constraintMean.row(row)));
-          nonLinear += Dstar(m_value(row));
-        }
-
-        new_test = -(1 + mu_sum) * nonLinear - linDot + constantTerm; // update values
-
-        iter++;
-      }
-      test_value = new_test;
-
-      // Project mu onto the interior simplex
-      // If any null value, then shrink
-      for (unsigned int col = 0; col < l_size; col++)
-      {
-        if(mu(col) < 0) { mu_sum -= sign[col] * mu(col); mu(col) = 0; }
-      }
-    };
-
-    auto updateGrad = [&] ()
-    {
-      for (unsigned int row = 0; row < d; row++)
-        nonLinearGrad(row) = DstarPrime(m_value(row));
-
-      for (unsigned int col = 0; col < l_size; col++)
-      {
-        double dot_product = 0;
-        auto col_k = constraintMean.col(col);
-        for (unsigned int row = 0; row < d; row++)
-        {
-          dot_product += nonLinearGrad(row) * (constraintMean(row, col) - objectiveMean(row));
-        }
-        grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
-
-
-        if (grad(col) > 0)
-        {
-          neg_grad = false;
-        }
-      }
-
-      // Update grad value.
-      for (unsigned int col = 0; col < l_size; col++)
-      {
-        double dot_product = 0;
-        auto col_k = constraintMean.col(col);
-        for (unsigned int row = 0; row < d; row++)
-          dot_product += nonLinearGrad(row) * (col_k(row) - m_value(row));
-        grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
-        grad_diff(col) += grad(col);
-        if (grad_diff(col) == 0)
-        {
-          if (grad(col) > 0) { grad_diff(col) = -1e-16; }
-          else { grad_diff(col) = 1e-16; }
-        }
-      }
-    };
-
-    // Optim loop
-    unsigned int iter = 0;
-    do
-    {
-      // Update direction and intensity then clip it to stay within the bounds of the positive simplex
-      direction = (-grad) * inverseHessian;
-      direction_scale = 1.;
-
-      Rcout << "direction " << direction << std::endl;
-
-      double direction_sum ;
-      clip_stepsize_to_negative_element(mu, direction, direction_scale);
-      clip_stepsize_to_negative_sum(sign, mu_sum, direction, direction_sum, direction_scale);
-
-      for (auto row = 0; row < d; row++)
-      {
-        clipStepSizeModel(m_value(row), constraintMean.row(row), mu_sum, direction, direction_sum, direction_scale);
-      }
-
-      Rcout << "direction scale " << direction_scale << std::endl;
-
-      if (direction_scale <= 0) { return false; } // stops optimization if no movement is produced
-
-      // update mu and D(mu) + check for shrink
-      updateTestValue();
-
-      Rcout << "mu " << mu << std::endl;
-
-      if(test_value > 0) { return true; } // success, index s is pruned
-
-      // update grad and tangent max location
-      updateGrad();
-
-      Rcout << "grad " << grad << std::endl;
-
-      // Update inverse hessian estimation
-      updateHessian(inverseHessian, mu_diff, grad_diff, I);
-
-      Rcout << "Inverse hessian " << inverseHessian << std::endl;
-
-      grad_diff = -grad;
       iter++;
-    } while (iter < nb_Loops);
+    }
+    test_value = new_test;
 
-    // return false;
-    return false;
+    // Project mu onto the interior simplex
+    // If any null value, then shrink
+    for (unsigned int col = 0; col < l_size; col++)
+    {
+      if(mu(col) < 0) { mu_sum -= sign[col] * mu(col); mu(col) = 0; }
+    }
+  };
+
+  auto updateGrad = [&] ()
+  {
+    for (unsigned int row = 0; row < d; row++)
+      nonLinearGrad(row) = DstarPrime(m_value(row));
+
+    for (unsigned int col = 0; col < l_size; col++)
+    {
+      double dot_product = 0;
+      auto col_k = constraintMean.col(col);
+      for (unsigned int row = 0; row < d; row++)
+      {
+        dot_product += nonLinearGrad(row) * (constraintMean(row, col) - objectiveMean(row));
+      }
+      grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
+
+
+      if (grad(col) > 0)
+      {
+        neg_grad = false;
+      }
+    }
+
+    // Update grad value.
+    for (unsigned int col = 0; col < l_size; col++)
+    {
+      double dot_product = 0;
+      auto col_k = constraintMean.col(col);
+      for (unsigned int row = 0; row < d; row++)
+        dot_product += nonLinearGrad(row) * (col_k(row) - m_value(row));
+      grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
+      grad_diff(col) += grad(col);
+      if (grad_diff(col) == 0)
+      {
+        if (grad(col) > 0) { grad_diff(col) = -1e-16; }
+        else { grad_diff(col) = 1e-16; }
+      }
+    }
+  };
+
+  // Optim loop
+  unsigned int iter = 0;
+  do
+  {
+    // Update direction and intensity then clip it to stay within the bounds of the positive simplex
+    direction = (-grad) * inverseHessian;
+    direction_scale = 1.;
+
+    Rcout << "direction " << direction << std::endl;
+
+    double direction_sum ;
+    clip_stepsize_to_negative_element(mu, direction, direction_scale);
+    clip_stepsize_to_negative_sum(sign, mu_sum, direction, direction_sum, direction_scale);
+
+    for (unsigned row = 0; row < d; row++)
+    {
+      clipStepSizeModel(m_value(row), constraintMean.row(row), mu_sum, direction, direction_sum, direction_scale);
+    }
+
+    Rcout << "direction scale " << direction_scale << std::endl;
+
+    if (direction_scale <= 0) { return false; } // stops optimization if no movement is produced
+
+    // update mu and D(mu) + check for shrink
+    updateTestValue();
+
+    Rcout << "mu " << mu << std::endl;
+
+    if(test_value > 0) { return true; } // success, index s is pruned
+
+    // update grad and tangent max location
+    updateGrad();
+
+    Rcout << "grad " << grad << std::endl;
+
+    // Update inverse hessian estimation
+    updateHessian(inverseHessian, mu_diff, grad_diff, I);
+
+    Rcout << "Inverse hessian " << inverseHessian << std::endl;
+
+    grad_diff = -grad;
+    iter++;
+  } while (iter < nb_Loops);
+
+  // return false;
+  return false;
 }
 
 

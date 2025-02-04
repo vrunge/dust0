@@ -119,7 +119,7 @@ void DUST_1D::update_partition()
     // OP step
     indices->reset();
     double minCost = std::numeric_limits<double>::infinity();
-    unsigned argMin;
+    unsigned argMin = 0;
     do
     {
       unsigned int s = indices->get_current();

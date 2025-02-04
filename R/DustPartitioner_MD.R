@@ -4,9 +4,15 @@
 ## --- // Importing C++ Modules // --- ##
 ## --- /////////////////////////// --- ##
 ## ----------------------------------- ##
-
-Rcpp::loadModule("FLATOPMD", TRUE)
 Rcpp::loadModule("DUSTMODULEMD", TRUE)
+Rcpp::loadModule("FLATOPMD", TRUE)
+
+if (!exists("FLATOPMD_Module", envir = .GlobalEnv)) {
+  Rcpp::loadModule("FLATOPMD", TRUE)
+}
+if (!exists("DUSTMODULEMD_Module", envir = .GlobalEnv)) {
+  Rcpp::loadModule("DUSTMODULEMD", TRUE)
+}
 
 #' dust.object.MD
 #'

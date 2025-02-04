@@ -63,7 +63,7 @@ List flat_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty 
   // then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
   // ... storing it allows pruning of the first available index
   double minCost;
-  unsigned int argMin; // stores the optimal last changepoint for the current OP step
+  unsigned int argMin = 0; // stores the optimal last changepoint for the current OP step
 
   // First OP step (t = 1)
   unsigned int t = 1;
@@ -175,7 +175,7 @@ List flat2_DUST_1D(const std::vector<double>& inData, Nullable<double> inPenalty
   // then keeps the cost of the model with last changepoint at the first possible index in the t-th OP step ...
   // ... storing it allows pruning of the first available index
   double minCost;
-  unsigned int argMin; // stores the optimal last changepoint for the current OP step
+  unsigned int argMin = 0; // stores the optimal last changepoint for the current OP step
 
   // First OP step (t = 1)
   unsigned int t = 1;

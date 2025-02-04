@@ -1,4 +1,5 @@
 // --- // Models // --- //
+#include "MD_A_DUST.h"
 #include "MD_A1_GaussModel.h"
 #include "MD_A2_PoissonModel.h"
 #include "MD_A3_ExpModel.h"
@@ -18,7 +19,7 @@ using namespace Rcpp;
 
 DUST_MD *newModuleMD(const std::string& model,
                      const std::string& method,
-                     Nullable<int> nbLoops)
+                     Nullable<unsigned> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
   std::vector<std::string> indices_max;
@@ -42,18 +43,18 @@ DUST_MD *newModuleMD(const std::string& model,
   /// FASTEST CHOICE
   int dual_max = 4; /// quasi newton
   bool random_constraint = false; /// deterministic choice
-  if(model == "gauss"){dual_max = 1;}
+  if(model == "gauss") { dual_max = 1; }
 
-  if (indices_max[0] == "randIndex"){random_constraint = true;}
-  else if (indices_max[0] == "detIndex"){random_constraint = false;}
+  if (indices_max[0] == "randIndex") { random_constraint = true; }
+  else if (indices_max[0] == "detIndex") { random_constraint = false; }
 
-  if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
-  else if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
-  else if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
-  else if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
-  else if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
-  else if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
-  else if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
+  if (indices_max[1] == "Eval0") { dual_max = 0; } //algo0
+  else if (indices_max[1] == "Eval1") { dual_max = 1; } //algo1
+  else if (indices_max[1] == "Eval2") { dual_max = 2; } //algo2
+  else if (indices_max[1] == "Eval3") { dual_max = 3; } //algo3
+  else if (indices_max[1] == "Eval4") { dual_max = 4; } //algo4
+  else if (indices_max[1] == "Eval5") { dual_max = 5; } //algo5
+  else if (indices_max[1] == "Eval6") { dual_max = 6; } //algo6
 
   if (model == "gauss")
     return new Gauss_MD(dual_max, random_constraint, nbLoops);
@@ -94,7 +95,7 @@ RCPP_MODULE(DUSTMODULEMD)
 {
   class_<DUST_MD>("DUST_MD")
 
-  .factory<const std::string&, const std::string&, Nullable<int>>(newModuleMD)
+  .factory<const std::string&, const std::string&, Nullable<unsigned>>(newModuleMD)
 
   .method("append_c", &DUST_MD::append)
   .method("update_partition", &DUST_MD::update_partition)

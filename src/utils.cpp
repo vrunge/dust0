@@ -9,7 +9,7 @@ using namespace Rcpp;
 void clip_stepsize_to_negative_element(const arma::rowvec &mu, const arma::rowvec &direction, double &max_stepsize)
 {
   unsigned size = mu.n_elem;
-  for (auto i = 0; i < size; i++)
+  for (unsigned i = 0; i < size; i++)
   {
     double distance_to_zero;
     if (mu(i) > 0)
@@ -39,7 +39,7 @@ void clip_stepsize_to_negative_element(const arma::rowvec &mu, const arma::rowve
 
 void clip_stepsize_to_negative_sum(const std::vector<int>& sign, const double& mu_sum, const arma::rowvec& direction, double& direction_sum, double& max_stepsize)
 {
-  for (auto i = 0; i < direction.n_elem; i++)
+  for (unsigned i = 0; i < direction.n_elem; i++)
   {
     direction_sum += sign[i] * direction(i);
   }
