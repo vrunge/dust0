@@ -506,6 +506,13 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   std::vector<double> u;
   u.reserve(nb_l + nb_r);
 
+  Rcout << "ALL INDEX "<< std::endl;
+  for (unsigned int i = 0; i < nb_l; i++){Rcout << "l: " << l[i]<< std::endl;}
+  Rcout << "s: " << s << std::endl;
+  for (unsigned int i = 0; i < nb_r; i++){Rcout << "r: "  << r[i]<< std::endl;}
+  Rcout << t<< std::endl;
+
+
   /// push_back => START by the end
   for (unsigned int i = 0; i < nb_l; i++){u.push_back(-dist(engine));}
   for (unsigned int i = 0; i < nb_r; i++){u.push_back(dist(engine));}

@@ -104,7 +104,7 @@ res4$nb
 d <- 5
 cl <- 1
 cr <- 4
-n <- 5000
+n <- 500
 mu <- c(rep(4,n/2), rep(4, n/2))
 data <- matrix(rnorm(n* d, mu), nrow = n, ncol = d, byrow = FALSE)
 data <- t(data)
@@ -123,8 +123,11 @@ res0$nb
 res0$nb[length(res0$nb)]
 ###
 
+######
+###### HERE PB WHEN detIndex_Eval1 AND cr = d-1
+######
 res1 <- dust.MD(data,
-                method = "randIndex_Eval1",
+                method = "detIndex_Eval1",
                 penalty = pen,
                 constraints_l = cl,
                 constraints_r = cr)
