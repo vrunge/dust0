@@ -62,8 +62,8 @@ double FindBoundaryCoef(const arma::rowvec &x,
 {
   double max_coef = 1.; // record current min
   double coef; // store current value
-  double sum_x = 0; // for sum condition (sum < 1)
-  double sum_d = 0;
+  double sum_x = 0.; // for sum condition (sum < 1)
+  double sum_d = 0.;
   for (unsigned int col = 0; col < x.size(); col++)
   {
     if (x(col) == 0. && direction(col) < 0.)
@@ -77,7 +77,7 @@ double FindBoundaryCoef(const arma::rowvec &x,
     sum_d += d_norm;
 
     coef = x_norm / d_norm; // coef for reaching boundary i
-    if (coef > 0)
+    if (coef > 0.)
     {
       if (coef < max_coef) 
       {
@@ -88,7 +88,7 @@ double FindBoundaryCoef(const arma::rowvec &x,
 
   if (sum_d == 0.) return 0.;
 
-  coef = (1 + sum_x) / sum_d; // sum boundary (boundary defined by sum(x / mu_max) == 1)
+  coef = -(1 + sum_x) / sum_d; // sum boundary (boundary defined by sum(x / mu_max) == 1)
   // coef = (1 - 1e-9) * (1 - sum_x) / sum_d; // sum boundary (boundary defined by sum(x / mu_max) == 1)
   if (coef > 0)
   {
