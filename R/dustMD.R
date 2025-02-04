@@ -1,4 +1,6 @@
-
+if (!exists("DUSTMODULEMD_Module", envir = .GlobalEnv)) {
+  Rcpp::loadModule("DUSTMODULEMD", TRUE)
+}
 
 #' Run the MD Dust Change Point Detection
 #'
@@ -52,6 +54,10 @@ dust.MD <- function(
     , nbLoops = 10
 )
 {
+  if (!is.null(nbLoops) && nbLoops < 0)
+  {
+    stop("negative nbLoops passed to dust.MD")
+  }
   partitioner <- new(DUST_MD, model, method, nbLoops)
   return(partitioner$one_dust(data, penalty, constraints_l, constraints_r))
 }

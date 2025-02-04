@@ -51,7 +51,7 @@ void DeterministicIndices_MD::reset_prune()
     begin_l = nb_l > 0 ? current - 1 : current;
 
     // if we want smallest possible r-side constraints -> begin_r -> end_r (in class)
-    int right_size = list.end() - current;
+    unsigned right_size = list.end() - current;
     if (right_size <= nb_r)
     {
       end_r = list.end();
@@ -80,9 +80,17 @@ void DeterministicIndices_MD::next_prune()
 // remove current index and its pointer VERY TECHNIK for begin_r
 void DeterministicIndices_MD::prune_current()
 {
-  unsigned int gap_r = end_r - current; // end_r -> begin_r
-  current = list.erase(current);
-  end_r = current + gap_r; // same
+  if (end_r == list.end()) // end_r -> begin_r
+  {
+    current = list.erase(current);
+    end_r = list.end();
+  }
+  else
+  {
+    unsigned gap_r = end_r - current; // end_r -> begin_r
+    current = list.erase(current);
+    end_r = current + gap_r; // same
+  }
 }
 
 ////////////////

@@ -6,6 +6,8 @@ using namespace Rcpp;
 #include <cmath>
 #include <algorithm> // for std::max_element, for std::all_of and std::isfinite
 
+#include "preProcessing.h"
+
 
 //' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
 //'
@@ -37,7 +39,7 @@ using namespace Rcpp;
 //'
 //' @export
 // [[Rcpp::export]]
-double sdDiff(std::vector<double>& y, std::string method = "HALL")
+double sdDiff(std::vector<double>& y, std::string method)
 {
   ///////////////////////  HALL
   ///////////////////////  HALL
@@ -269,7 +271,7 @@ std::vector<double> data_normalization_1D(std::vector<double>& y,
       disp = disp  + (mean * mean / (variance - mean));
     }
     disp = disp/k;
-    for(int i = 0; i < y.size(); i++){y[i] = y[i]/disp;}
+    for(size_t i = 0; i < y.size(); i++){y[i] = y[i]/disp;}
     return y;
   }
 

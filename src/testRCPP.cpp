@@ -21,7 +21,7 @@ double cs1(NumericVector& x)
   cumsum = std::vector<double>(x.size(), 0.);
 
   cumsum[0] = x[0];
-  for (int i = 1; i < cumsum.size(); ++i)
+  for (size_t i = 1; i < cumsum.size(); ++i)
   {
     cumsum[i] = cumsum[i-1] + x[i];
   }
@@ -49,7 +49,7 @@ double cs2(NumericVector& x)
   cumsum = std::vector<double>(x.size(), 0.);
 
   cumsum[0] = x[0];
-  for (int i = 1; i < cumsum.size(); ++i)
+  for (size_t i = 1; i < cumsum.size(); ++i)
   {
     cumsum[i] = cumsum[i-1] + data[i];
   }
