@@ -394,14 +394,6 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
   linearTerm.resize(size_l);
   constraintMean.resize(d, size_l);
 
-<<<<<<< HEAD
-  Rcout << "test2"   <<  std::endl;
-  Rcout << nb_l << " - "<< nb_r << " - "<< nb_max << std::endl;
-=======
-  //Rcout << "test2"   <<  std::endl;
-  //Rcout << nb_l<< " - "<< nb_r << " - "<< nb_max << std::endl;
->>>>>>> 6b3a078 (MD max algo 0, 1 and 3 (coordinate descent) OK)
-
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
   for (unsigned int row = 0; row < d; row++)
@@ -529,6 +521,13 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   for (unsigned int i = 0; i < r.size(); i++){Rcout << "r: "  << r[i]<< std::endl;}
   Rcout << t<< std::endl;
 
+  Rcout << "ALL INDEX "<< std::endl;
+  for (unsigned int i = 0; i < nb_l; i++){Rcout << "l: " << l[i]<< std::endl;}
+  Rcout << "s: " << s << std::endl;
+  for (unsigned int i = 0; i < nb_r; i++){Rcout << "r: "  << r[i]<< std::endl;}
+  Rcout << t<< std::endl;
+
+
   /// push_back => START by the end
   for (unsigned int i = 0; i < l.size(); i++){u.push_back(-dist(engine));}
   for (unsigned int i = 0; i < r.size(); i++){u.push_back(dist(engine));}
@@ -622,7 +621,6 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
                            std::vector<unsigned int> r)
 {
   //Rcout << "DUST_MD DUST_MD DUST_MD DUST_MD DUST_MD " << std::endl;
-
 
   update_dual_parameters_l_r(minCost, t, s, l, r);
   unsigned int nb_l_r = l.size() + r.size();
