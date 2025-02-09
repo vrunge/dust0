@@ -14,8 +14,8 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_reg::DUST_reg(int dual_max, int constraint_indices, Nullable<int> nbLoops)
-  : dual_max(dual_max),
+DUST_reg::DUST_reg(int dual_max_type, int constraint_indices, Nullable<int> nbLoops)
+  : dual_max_type(dual_max_type),
     constraint_indices(constraint_indices),
     indices(nullptr)
 {
@@ -42,14 +42,14 @@ void DUST_reg::init_method()
 
 
   /// /// ///
-  /// /// /// dual_max METHOD
+  /// /// /// dual_max_type METHOD
   /// /// ///
-  if(dual_max == 0){current_test = &DUST_reg::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_reg::dualMaxAlgo1;}
-  if(dual_max == 2){current_test = &DUST_reg::dualMaxAlgo2;}
-  if(dual_max == 3){current_test = &DUST_reg::dualMaxAlgo3;}
-  if(dual_max == 4){current_test = &DUST_reg::dualMaxAlgo4;}
-  if(dual_max == 5){current_test = &DUST_reg::dualMaxAlgo5;}
+  if(dual_max_type == 0){current_test = &DUST_reg::dualMaxAlgo0;}
+  if(dual_max_type == 1){current_test = &DUST_reg::dualMaxAlgo1;}
+  if(dual_max_type == 2){current_test = &DUST_reg::dualMaxAlgo2;}
+  if(dual_max_type == 3){current_test = &DUST_reg::dualMaxAlgo3;}
+  if(dual_max_type == 4){current_test = &DUST_reg::dualMaxAlgo4;}
+  if(dual_max_type == 5){current_test = &DUST_reg::dualMaxAlgo5;}
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR

@@ -4,8 +4,8 @@
 
 using namespace Rcpp;
 
-Binom_MD::Binom_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
-  : DUST_MD(dual_max, random_constraint, nbLoops) {}
+Binom_MD::Binom_MD(int dual_max_type, int constraints_type, Nullable<unsigned> nbLoops)
+  : DUST_MD(dual_max_type, constraints_type, nbLoops) {}
 
 double Binom_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
@@ -13,7 +13,7 @@ double Binom_MD::Cost(const unsigned int& t, const unsigned int& s) const
   double inv_delta = pow(t - s, -1);
   double diff;
   double ratio;
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
   {
     diff = cumsum(row, t) - cumsum(row, s);
     ratio = diff * inv_delta;
@@ -42,7 +42,7 @@ double Binom_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
-std::array<double, 2> Binom_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
+std::array<double, 2> Binom_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
 
@@ -50,13 +50,13 @@ std::array<double, 2> Binom_MD::muInterval(const arma::colvec& a, const arma::co
   {
     if (a[i] > 0 && b[i] < 0){interval[1] = std::min(interval[1], -a[i]/b[i]);}
     else if (a[i] < 0 && b[i] > 0) {interval[0] = std::max(interval[0], -a[i]/b[i]);}
-    if (c-a[i] > 0 && d-b[i] < 0){interval[1] = std::min(interval[1], -(c-a[i])/(D-b[i]));}
-    else if (c-a[i] < 0 && d-b[i] > 0) {interval[0] = std::max(interval[0], -(c-a[i])/(D-b[i]));}
+    if (c-a[i] > 0 && d-b[i] < 0){interval[1] = std::min(interval[1], -(c-a[i])/(d-b[i]));}
+    else if (c-a[i] < 0 && d-b[i] > 0) {interval[0] = std::max(interval[0], -(c-a[i])/(d-b[i]));}
   }
 
-  if (c > 0 && D < 0)
-  {interval[1] = std::min(interval[1], -c / D);}
-  else if (c < 0 && D > 0){interval[0] = std::max(interval[0], -c / D);}
+  if (c > 0 && d < 0)
+  {interval[1] = std::min(interval[1], -c / d);}
+  else if (c < 0 && d > 0){interval[0] = std::max(interval[0], -c / d);}
 
   return(interval);
 }
@@ -85,14 +85,14 @@ void Binom_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& const
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Binom_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Binom_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   return(-std::numeric_limits<double>::infinity());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-double Binom_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Binom_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   double Max = -std::numeric_limits<double>::infinity();
 

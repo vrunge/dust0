@@ -8,13 +8,14 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_MD::DUST_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
+DUST_MD::DUST_MD(int dual_max_type, int constraints_type, Nullable<unsigned> nbLoops)
   : n(0),
-    d(0),
-    dual_max(dual_max),
-    random_constraint(random_constraint),
+    dim(0),
+    dual_max_type(dual_max_type),
+    constraints_type(constraints_type),
     indices(nullptr)
 {
+  /// SET default nb_Loops if no values
   if(nbLoops.isNull()){nb_Loops = 10;}else{nb_Loops = as<int>(nbLoops);}
 }
 
@@ -35,19 +36,19 @@ void DUST_MD::pruning_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint){indices = new RandomIndices_MD(nb_l, nb_r);}
+  if(constraints_type == 0){indices = new RandomIndices_MD(nb_l, nb_r);}
   else{indices = new DeterministicIndices_MD(nb_l, nb_r);}
 
   /// /// ///
-  /// /// /// dual_max METHOD
+  /// /// /// dual_max_type METHOD
   /// /// ///
-  if(dual_max == 0){current_test = &DUST_MD::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_MD::dualMaxAlgo1;}
-  if(dual_max == 2){current_test = &DUST_MD::dualMaxAlgo2;}
-  if(dual_max == 3){current_test = &DUST_MD::dualMaxAlgo3;}
-  if(dual_max == 4){current_test = nb_r > 0 ? &DUST_MD::dualMaxAlgo42 : &DUST_MD::dualMaxAlgo4;}
-  if(dual_max == 5){current_test = &DUST_MD::dualMaxAlgo5;}
-  if(dual_max == 6){current_test = &DUST_MD::dualMaxAlgo6;}
+  if(dual_max_type == 0){current_test = &DUST_MD::dualMaxAlgo0;}
+  if(dual_max_type == 1){current_test = &DUST_MD::dualMaxAlgo1;}
+  if(dual_max_type == 2){current_test = &DUST_MD::dualMaxAlgo2;}
+  if(dual_max_type == 3){current_test = &DUST_MD::dualMaxAlgo3;}
+  if(dual_max_type == 4){current_test = nb_r > 0 ? &DUST_MD::dualMaxAlgo42 : &DUST_MD::dualMaxAlgo4;}
+  if(dual_max_type == 5){current_test = &DUST_MD::dualMaxAlgo5;}
+  if(dual_max_type == 6){current_test = &DUST_MD::dualMaxAlgo6;}
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
   engine.seed(std::random_device{}());
@@ -75,13 +76,13 @@ void DUST_MD::append(const arma::dmat& inData,
   /// Exception
   if (!first_execution)
   {
-    if (d != inData.n_rows)
-      throw std::invalid_argument("new data has invalid n_rows. got " + std::to_string(inData.n_rows) + ", expected " + std::to_string(d));
+    if (dim != inData.n_rows)
+      throw std::invalid_argument("new data has invalid n_rows. got " + std::to_string(inData.n_rows) + ", expected " + std::to_string(dim));
   }
-  else { d = inData.n_rows; }
+  else { dim = inData.n_rows; }
 
   /// PENALTY value default
-  if (inPenalty.isNull()){penalty = 2 * d * std::log(n);}else{penalty = as<double>(inPenalty);}
+  if (inPenalty.isNull()){penalty = 2 * dim * std::log(n);}else{penalty = as<double>(inPenalty);}
 
   /// RETURN
   changepointRecord.reserve(n + 1);
@@ -89,14 +90,14 @@ void DUST_MD::append(const arma::dmat& inData,
   costRecord.reserve(n + 1);
 
   /// CUMSUM => statistics
-  cumsum.resize(d, n + 1);
+  cumsum.resize(dim, n + 1);
 
   if (first_execution)
   {
     changepointRecord.push_back(0);
     nb_indices.push_back(1);
     costRecord.push_back(-penalty);
-    for (unsigned row = 0; row < d; row++)
+    for (unsigned row = 0; row < dim; row++)
       cumsum(row, 0) = 0.;
 
     // read the number of constraints + default choice
@@ -104,19 +105,19 @@ void DUST_MD::append(const arma::dmat& inData,
     {
       if (inNbR.isNotNull())
       {
-        nb_r = std::min(d, as<unsigned>(inNbR));
-        nb_l = d - nb_r;
+        nb_r = std::min(dim, as<unsigned>(inNbR));
+        nb_l = dim - nb_r;
       }
-      else 
+      else
       {
         nb_r = 0;
-        nb_l = d;
+        nb_l = dim;
       }
     }
     else
     {
-      nb_l = std::min(d, as<unsigned>(inNbL));
-      nb_r = d - nb_l;
+      nb_l = std::min(dim, as<unsigned>(inNbL));
+      nb_r = dim - nb_l;
     }
     nb_max = nb_l + nb_r;
     Rcout << "nb_l = " << nb_l << "; nb_r = " << nb_r << "; nb_max = " << nb_max << std::endl;
@@ -133,10 +134,10 @@ void DUST_MD::append(const arma::dmat& inData,
 
     linearTerm     = arma::rowvec(nb_max);
 
-    m_value        = arma::colvec(d);
-    objectiveMean  = arma::colvec(d);
-    constraintMean = arma::dmat(d, nb_max);
-    nonLinearGrad  = arma::colvec(d);
+    m_value        = arma::colvec(dim);
+    objectiveMean  = arma::colvec(dim);
+    constraintMean = arma::dmat(dim, nb_max);
+    nonLinearGrad  = arma::colvec(dim);
 
     Identity       = arma::dmat(nb_max, nb_max, arma::fill::eye);
     inverseHessian = arma::dmat(nb_max, nb_max);
@@ -149,7 +150,7 @@ void DUST_MD::append(const arma::dmat& inData,
   for (unsigned int data_col = 0; data_col < inData.n_cols; data_col++)
   {
     unsigned cumsum_col = data_col + current_filled_cols;
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       cumsum(row, cumsum_col + 1) = cumsum(row, cumsum_col) + statistic(inData(row, data_col));
     }
@@ -275,11 +276,11 @@ List DUST_MD::get_info()
 {
   return List::create(
     _["data_statistic"] = cumsum,
-    _["data_dimensions"] = std::vector<unsigned> { d, n },
+    _["data_dimensions"] = std::vector<unsigned> { dim, n },
     _["current_penalty"] = penalty,
     _["model"] = get_model(),
-    _["pruning_algo"] = dual_max,
-    _["pruning_random_constraint"] = random_constraint,
+    _["pruning_algo"] = dual_max_type,
+    _["pruning_constraints_type"] = constraints_type,
     _["pruning_nb_constraints"] = std::vector<unsigned> { nb_l, nb_r },
     _["pruning_nb_loops"] = nb_Loops
   );
@@ -340,7 +341,7 @@ double DUST_MD::dual_Eval()
 
   double Linear = arma::dot(mu, linearTerm);
   double nonLinear = 0;
-  for (unsigned int i = 0; i < d; i++)
+  for (unsigned int i = 0; i < dim; i++)
     nonLinear += Dstar(coeff * (objectiveMean(i) + arma::dot(mu, constraintMean.row(i))));
 
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
@@ -356,14 +357,14 @@ double DUST_MD::dual_Eval(double &nonLinear)
 
   double Linear = arma::dot(mu, linearTerm);
   nonLinear = 0;
-  for (unsigned int i = 0; i < d; i++)
+  for (unsigned int i = 0; i < dim; i++)
     nonLinear += Dstar(coeff * (objectiveMean(i) + arma::dot(mu, constraintMean.row(i))));
 
   return( - ((1 + mu_sum) * nonLinear + Linear + constantTerm));
 }
 
 void DUST_MD::grad_Eval(const double nonLinear)
-{  
+{
   for (unsigned col = 0; col < mu.size(); col++)
   {
     double dot_product = 0.;
@@ -392,19 +393,19 @@ void DUST_MD::update_dual_parameters_l(const double& minCost,
   mu_max.resize(size_l);
   mu_max.fill(1.0);
   linearTerm.resize(size_l);
-  constraintMean.resize(d, size_l);
+  constraintMean.resize(dim, size_l);
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++)
-  { 
+  for (unsigned int row = 0; row < dim; row++)
+  {
     objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);
   }
 
   for (unsigned int j = 0; j < size_l; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
       mu_max(j) = std::min(mu_max(j), muMax(objectiveMean(row), constraintMean(row, j)));
@@ -433,16 +434,16 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
   mu_max.resize(size_l + size_r);
   mu_max.fill(1.0);
   linearTerm.resize(size_l + size_r);
-  constraintMean.resize(d, size_l + size_r);
+  constraintMean.resize(dim, size_l + size_r);
 
   /// UDDATE DUAL FUNCTION parameters
   constantTerm =  (minCost - costRecord[s]) / (t - s);
-  for (unsigned int row = 0; row < d; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
+  for (unsigned int row = 0; row < dim; row++){objectiveMean(row) = (cumsum(row, t) - cumsum(row, s)) / (t - s);}
   ///////
   for (unsigned int j = 0; j < size_l; j++)
   {
     linearTerm(j) = (costRecord[s] - costRecord[l[j]]) / (s - l[j]);
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       constraintMean(row, j) = (cumsum(row,s) - cumsum(row, l[j])) / (s - l[j]);
     }
@@ -454,7 +455,7 @@ void DUST_MD::update_dual_parameters_l_r(const double& minCost,
   for (unsigned int j = 0; j < size_r; j++)
   {
     linearTerm(size_l + j) = -(costRecord[s] - costRecord[r[j]]) / (r[j] - s);
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       constraintMean(row, size_l + j) = -(cumsum(row,s) - cumsum(row, r[j])) / (r[j] - s);
     }
@@ -535,8 +536,8 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   //
   // build the 1D dual
   //
-  arma::colvec b(d);
-  for (unsigned int row = 0; row < d; row++)
+  arma::colvec b(dim);
+  for (unsigned int row = 0; row < dim; row++)
   {
     b(row) = 0;
     for (unsigned int i = 0; i < u.size(); i++)
@@ -544,11 +545,11 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
       b(row) += u[i] * constraintMean(row, i);
     }
   }
-  double D = 0;
+  double d = 0;
   double e = 0;
   for (unsigned int i = 0; i < u.size(); i++)
   {
-    D += u[i];
+    d += u[i];
     e += u[i]*linearTerm(i);
   }
   double argmax = 0; // initial value for finding max
@@ -557,7 +558,7 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   // a = objectiveMean
   double c = 1;
   // f = constantTerm
-  return(dual1D_Max(argmax,objectiveMean,b,c,D,e,constantTerm) > 0);
+  return(dual1D_Max(argmax,objectiveMean,b,c,d,e,constantTerm) > 0);
 }
 
 
@@ -634,8 +635,8 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
   ///////
   /////// 1D dual parameters
   ///////
-  arma::colvec a = arma::colvec(d, arma::fill::zeros);
-  arma::colvec b = arma::colvec(d, arma::fill::zeros);
+  arma::colvec a = arma::colvec(dim, arma::fill::zeros);
+  arma::colvec b = arma::colvec(dim, arma::fill::zeros);
   double c = 1;
   double D;
   double e;
@@ -657,7 +658,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
 
   for (unsigned int k = 0; k < nb_Loops; k++)
   {
-    for(unsigned int row = 0; row < d; row++)
+    for(unsigned int row = 0; row < dim; row++)
     {
       a(row) = objectiveMean(row);
     }
@@ -671,9 +672,9 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     /// a and b
     for(unsigned int j = 0; j < nb_l_r; j++)
     {
-      if(j != k_dual){for(unsigned int row = 0; row < d; row++){a(row) = a(row) + sign[j]*mu(j)*constraintMean(row,j);}}
+      if(j != k_dual){for(unsigned int row = 0; row < dim; row++){a(row) = a(row) + sign[j]*mu(j)*constraintMean(row,j);}}
     }
-    for(unsigned int row = 0; row < d; row++){b(row) = sign[k_dual]*constraintMean(row,k_dual);}
+    for(unsigned int row = 0; row < dim; row++){b(row) = sign[k_dual]*constraintMean(row,k_dual);}
 
     /// c, d, e, f
     for(unsigned int j = 0; j < nb_l_r; j++)
@@ -736,7 +737,7 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
   Rcout << "updated parameters..." << std::endl;
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
   {
     nonLinear += Dstar(objectiveMean(row));
   }
@@ -764,7 +765,7 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
   double grad_max = -std::numeric_limits<double>::infinity(); // !!! UPDATED IN OPTIM !!! //
   unsigned int grad_argmax = 0; // !!! UPDATED IN OPTIM !!! //
 
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
     nonLinearGrad(row) = DstarPrime(objectiveMean(row));
 
   mu.fill(0.);
@@ -1007,7 +1008,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   auto col_s = cumsum.col(s);
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
   {
     objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
     nonLinear += Dstar(objectiveMean(row));
@@ -1046,7 +1047,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   }
 
   linearTerm.resize(total_size);
-  constraintMean.resize(d, total_size);
+  constraintMean.resize(dim, total_size);
 
   // Initialize the constraint mean matrix, which contains the mean-vectors associated with each constraint as columns
   // + Initialize mu_max, which is based on the value of the value of each mean-vector compared to the value of the "objective" mean-vector
@@ -1055,7 +1056,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   {
     linearTerm(j) = sign[j] * (costRecord[s] - costRecord[k]) / (s - k);
     auto col_k = cumsum.col(k);
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       constraintMean(row, j) = sign[j] * (col_s(row) - col_k(row)) / (s - k);
     }
@@ -1064,7 +1065,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
   Rcout << "Linear and constraint mean" << std::endl;
 
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
     nonLinearGrad(row) = DstarPrime(objectiveMean(row));
 
   grad.resize(total_size);
@@ -1075,7 +1076,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
   {
     double dot_product = 0;
     auto col_k = constraintMean.col(col);
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       dot_product += nonLinearGrad(row) * (col_k(row) - objectiveMean(row));
     }
@@ -1155,7 +1156,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
     inv_sum = pow(1 + mu_sum, -1);
     nonLinear = 0;
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
     {
       m_value(row) = inv_sum * (objectiveMean(row) + arma::dot(mu, constraintMean.row(row)));
       nonLinear += Dstar(m_value(row));
@@ -1182,7 +1183,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
       inv_sum = pow(1 + mu_sum, -1);
       nonLinear = 0;
-      for (unsigned int row = 0; row < d; row++)
+      for (unsigned int row = 0; row < dim; row++)
       {
         m_value(row) = inv_sum * (objectiveMean(row) + arma::dot(mu, constraintMean.row(row)));
         nonLinear += Dstar(m_value(row));
@@ -1204,14 +1205,14 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
 
   auto updateGrad = [&] ()
   {
-    for (unsigned int row = 0; row < d; row++)
+    for (unsigned int row = 0; row < dim; row++)
       nonLinearGrad(row) = DstarPrime(m_value(row));
 
     for (unsigned int col = 0; col < l_size; col++)
     {
       double dot_product = 0;
       auto col_k = constraintMean.col(col);
-      for (unsigned int row = 0; row < d; row++)
+      for (unsigned int row = 0; row < dim; row++)
       {
         dot_product += nonLinearGrad(row) * (constraintMean(row, col) - objectiveMean(row));
       }
@@ -1229,7 +1230,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
     {
       double dot_product = 0;
       auto col_k = constraintMean.col(col);
-      for (unsigned int row = 0; row < d; row++)
+      for (unsigned int row = 0; row < dim; row++)
         dot_product += nonLinearGrad(row) * (col_k(row) - m_value(row));
       grad(col) = -sign[col] * (nonLinear + dot_product + linearTerm(col));
       grad_diff(col) += grad(col);
@@ -1255,7 +1256,7 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
     clip_stepsize_to_negative_element(mu, direction, direction_scale);
     clip_stepsize_to_negative_sum(sign, mu_sum, direction, direction_sum, direction_scale);
 
-    for (unsigned row = 0; row < d; row++)
+    for (unsigned row = 0; row < dim; row++)
     {
       clipStepSizeModel(m_value(row), constraintMean.row(row), mu_sum, direction, direction_sum, direction_scale);
     }
@@ -1316,7 +1317,7 @@ bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t,
   auto col_s = cumsum.col(s);
 
   double nonLinear = 0; // D*(Sst) // !!! UPDATED IN OPTIM !!! //
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
   {
     objectiveMean(row) = (col_t(row) - col_s(row)) / (t - s);
     nonLinear += Dstar(objectiveMean(row));

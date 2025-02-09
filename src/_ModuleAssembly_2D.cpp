@@ -16,38 +16,38 @@ DUST_meanVar *newModuleMeanVar(const std::string& method,
                                Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
-  std::vector<std::string> indices_max;
+  std::vector<std::string> method_INFO;
   size_t pos = method.find('_');  // Find the position of the underscore
 
   if (pos != std::string::npos)
   {
-    indices_max.push_back(method.substr(0, pos));        // First part before the underscore
-    indices_max.push_back(method.substr(pos + 1));       // Second part after the underscore
+    method_INFO.push_back(method.substr(0, pos));        // First part before the underscore
+    method_INFO.push_back(method.substr(pos + 1));       // Second part after the underscore
   }
   else
   {
-    indices_max.push_back(method);
-    indices_max.push_back(method);
+    method_INFO.push_back(method);
+    method_INFO.push_back(method);
   }
 
   ///////////////////  DEFAULT CHOICE  ///////////////////
   int constraint_indices = 11;
-  int dual_max = 2;
+  int dual_max_type = 2;
 
-  if (indices_max[0] == "randIndex"){constraint_indices = 10;}
-  if (indices_max[0] == "detIndex"){constraint_indices = 11;}
-  if (indices_max[0] == "rand2Index"){constraint_indices = 20;}
-  if (indices_max[0] == "det2Index"){constraint_indices = 21;}
+  if (method_INFO[0] == "randIndex"){constraint_indices = 10;}
+  if (method_INFO[0] == "detIndex"){constraint_indices = 11;}
+  if (method_INFO[0] == "rand2Index"){constraint_indices = 20;}
+  if (method_INFO[0] == "det2Index"){constraint_indices = 21;}
 
-  if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
-  if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
-  if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
-  if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
-  if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
-  if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
-  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
+  if (method_INFO[1] == "Eval0"){dual_max_type = 0;} //algo0
+  if (method_INFO[1] == "Eval1"){dual_max_type = 1;} //algo1
+  if (method_INFO[1] == "Eval2"){dual_max_type = 2;} //algo2
+  if (method_INFO[1] == "Eval3"){dual_max_type = 3;} //algo3
+  if (method_INFO[1] == "Eval4"){dual_max_type = 4;} //algo4
+  if (method_INFO[1] == "Eval5"){dual_max_type = 5;} //algo5
+  if (method_INFO[1] == "Eval6"){dual_max_type = 6;} //algo6
 
-  return new DUST_meanVar(dual_max, constraint_indices, nbLoops);
+  return new DUST_meanVar(dual_max_type, constraint_indices, nbLoops);
 }
 
 
@@ -95,38 +95,38 @@ DUST_reg *newModuleReg(const std::string& method,
                        Nullable<int> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
-  std::vector<std::string> indices_max;
+  std::vector<std::string> method_INFO;
   size_t pos = method.find('_');  // Find the position of the underscore
 
   if (pos != std::string::npos)
   {
-    indices_max.push_back(method.substr(0, pos));        // First part before the underscore
-    indices_max.push_back(method.substr(pos + 1));       // Second part after the underscore
+    method_INFO.push_back(method.substr(0, pos));        // First part before the underscore
+    method_INFO.push_back(method.substr(pos + 1));       // Second part after the underscore
   }
   else
   {
-    indices_max.push_back(method);
-    indices_max.push_back(method);
+    method_INFO.push_back(method);
+    method_INFO.push_back(method);
   }
 
   ///////////////////  DEFAULT CHOICE  ///////////////////
   int constraint_indices = 11;
-  int dual_max = 2;
+  int dual_max_type = 2;
 
-  if (indices_max[0] == "randIndex"){constraint_indices = 10;}
-  if (indices_max[0] == "detIndex"){constraint_indices = 11;}
-  if (indices_max[0] == "rand2Index"){constraint_indices = 20;}
-  if (indices_max[0] == "det2Index"){constraint_indices = 21;}
+  if (method_INFO[0] == "randIndex"){constraint_indices = 10;}
+  if (method_INFO[0] == "detIndex"){constraint_indices = 11;}
+  if (method_INFO[0] == "rand2Index"){constraint_indices = 20;}
+  if (method_INFO[0] == "det2Index"){constraint_indices = 21;}
 
-  if (indices_max[1] == "Eval0"){dual_max = 0;} //algo0
-  if (indices_max[1] == "Eval1"){dual_max = 1;} //algo1
-  if (indices_max[1] == "Eval2"){dual_max = 2;} //algo2
-  if (indices_max[1] == "Eval3"){dual_max = 3;} //algo3
-  if (indices_max[1] == "Eval4"){dual_max = 4;} //algo4
-  if (indices_max[1] == "Eval5"){dual_max = 5;} //algo5
-  if (indices_max[1] == "Eval6"){dual_max = 6;} //algo6
+  if (method_INFO[1] == "Eval0"){dual_max_type = 0;} //algo0
+  if (method_INFO[1] == "Eval1"){dual_max_type = 1;} //algo1
+  if (method_INFO[1] == "Eval2"){dual_max_type = 2;} //algo2
+  if (method_INFO[1] == "Eval3"){dual_max_type = 3;} //algo3
+  if (method_INFO[1] == "Eval4"){dual_max_type = 4;} //algo4
+  if (method_INFO[1] == "Eval5"){dual_max_type = 5;} //algo5
+  if (method_INFO[1] == "Eval6"){dual_max_type = 6;} //algo6
 
-  return new DUST_reg(dual_max, constraint_indices, nbLoops);
+  return new DUST_reg(dual_max_type, constraint_indices, nbLoops);
 }
 
 

@@ -99,7 +99,7 @@ flat_OP_MD <- function(inData, inPenalty = NULL) {
 #' sdDiff(y, "SD")
 #'
 #' @export
-sdDiff <- function(y, method = "HALL") {
+sdDiff <- function(y, method) {
     .Call(`_dust_sdDiff`, y, method)
 }
 

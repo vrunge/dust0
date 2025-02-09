@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 class Variance_1D : public DUST_1D {
 public:
-  Variance_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops = Nullable<int>());
+  Variance_1D(int dual_max_type, int constraints_type, Nullable<int> nbLoops = Nullable<int>());
 protected:
   double Cost(unsigned int t, unsigned int s) const override;
   double statistic(double& data) const override;

@@ -22,18 +22,18 @@ DUST_MD *newModuleMD(const std::string& model,
                      Nullable<unsigned> nbLoops)
 {
   ///////////////////  method separation into 2 ///////////////////
-  std::vector<std::string> indices_max;
+  std::vector<std::string> method_INFO;
   size_t pos = method.find('_');  // Find the position of the underscore
 
   if (pos != std::string::npos)
   {
-    indices_max.push_back(method.substr(0, pos));        // First part before the underscore
-    indices_max.push_back(method.substr(pos + 1));       // Second part after the underscore
+    method_INFO.push_back(method.substr(0, pos));        // First part before the underscore
+    method_INFO.push_back(method.substr(pos + 1));       // Second part after the underscore
   }
   else
   {
-    indices_max.push_back(method);
-    indices_max.push_back(method);
+    method_INFO.push_back(method);
+    method_INFO.push_back(method);
   }
 
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
@@ -41,37 +41,39 @@ DUST_MD *newModuleMD(const std::string& model,
   ///////////////////  DEFAULT CHOICE  /////////////////////////////////
   /// FASTEST CHOICE
   /// FASTEST CHOICE
-  int dual_max = 4; /// quasi newton
-  bool random_constraint = false; /// deterministic choice
-  if(model == "gauss") { dual_max = 1; }
+  int dual_max_type = 4; /// quasi newton
+  int constraints_type = 0; /// deterministic choice
+  if(model == "gauss"){dual_max_type = 1;}
+  /// FASTEST CHOICE
+  /// FASTEST CHOICE
 
-  if (indices_max[0] == "randIndex") { random_constraint = true; }
-  else if (indices_max[0] == "detIndex") { random_constraint = false; }
+  if (method_INFO[0] == "randIndex"){constraints_type = 0;} // rand index choice
+  else if (method_INFO[0] == "detIndex"){constraints_type = 1;} // det index choice
 
-  if (indices_max[1] == "Eval0") { dual_max = 0; } //algo0
-  else if (indices_max[1] == "Eval1") { dual_max = 1; } //algo1
-  else if (indices_max[1] == "Eval2") { dual_max = 2; } //algo2
-  else if (indices_max[1] == "Eval3") { dual_max = 3; } //algo3
-  else if (indices_max[1] == "Eval4") { dual_max = 4; } //algo4
-  else if (indices_max[1] == "Eval5") { dual_max = 5; } //algo5
-  else if (indices_max[1] == "Eval6") { dual_max = 6; } //algo6
+  if (method_INFO[1] == "Eval0") {dual_max_type = 0;} //algo0
+  else if (method_INFO[1] == "Eval1"){dual_max_type = 1;} //algo1
+  else if (method_INFO[1] == "Eval2"){dual_max_type = 2;} //algo2
+  else if (method_INFO[1] == "Eval3"){dual_max_type = 3;} //algo3
+  else if (method_INFO[1] == "Eval4"){dual_max_type = 4;} //algo4
+  else if (method_INFO[1] == "Eval5"){dual_max_type = 5;} //algo5
+  else if (method_INFO[1] == "Eval6"){dual_max_type = 6;} //algo6
 
   if (model == "gauss")
-    return new Gauss_MD(dual_max, random_constraint, nbLoops);
+    return new Gauss_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "poisson")
-    return new Poisson_MD(dual_max, random_constraint, nbLoops);
+    return new Poisson_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "exp")
-    return new Exp_MD(dual_max, random_constraint, nbLoops);
+    return new Exp_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "geom")
-    return new Geom_MD(dual_max, random_constraint, nbLoops);
+    return new Geom_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "bern")
-    return new Bern_MD(dual_max, random_constraint, nbLoops);
+    return new Bern_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "binom")
-    return new Binom_MD(dual_max, random_constraint, nbLoops);
+    return new Binom_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "negbin")
-    return new Negbin_MD(dual_max, random_constraint, nbLoops);
+    return new Negbin_MD(dual_max_type, constraints_type, nbLoops);
   if (model == "variance")
-    return new Variance_MD(dual_max, random_constraint, nbLoops);
+    return new Variance_MD(dual_max_type, constraints_type, nbLoops);
   return nullptr;
 }
 

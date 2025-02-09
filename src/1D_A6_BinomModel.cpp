@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-Binom_1D::Binom_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops)
-  : DUST_1D(dual_max, random_constraint, nbLoops) {}
+Binom_1D::Binom_1D(int dual_max_type, int constraints_type, Nullable<int> nbLoops)
+  : DUST_1D(dual_max_type, constraints_type, nbLoops) {}
 
 double Binom_1D::Cost(unsigned int t, unsigned int s) const
 {

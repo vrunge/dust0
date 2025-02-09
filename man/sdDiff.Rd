@@ -4,7 +4,7 @@
 \alias{sdDiff}
 \title{Calculate Standard Deviation or MAD of Differences in a Numeric Vector}
 \usage{
-sdDiff(y, method = "HALL")
+sdDiff(y, method)
 }
 \arguments{
 \item{y}{A numeric vector.}

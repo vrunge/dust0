@@ -2,13 +2,13 @@
 
 using namespace Rcpp;
 
-Gauss_MD::Gauss_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
-  : DUST_MD(dual_max, random_constraint, nbLoops) {}
+Gauss_MD::Gauss_MD(int dual_max_type, int constraints_type, Nullable<unsigned> nbLoops)
+  : DUST_MD(dual_max_type, constraints_type, nbLoops) {}
 
 double Gauss_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
   double result = 0;
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
     result += pow(cumsum(row, t) - cumsum(row, s), 2);
 
   return - .5 * result / (t - s);
@@ -27,11 +27,11 @@ double Gauss_MD::statistic(const double& value) const
 
 // GAUSS function =>  -0.5 sum (a_i + X b_i)^2/(c + X d) -e X - f
 
-double Gauss_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Gauss_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   double result = 0;
-  for (unsigned int i = 0; i <  d; i++){result += pow(a(i) + point*b(i), 2);}
-  result = - 0.5 * pow(c + point * D, -1) * result;
+  for (unsigned int i = 0; i <  dim; i++){result += pow(a(i) + point*b(i), 2);}
+  result = - 0.5 * pow(c + point * d, -1) * result;
   return(result - e*point - f);
 }
 
@@ -42,12 +42,12 @@ double Gauss_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::c
 // GAUSS function =>  -0.5 sum (a_i + X b_i)^2/(c + X D) -e X - f
 // write D to be different from dimension d
 //
-double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   double Max = -std::numeric_limits<double>::infinity();
 
   /// Find mu_min - mu_max
-  std::array<double, 2>  mu_interval = muInterval(a,b,c,D);
+  std::array<double, 2>  mu_interval = muInterval(a,b,c,d);
 
   // GAUSS function =>  -0.5 sum (a_i + X b_i)^2/(c + X d) -e X - f
   // discriminant of the 2nd order polynomial (after differentiating):
@@ -58,12 +58,12 @@ double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, do
   double B2 = arma::dot(b,b);
   double AB = arma::dot(a,b);
 
-  double DELTA2 = D*D*A2 - 2*c*D*AB + c*c*B2;
-  double delta = B2 + 2*D*e;
+  double DELTA2 = d*d*A2 - 2*c*d*AB + c*c*B2;
+  double delta = B2 + 2*d*e;
 
   if(delta < 0)  /// No root case
   {
-    if(D > 0)    ///  A mu^2 + B mu + C > 0, max in +INFTY
+    if(d > 0)    ///  A mu^2 + B mu + C > 0, max in +INFTY
     {
       //Rcout << "D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 D > 0 " << std::endl;
       argmax = mu_interval[1];
@@ -75,13 +75,13 @@ double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, do
       //throw std::runtime_error("Something went wrong! Stopping execution.");
       return(std::numeric_limits<double>::infinity());
     }
-    else if(D < 0)  ///  A mu^2 + B mu + C < 0, max in 0
+    else if(d < 0)  ///  A mu^2 + B mu + C < 0, max in 0
     {
       //Rcout << "D < 0 D < 0 D < 0 D < 0 D < 0 D < 0 " << std::endl;
       //Rcout << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
       //Rcout << c << " / " << D << " / " << e << " / " << f << std::endl;
       argmax = mu_interval[0];
-      Max = dual1D_Eval(argmax,a,b,c,D,e,f);
+      Max = dual1D_Eval(argmax,a,b,c,d,e,f);
       //Rcout << Max << std::endl;
       //Rcout << argmax << std::endl;
       //Rcout << Max << std::endl;
@@ -91,9 +91,9 @@ double Gauss_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, do
   else
   {
     //Rcout << "root root root root root root root root root " << std::endl;
-    double root = (-c + std::sqrt(DELTA2/delta))/D;
+    double root = (-c + std::sqrt(DELTA2/delta))/d;
     argmax = (0 > root) ? 0 : root;
-    Max = dual1D_Eval(argmax,a,b,c,D,e,f);
+    Max = dual1D_Eval(argmax,a,b,c,d,e,f);
     //Rcout << Max << std::endl;
     return(Max);
   }
@@ -111,16 +111,16 @@ double Gauss_MD::muMax(const double& a, const double& b) const
 }
 
 
-std::array<double, 2> Gauss_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
+std::array<double, 2> Gauss_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity()};
-  if (c > 0 && D < 0)
+  if (c > 0 && d < 0)
   {
-    interval[1] = -c / D;
+    interval[1] = -c / d;
   }
-  else if (c < 0 && D > 0)
+  else if (c < 0 && d > 0)
   {
-    interval[0] = -c / D;
+    interval[0] = -c / d;
   }
   return(interval);
 }

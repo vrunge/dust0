@@ -14,8 +14,8 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_meanVar::DUST_meanVar(int dual_max, int constraint_indices, Nullable<int> nbLoops)
-  : dual_max(dual_max),
+DUST_meanVar::DUST_meanVar(int dual_max_type, int constraint_indices, Nullable<int> nbLoops)
+  : dual_max_type(dual_max_type),
     constraint_indices(constraint_indices),
     indices(nullptr)
 {
@@ -41,14 +41,14 @@ void DUST_meanVar::init_method()
   if(constraint_indices == 21){indices = new DeterministicIndices_2D2;}
 
   /// /// ///
-  /// /// /// dual_max METHOD
+  /// /// /// dual_max_type METHOD
   /// /// ///
-  if(dual_max == 0){current_test = &DUST_meanVar::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_meanVar::dualMaxAlgo1;}
-  if(dual_max == 2){current_test = &DUST_meanVar::dualMaxAlgo2;}
-  if(dual_max == 3){current_test = &DUST_meanVar::dualMaxAlgo3;}
-  if(dual_max == 4){current_test = &DUST_meanVar::dualMaxAlgo4;}
-  if(dual_max == 5){current_test = &DUST_meanVar::dualMaxAlgo5;}
+  if(dual_max_type == 0){current_test = &DUST_meanVar::dualMaxAlgo0;}
+  if(dual_max_type == 1){current_test = &DUST_meanVar::dualMaxAlgo1;}
+  if(dual_max_type == 2){current_test = &DUST_meanVar::dualMaxAlgo2;}
+  if(dual_max_type == 3){current_test = &DUST_meanVar::dualMaxAlgo3;}
+  if(dual_max_type == 4){current_test = &DUST_meanVar::dualMaxAlgo4;}
+  if(dual_max_type == 5){current_test = &DUST_meanVar::dualMaxAlgo5;}
 
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR

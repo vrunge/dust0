@@ -13,9 +13,9 @@ using namespace Rcpp;
 ////////////////////////////////////////////////////////////////////////////////
 
 // --- // Constructor // --- //
-DUST_1D::DUST_1D(int dual_max, bool random_constraint, Nullable<int> nbLoops)
-  : dual_max(dual_max),
-    random_constraint(random_constraint),
+DUST_1D::DUST_1D(int dual_max_type, int constraints_type, Nullable<int> nbLoops)
+  : dual_max_type(dual_max_type),
+    constraints_type(constraints_type),
     indices(nullptr),
     n(0)
 {
@@ -40,19 +40,19 @@ void DUST_1D::pruning_method()
   /// /// ///
   /// /// /// index METHOD
   /// /// ///
-  if(random_constraint){indices = new RandomIndices_1D();}
+  if(constraints_type == 0){indices = new RandomIndices_1D();}
   else{indices = new DeterministicIndices_1D;}
 
   /// /// ///
-  /// /// /// dual_max METHOD
+  /// /// /// dual_max_type METHOD
   /// /// ///
-  if(dual_max == 0){current_test = &DUST_1D::dualMaxAlgo0;}
-  if(dual_max == 1){current_test = &DUST_1D::dualMaxAlgo1;}
-  if(dual_max == 2){current_test = &DUST_1D::dualMaxAlgo2;}
-  if(dual_max == 3){current_test = &DUST_1D::dualMaxAlgo3;}
-  if(dual_max == 4){current_test = &DUST_1D::dualMaxAlgo4;}
-  if(dual_max == 5){current_test = &DUST_1D::dualMaxAlgo5;}
-  if(dual_max == 6){current_test = &DUST_1D::dualMaxAlgo6;}
+  if(dual_max_type == 0){current_test = &DUST_1D::dualMaxAlgo0;}
+  if(dual_max_type == 1){current_test = &DUST_1D::dualMaxAlgo1;}
+  if(dual_max_type == 2){current_test = &DUST_1D::dualMaxAlgo2;}
+  if(dual_max_type == 3){current_test = &DUST_1D::dualMaxAlgo3;}
+  if(dual_max_type == 4){current_test = &DUST_1D::dualMaxAlgo4;}
+  if(dual_max_type == 5){current_test = &DUST_1D::dualMaxAlgo5;}
+  if(dual_max_type == 6){current_test = &DUST_1D::dualMaxAlgo6;}
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
@@ -234,8 +234,8 @@ List DUST_1D::get_info()
     _["data_length"] = n,
     _["current_penalty"] = penalty,
     _["model"] = get_model(),
-    _["pruning_algo"] = dual_max,
-    _["pruning_random_constraint"] = random_constraint,
+    _["pruning_algo"] = dual_max_type,
+    _["pruning_constraints_type"] = constraints_type,
     _["pruning_nb_loops"] = nb_Loops
   );
 }

@@ -4,8 +4,8 @@
 
 using namespace Rcpp;
 
-Variance_MD::Variance_MD(int dual_max, bool random_constraint, Nullable<unsigned> nbLoops)
-  : DUST_MD(dual_max, random_constraint, nbLoops) {}
+Variance_MD::Variance_MD(int dual_max_type, int constraints_type, Nullable<unsigned> nbLoops)
+  : DUST_MD(dual_max_type, constraints_type, nbLoops) {}
 
 double Variance_MD::Cost(const unsigned int& t, const unsigned int& s) const
 {
@@ -13,7 +13,7 @@ double Variance_MD::Cost(const unsigned int& t, const unsigned int& s) const
   double delta = t - s;
   double inv_delta = pow(t - s, -1);
   double diff;
-  for (unsigned int row = 0; row < d; row++)
+  for (unsigned int row = 0; row < dim; row++)
   {
     diff = cumsum(row, t) - cumsum(row, s);
     if(diff <= 0){diff = 1e-100;} /// choice  1e-100 to avoid -Inf
@@ -37,7 +37,7 @@ double Variance_MD::muMax(const double& a, const double& b) const
   return res;
 }
 
-std::array<double, 2> Variance_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const
+std::array<double, 2> Variance_MD::muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const
 {
   std::array<double, 2> interval = {0, std::numeric_limits<double>::infinity() };
 
@@ -69,7 +69,7 @@ void Variance_MD::clipStepSizeModel(const double& m_elem, const arma::rowvec& co
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   return(-std::numeric_limits<double>::infinity());
 }
@@ -78,7 +78,7 @@ double Variance_MD::dual1D_Eval(double& point, const arma::colvec& a, const arma
 
 
 
-double Variance_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const
+double Variance_MD::dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const
 {
   double Max = -std::numeric_limits<double>::infinity();
 

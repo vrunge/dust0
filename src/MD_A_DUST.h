@@ -13,10 +13,9 @@ using namespace Rcpp;
 
 class DUST_MD
 {
-
 public:
-  DUST_MD(int dual_max,
-          bool random_constraint,
+  DUST_MD(int dual_max_type,
+          int constraints_type,
           Nullable<unsigned> nbLoops = Nullable<unsigned>());
 
   virtual ~DUST_MD();
@@ -48,7 +47,7 @@ public:
 
 protected:
   unsigned int n; // number of observations
-  unsigned int d; // data dimension
+  unsigned int dim; // data dimension
   unsigned int nb_max; // = nb_l + nb_r
   unsigned int nb_l; // number of constraints before the current index to prune
   unsigned int nb_r; // number of constraints after the current index to prune
@@ -70,12 +69,12 @@ protected:
 
   /// dual domain bounds
   virtual double muMax(const double& a, const double& b) const = 0;
-  virtual std::array<double, 2> muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& D) const = 0;
+  virtual std::array<double, 2> muInterval(const arma::colvec& a, const arma::colvec& b, double& c, double& d) const = 0;
   virtual void clipStepSizeModel(const double& m_elem, const arma::rowvec& constraint_means, const double& mu_sum, const arma::rowvec& direction, const double& direction_sum, double& max_stepsize) const = 0;
 
   /// dual evaluation
-  virtual double dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& D, double& e, double& f) const = 0;
-  virtual double dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& D, double& e, double& f) const = 0;
+  virtual double dual1D_Eval(double& point, const arma::colvec& a, const arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
+  virtual double dual1D_Max(double& argmax, arma::colvec& a, arma::colvec& b, double& c, double& d, double& e, double& f) const = 0;
 
   /// dual non linear function
   virtual double Dstar(const double& x) const = 0;
@@ -121,24 +120,24 @@ private:
   // 4: Quasi-Newton
   // 5: PELT
   // 6: OP
-  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo42(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
-  bool dualMaxAlgo7(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
+  bool dualMaxAlgo0(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo1(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo2(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo3(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo4(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo42(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo5(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo6(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
+  bool dualMaxAlgo7(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
 
-  bool (DUST_MD::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r2);
+  bool (DUST_MD::*current_test)(const double& minCost, const unsigned int& t, const unsigned int& s, std::vector<unsigned int> l, std::vector<unsigned int> r);
 
   // --- // Result processing // --- //
   std::forward_list<unsigned int> backtrack_changepoints();
 
   // --- // Private fields // --- //
-  int dual_max;
-  bool random_constraint;
+  int dual_max_type;
+  int constraints_type;
 
   Indices_MD* indices;
   std::vector<int> nb_indices;

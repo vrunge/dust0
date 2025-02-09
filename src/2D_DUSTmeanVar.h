@@ -17,7 +17,7 @@ class DUST_meanVar
   ////////////////////////////////
 
 public:
-  DUST_meanVar(int dual_max,
+  DUST_meanVar(int dual_max_type,
                int constraint_indices,
                Nullable<int> nbLoops = Nullable<int>());
 
@@ -86,7 +86,7 @@ public:
   std::forward_list<unsigned int> backtrack_changepoints();
 
   // --- // Private fields // --- //
-  int dual_max;
+  int dual_max_type;
   int constraint_indices;
 
   Indices_2D2* indices;

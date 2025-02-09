@@ -13,8 +13,8 @@ class DUST_1D
 {
 
 public:
-  DUST_1D(int dual_max,
-          bool random_constraint,
+  DUST_1D(int dual_max_type,
+          int constraints_type,
           Nullable<int> nbLoops = Nullable<int>());
 
   virtual ~DUST_1D();
@@ -97,8 +97,8 @@ private:
   std::forward_list<unsigned int> backtrack_changepoints();
 
   // --- // Private fields // --- //
-  int dual_max;
-  bool random_constraint;
+  int dual_max_type;
+  int constraints_type;
 
   Indices_1D* indices;
   std::vector<int> nb_indices;
