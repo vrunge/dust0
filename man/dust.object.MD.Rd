@@ -36,10 +36,6 @@ Here are the current available algorithms (\code{Eval4} is often the most effici
 }}
 
 \item{nbLoops}{number of iterations in the algorithm for maximizing the dual function}
-
-\item{nb_l}{number of left constraints}
-
-\item{nb_r}{number of right constraints}
 }
 \value{
 a DUST object that provides methods:

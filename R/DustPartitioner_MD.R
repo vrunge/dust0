@@ -44,8 +44,6 @@ if (!exists("DUSTMODULEMD_Module", envir = .GlobalEnv)) {
 #'   \item \code{"Eval5"}:
 #'   \item \code{"Eval6"}:
 #' }
-#' @param nb_l number of left constraints
-#' @param nb_r number of right constraints
 #' @param nbLoops number of iterations in the algorithm for maximizing the dual function
 #'
 #' @return a DUST object that provides methods:
