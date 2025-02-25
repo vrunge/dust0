@@ -153,6 +153,7 @@ private:
   /// vector size nb_l_r (= number of constraints)
   ///
   arma::rowvec mu; /// for the optimization step
+  arma::rowvec mu_sign;
   arma::rowvec mu_max; /// constraints on mu (case no right constraint)
   /////  /////  /////  ///// link to dimension (column)
   /// vector size d = dimension
