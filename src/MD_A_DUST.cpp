@@ -786,7 +786,7 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
 
   if (grad_max > 0)
   {
-    Rcout << "grad_argmax  = " << grad_argmax << std::endl;
+    // Rcout << "grad_argmax  = " << grad_argmax << std::endl;
     tangent_max(grad_argmax) = mu_max(grad_argmax); // maximum value on the hyperplane is at the corner of the simplex corresponding to the largest grad value
     if (test_value + arma::dot(tangent_max, grad) <= 0)
     {
