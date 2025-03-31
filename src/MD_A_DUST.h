@@ -8,6 +8,8 @@
 
 #include "MD_B_Indices.h"
 #include "utils.h"
+#include <array>
+
 
 using namespace Rcpp;
 
