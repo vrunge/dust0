@@ -6,6 +6,11 @@
 #include "1D_A_DUST.h"
 #include "preProcessing.h"
 
+
+#include <fstream> /////// T0 WRITE  EMMELINE
+#include <iostream>  /////// T0 WRITE  EMMELINE
+
+
 using namespace Rcpp;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -379,6 +384,7 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
   double constantTerm = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(objectiveMean);
@@ -493,8 +499,110 @@ bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+
+  // 1. Get model string from get_info()
+  Rcpp::List info = get_info();
+  std::string model = Rcpp::as<std::string>(info["model"]);
+  std::string filename = "dataset_1D_" + model + ".csv";
+  std::ofstream file(filename, std::ios::app);
+  //std::ofstream file("dataset_1D.csv", std::ios::app);  // Emmeline
+
+  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
+  double constantTerm = (costRecord[s] - minCost) / (t - s);
+  double nonLinear = Dstar(objectiveMean);
+  double test_value = - nonLinear + constantTerm;
+
+  ///
+  /// Emmeline: REMARQUE : ON ENLEVE LE CAS MAX EN 0 > SEUIL
+  ///
+  if (test_value > 0) {return true;} // PELT test
+
+  double constraintMean = (cumsum[s] - cumsum[r]) / (s - r);
+  double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+  double meanGap = objectiveMean - constraintMean;
+  double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
+  double mu_max = muMax(objectiveMean, constraintMean);
+
+  // Emmeline: ON AJOUTE
+  file << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ";";  // Emmeline
+
+  // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
+  double mu = 0;
+  double direction;
+  double mu_diff;
+  double m_value;
+  double grad_diff = -grad; // stores grad difference between two steps, initialized each step as g_k, then once g_{k+1} is computed, y += g_{k+1}
+  double inverseHessian = -1;
+
+  auto updateDirection = [&] () // update and clip direction
+  {
+    direction = - inverseHessian * grad;
+    if (mu + direction > mu_max) { direction = mu_max - 1e-9 - mu; } // clip ascent direction, as dual may increase beyond the bound
+    else if (mu + direction < 0) { direction = -mu + 1e-9; }
+  };
+
+  auto getM = [&] (double point) // for use in Dstar, DstarPrime
+  {
+    return pow(1 - point, -1) * (objectiveMean - point * constraintMean);
+  };
+
+  auto updateTestValue = [&] ()
+  {
+    double gradCondition = m1 * grad;
+
+    // Initialize all values
+    mu_diff = direction;
+    mu += mu_diff;
+    m_value = getM(mu);
+    nonLinear = Dstar(m_value);
+    double new_test = - (1 - mu) * nonLinear + mu * linearTerm + constantTerm;
+
+    int i = 0;
+    while(new_test < test_value + mu_diff * gradCondition)
+    {
+      mu_diff *= .5; // shrink if unsuitable stepsize
+      mu -= mu_diff; // relay shrinking
+      m_value = getM(mu); // update values
+      nonLinear = Dstar(m_value); // update values
+      new_test = - (1 - mu) * nonLinear + mu * linearTerm + constantTerm; // update values
+      i++;
+      if (i == 10) { break; }
+    }
+    test_value = new_test;
+  };
+
+
+
+  auto updateGrad = [&] ()
+  {
+    grad = nonLinear - pow(1 - mu, -1) * meanGap * DstarPrime(m_value) + linearTerm;
+  };
+
+  auto updateHessian = [&] () // uses BFGS formula (in 1D, the formula simplifies to s / y)
+  {
+    grad_diff += grad;
+    if(grad_diff == 0) { grad_diff = 1e-9; }
+
+    inverseHessian = mu_diff / grad_diff;
+    grad_diff = - grad; // setting up y for next step
+  };
+
+  int i = 0;
+  do
+  {
+    updateDirection();
+    updateTestValue();
+    updateGrad();
+    updateHessian();
+    i++;
+  } while (i < 100);
+
+  file << mu << "\n";  // Emmeline
+  file.close();  // Emmeline
+
+  if(test_value > 0) {return true;} else {return false;}
 }
+
 
 
 

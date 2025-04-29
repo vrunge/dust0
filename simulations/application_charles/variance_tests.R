@@ -60,6 +60,6 @@ floor(chgpt * n)
 plot(res2$nb)
 
 
-
-
+res <- dust.1D(dataGenerator_1D(c(500,1000), parameters = c(0,1)), penalty = 2*log(1000), model = "gauss")
+plot(res$nb)
 
