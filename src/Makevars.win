@@ -1,1 +1,2 @@
 PKG_LIBS = -lopenblas -llapack -lblas -fopenmp
+CXX_STD = CXX17
