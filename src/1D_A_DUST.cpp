@@ -384,7 +384,6 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
   double constantTerm = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(objectiveMean);
@@ -524,7 +523,7 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   double mu_max = muMax(objectiveMean, constraintMean);
 
   // Emmeline: ON AJOUTE
-  file << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ";";  // Emmeline
+  file << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
 
   // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
   double mu = 0;
@@ -597,7 +596,7 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
     i++;
   } while (i < 100);
 
-  file << mu << "\n";  // Emmeline
+  file << mu << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] <<"\n";  // Emmeline
   file.close();  // Emmeline
 
   if(test_value > 0) {return true;} else {return false;}

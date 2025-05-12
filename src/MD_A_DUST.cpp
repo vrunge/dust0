@@ -1314,7 +1314,6 @@ bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t,
   // ############################################## //
   // ############################################## //
 
-
   // ######### // PELT TEST // ######### //
   // Formula: Dst - D*(Sst)              //
 
