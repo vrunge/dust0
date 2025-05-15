@@ -27,7 +27,7 @@ dataGenerator_1D(
 
 \item{nbSuccess}{(type \code{"negbin"}) number of successes}
 
-\item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}}
+\item{type}{the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}, \code{"variance"}}
 }
 \value{
 a univariate time series following the chosen model type and parameters
@@ -44,5 +44,6 @@ dataGenerator_1D(chpts = c(50,100), parameters = c(0.6,0.3), type = "geom")
 dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.2), type = "bern")
 dataGenerator_1D(chpts = c(50,100), parameters = c(0.7, 0.3), nbTrials = 5, type = "binom")
 dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, type = "negbin")
-dataGenerator_1D(chpts = c(50,70, 120, 200), parameter = c(0,3,-1,1), type = "gauss")
+dataGenerator_1D(chpts = c(50,70,120,200), parameter = c(0,3,-1,1), type = "gauss")
+dataGenerator_1D(chpts = c(50,100,180), parameter = c(3,1,6), type = "variance")
 }

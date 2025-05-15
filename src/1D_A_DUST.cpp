@@ -1,15 +1,11 @@
 #include <Rcpp.h>
 #include <cmath>
-
 #include <random> /// FOR RANDOM NUMBER IN DUAL EVAL
-
 #include "1D_A_DUST.h"
 #include "preProcessing.h"
 
-
 #include <fstream> /////// T0 WRITE  EMMELINE
 #include <iostream>  /////// T0 WRITE  EMMELINE
-
 
 using namespace Rcpp;
 

@@ -12,7 +12,7 @@
 #' @param gamma (type \code{"gauss"}) vector of numbers between 0 and 1 : the coefficient of the exponential decay. By default = 1 for piecewise constant signals. If one value, it is used for all segments. Otherwise we need as many values as in \code{chpts} vector.
 #' @param nbTrials (type \code{"binom"}) number of trials
 #' @param nbSuccess (type \code{"negbin"}) number of successes
-#' @param type the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}
+#' @param type the model: \code{"gauss"}, \code{"exp"}, \code{"poisson"}, \code{"geom"}, \code{"bern"}, \code{"binom"}, \code{"negbin"}, \code{"variance"}
 #' @return a univariate time series following the chosen model type and parameters
 #' @examples
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0,1), sdNoise = 0.2, type = "gauss")
@@ -23,7 +23,8 @@
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0.7,0.2), type = "bern")
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0.7, 0.3), nbTrials = 5, type = "binom")
 #' dataGenerator_1D(chpts = c(50,100), parameters = c(0.4,0.7), nbSuccess = 10, type = "negbin")
-#' dataGenerator_1D(chpts = c(50,70, 120, 200), parameter = c(0,3,-1,1), type = "gauss")
+#' dataGenerator_1D(chpts = c(50,70,120,200), parameter = c(0,3,-1,1), type = "gauss")
+#' dataGenerator_1D(chpts = c(50,100,180), parameter = c(3,1,6), type = "variance")
 dataGenerator_1D <- function(chpts = 100,
                              parameters = 0.5, # as 0 is not available for costs exp, poisson, geom, negbin
                              sdNoise = 1,
