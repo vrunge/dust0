@@ -172,7 +172,7 @@ void DUST_1D::update_partition()
     // END (DUST loop)
 
     // Prune the last index (analogous with a "mu* = 0" duality simple test)
-    // this is the smallest available index
+    // this is the smallest available index = PELT RULE
     if (lastCost > minCost)
     {
       indices->prune_last();
@@ -494,10 +494,16 @@ bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsig
   return (false);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+  Rcout << "START START START" << std::endl;
+
 
   // 1. Get model string from get_info()
   Rcpp::List info = get_info();
@@ -511,6 +517,8 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   double nonLinear = Dstar(objectiveMean);
   double test_value = - nonLinear + constantTerm;
 
+
+
   ///
   /// Emmeline: REMARQUE : ON ENLEVE LE CAS MAX EN 0 > SEUIL
   ///
@@ -521,6 +529,10 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   double meanGap = objectiveMean - constraintMean;
   double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
   double mu_max = muMax(objectiveMean, constraintMean);
+
+  Rcout << "PROBLEM : " << objectiveMean << std::endl;
+  Rcout << "constraintMean : " << constraintMean << std::endl;
+  Rcout << "mu_max : " << mu_max << std::endl;
 
   // Emmeline: ON AJOUTE
   file << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
@@ -533,6 +545,9 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   double grad_diff = -grad; // stores grad difference between two steps, initialized each step as g_k, then once g_{k+1} is computed, y += g_{k+1}
   double inverseHessian = -1;
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateDirection = [&] () // update and clip direction
   {
     direction = - inverseHessian * grad;
@@ -540,11 +555,17 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
     else if (mu + direction < 0) { direction = -mu + 1e-9; }
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto getM = [&] (double point) // for use in Dstar, DstarPrime
   {
     return pow(1 - point, -1) * (objectiveMean - point * constraintMean);
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateTestValue = [&] ()
   {
     double gradCondition = m1 * grad;
@@ -571,12 +592,17 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   };
 
 
-
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateGrad = [&] ()
   {
     grad = nonLinear - pow(1 - mu, -1) * meanGap * DstarPrime(m_value) + linearTerm;
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateHessian = [&] () // uses BFGS formula (in 1D, the formula simplifies to s / y)
   {
     grad_diff += grad;
@@ -586,19 +612,26 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
     grad_diff = - grad; // setting up y for next step
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   int i = 0;
+  Rcout << "start" << std::endl;
+  Rcout << mu_max << std::endl;
   do
   {
+    Rcout << mu << std::endl;
     updateDirection();
     updateTestValue();
     updateGrad();
     updateHessian();
     i++;
-  } while (i < 100);
+  } while (i < 10);
 
   file << mu << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] <<"\n";  // Emmeline
   file.close();  // Emmeline
 
+  Rcout << mu << std::endl;
   if(test_value > 0) {return true;} else {return false;}
 }
 
