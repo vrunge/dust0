@@ -1,7 +1,7 @@
 Package: dust
 Type: Package
 Title: Multiple Change Point Detection in Multivariate Time Series
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Simon", "Querné", email = "simon.querne@gmail.com", role = c("aut")),
     person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre")),
