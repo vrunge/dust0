@@ -407,6 +407,8 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
   double meanGap = objectiveMean - constraintMean;
   double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
 
+  /// if grad < 0 the max is in zero, no pelt pruning at this step, return false
+  if (grad < 0) {return false;}
 
   // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
   if (test_value + mu_max * grad <= 0) {return false;}
@@ -563,7 +565,7 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
 
   ///
   /// mu_max < 0. (m(mu) = constante) !!!
-  ///
+  /// call the Dual(constante)
   if (mu_max < 0) {;}
 
   ///
