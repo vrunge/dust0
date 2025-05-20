@@ -56,15 +56,15 @@ The smallest index, non-pruned, is always tested for pruning with the PELT rule.
 }
 \examples{
 y <- rnorm(100)
-y <- data_normalization_1D(data)
+y <- data_normalization_1D(y)
 dust.1D(y)
 
 y <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.5,0.2), type = "geom")
-y <- data_normalization_1D(data, type = "geom")
+y <- data_normalization_1D(y, type = "geom")
 dust.1D(data = y, model = "geom")
 
 y <- dataGenerator_1D(chpts = c(20,70), parameters = c(20,5), type = "poisson")
-y <- data_normalization_1D(data, type = "poisson")
+y <- data_normalization_1D(y, type = "poisson")
 dust.1D(data = y, model = "poisson")
 }
 \seealso{
