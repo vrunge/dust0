@@ -44,17 +44,17 @@
 #' \code{\link{dust.object.1D}} — An object-oriented version of this function that supports incremental updates via \code{append_c} and \code{update_partition}.
 #'
 #' @examples
-#' data <- rnorm(100)
-#' data <- data_normalization_1D(data)
-#' dust.1D(data = data)
+#' y <- rnorm(100)
+#' y <- data_normalization_1D(data)
+#' dust.1D(y)
 #'
-#' data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.5,0.2), type = "geom")
-#' data <- data_normalization_1D(data, type = "geom")
-#' dust.1D(data = data, model = "geom")
+#' y <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.5,0.2), type = "geom")
+#' y <- data_normalization_1D(data, type = "geom")
+#' dust.1D(data = y, model = "geom")
 #'
-#' data <- dataGenerator_1D(chpts = c(20,70), parameters = c(20,5), type = "poisson")
-#' data <- data_normalization_1D(data, type = "poisson")
-#' dust.1D(data = data, model = "poisson")
+#' y <- dataGenerator_1D(chpts = c(20,70), parameters = c(20,5), type = "poisson")
+#' y <- data_normalization_1D(data, type = "poisson")
+#' dust.1D(data = y, model = "poisson")
 #' @export
 dust.1D <- function(
     data = data

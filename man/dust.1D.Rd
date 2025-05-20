@@ -55,17 +55,17 @@ The input data should be first normalized by function \code{data_normalization_1
 The smallest index, non-pruned, is always tested for pruning with the PELT rule.
 }
 \examples{
-data <- rnorm(100)
-data <- data_normalization_1D(data)
-dust.1D(data = data)
+y <- rnorm(100)
+y <- data_normalization_1D(data)
+dust.1D(y)
 
-data <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.5,0.2), type = "geom")
-data <- data_normalization_1D(data, type = "geom")
-dust.1D(data = data, model = "geom")
+y <- dataGenerator_1D(chpts = c(50,100), parameters = c(0.5,0.2), type = "geom")
+y <- data_normalization_1D(data, type = "geom")
+dust.1D(data = y, model = "geom")
 
-data <- dataGenerator_1D(chpts = c(20,70), parameters = c(20,5), type = "poisson")
-data <- data_normalization_1D(data, type = "poisson")
-dust.1D(data = data, model = "poisson")
+y <- dataGenerator_1D(chpts = c(20,70), parameters = c(20,5), type = "poisson")
+y <- data_normalization_1D(data, type = "poisson")
+dust.1D(data = y, model = "poisson")
 }
 \seealso{
 \code{\link{dataGenerator_1D}} — To generate synthetic 1D data with change points and various statistical models.

@@ -54,9 +54,8 @@ double Geom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned
 
 double Geom_1D::muMax(double a, double b) const
 {
-  double res = 1;
-  if(b != 1){res = std::min(1.0, (a-1)/(b-1));}
-  return res;
+  if(a == b){return 0;}
+  if(b != 1){return(std::min(1.0, (a-1)/(b-1)));}
 }
 
 double Geom_1D::Dstar(double x) const

@@ -54,6 +54,7 @@ void DUST_1D::pruning_method()
   if(dual_max_type == 4){current_test = &DUST_1D::dualMaxAlgo4;}
   if(dual_max_type == 5){current_test = &DUST_1D::dualMaxAlgo5;}
   if(dual_max_type == 6){current_test = &DUST_1D::dualMaxAlgo6;}
+
   /// /// ///
   /// /// /// INIT RANDOM GENERATOR
   /// /// ///
@@ -83,9 +84,7 @@ void DUST_1D::append(std::vector<double>& inData, Nullable<double> inPenalty)
   if (first_execution)
   {
     // On first execution: initialize all vectors
-
     if (inPenalty.isNull()) { penalty = 2 * std::log(n); } else { penalty = as<double>(inPenalty); }
-    // if (inPenalty.isNull()) { penalty = 2 * pow(sdDiff(data), 2) * std::log(n); } else { penalty = as<double>(inPenalty); }
 
     cumsum.push_back(0);
     costRecord.push_back(-penalty);
@@ -228,6 +227,9 @@ List DUST_1D::get_partition()
   );
 }
 
+// --- // get_info object // --- //
+// --- // get_info object // --- //
+// --- // get_info object // --- //
 List DUST_1D::get_info()
 {
   return List::create(
@@ -259,7 +261,7 @@ bool DUST_1D::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsig
   return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
-/// EXACT EVAL
+/// EXACT EVAL // only available with Gaussian cost (fixed variance)
 
 bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
@@ -276,16 +278,16 @@ bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  double a = (cumsum[t] - cumsum[s]) * pow(t - s, -1);
-  double b = (cumsum[s] - cumsum[r]) * pow(s - r, -1);
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
 
   double lt = 0.0;
   double rt = muMax(a, b);
   double c = (1 - 1/phi) * rt;
   double d = 1/phi;
 
-  double linear = (costRecord[s] - costRecord[r]) * pow(s - r, -1);
-  double cst = (costRecord[s] - minCost) * pow(t - s, -1);
+  double linear = (costRecord[s] - costRecord[r]) / (s - r);
+  double cst = (costRecord[s] - minCost) / (t - s);
 
   double fc = - (1.0 - c) * Dstar((a - c*b)/(1 - c)) + c * linear + cst;
   double fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
@@ -322,19 +324,20 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
+// binary search. At each step, we evaluate the tangent line to the current point
+// at its max to stop the search at early step (when possible)
 
 bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  double a = (cumsum[t] - cumsum[s]) * pow(t - s, -1);
-  double cst = (costRecord[s] - minCost) * pow(t - s, -1);
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double cst = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(a);
   double test_value = - nonLinear + cst; // dual value in 0
 
   if (test_value > 0) {return true;} // PELT test
 
-  double b = (cumsum[s] - cumsum[r]) * pow(s - r, -1);
-  double linear = (costRecord[s] - costRecord[r]) * pow(s - r, -1);
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
+  double linear = (costRecord[s] - costRecord[r]) / (s - r);
   double meanGap = a - b;
   double grad = nonLinear - meanGap * DstarPrime(a) + linear;
   double mu_max = muMax(a, b);
@@ -351,10 +354,10 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
 
   for (int i = 0; i < nb_Loops; ++i)
   {
-    m = (a - mu * b) * pow(1 - mu, -1);
+    m = (a - mu * b) / (1 - mu);
     test_value = - (1 - mu) * Dstar(m) + mu * linear + cst; // test value
     if (test_value > 0) {return true;} // pruning
-    grad = Dstar(m) - (a - b) * pow(1 - mu, -1)*DstarPrime(m) + linear; // gradiant value
+    grad = Dstar(m) - (a - b) / (1 - mu) *DstarPrime(m) + linear; // gradiant value
     if(grad > 0)
     {
       if (test_value + (rt - mu) * grad <= 0) {return false;} //check value in rt
@@ -380,6 +383,9 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+  ///
+  /// TEST PELT in MU = 0
+  ///
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
   double constantTerm = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(objectiveMean);
@@ -387,11 +393,20 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
 
   if (test_value > 0) {return true;} // PELT test
 
+  ///
+  /// mu_max (stop ALGO if mu_max == 0) !!!
+  ///
   double constraintMean = (cumsum[s] - cumsum[r]) / (s - r);
+  double mu_max = muMax(objectiveMean, constraintMean);
+  if (mu_max == 0) {return false;}
+
+  ///
+  /// INIT Quasi Newton algo in zero
+  ///
   double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
   double meanGap = objectiveMean - constraintMean;
   double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
-  double mu_max = muMax(objectiveMean, constraintMean);
+
 
   // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
   if (test_value + mu_max * grad <= 0) {return false;}
@@ -402,6 +417,9 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
   double grad_diff = -grad; // stores grad difference between two steps, initialized each step as g_k, then once g_{k+1} is computed, y += g_{k+1}
   double inverseHessian = -1;
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateDirection = [&] () // update and clip direction
   {
     direction = - inverseHessian * grad;
@@ -409,11 +427,17 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
     else if (mu + direction < 0) { direction = -mu + 1e-9; }
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto getM = [&] (double point) // for use in Dstar, DstarPrime
   {
-    return pow(1 - point, -1) * (objectiveMean - point * constraintMean);
+    return (objectiveMean - point * constraintMean) / (1 - point);
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateTestValue = [&] ()
   {
     double gradCondition = m1 * grad;
@@ -439,11 +463,17 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
     test_value = new_test;
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateGrad = [&] ()
   {
-    grad = nonLinear - pow(1 - mu, -1) * meanGap * DstarPrime(m_value) + linearTerm;
+    grad = nonLinear - meanGap * DstarPrime(m_value) / (1 - mu) + linearTerm;
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   auto updateHessian = [&] () // uses BFGS formula (in 1D, the formula simplifies to s / y)
   {
     grad_diff += grad;
@@ -453,6 +483,9 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
     grad_diff = - grad; // setting up y for next step
   };
 
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
   int i = 0;
   do
   {
@@ -498,40 +531,54 @@ bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  Rcout << "START START START" << std::endl;
-
+  //Rcout << "START START START" << std::endl;
 
   // 1. Get model string from get_info()
   Rcpp::List info = get_info();
   std::string model = Rcpp::as<std::string>(info["model"]);
   std::string filename = "dataset_1D_" + model + ".csv";
   std::ofstream file(filename, std::ios::app);
-  //std::ofstream file("dataset_1D.csv", std::ios::app);  // Emmeline
 
+  if (file.tellp() == 0)
+  {
+    file << "r,s,t,objectiveMean,constraintMean,linearTerm,constantTerm,mu,muMax,pruning,minCost,Qt\n"; // Replace with actual column names
+  }
+
+  ///
+  /// TEST PELT in MU = 0
+  ///
   double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
   double constantTerm = (costRecord[s] - minCost) / (t - s);
   double nonLinear = Dstar(objectiveMean);
   double test_value = - nonLinear + constantTerm;
 
-
-
-  ///
-  /// Emmeline: REMARQUE : ON ENLEVE LE CAS MAX EN 0 > SEUIL
-  ///
   if (test_value > 0) {return true;} // PELT test
 
+  ///
+  /// mu_max (stop ALGO if mu_max == 0) !!!
+  ///
   double constraintMean = (cumsum[s] - cumsum[r]) / (s - r);
+  double mu_max = muMax(objectiveMean, constraintMean);
+  if (mu_max == 0) {return false;}
+
+  ///
+  /// mu_max < 0. (m(mu) = constante) !!!
+  ///
+  if (mu_max < 0) {;}
+
+  ///
+  /// INIT Quasi Newton algo in zero
+  ///
   double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
   double meanGap = objectiveMean - constraintMean;
   double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
-  double mu_max = muMax(objectiveMean, constraintMean);
 
-  Rcout << "PROBLEM : " << objectiveMean << std::endl;
-  Rcout << "constraintMean : " << constraintMean << std::endl;
-  Rcout << "mu_max : " << mu_max << std::endl;
+  //Rcout << "PROBLEM : " << objectiveMean << std::endl;
+  //Rcout << "constraintMean : " << constraintMean << std::endl;
+  //Rcout << "mu_max : " << mu_max << std::endl;
 
   // Emmeline: ON AJOUTE
-  file << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
+  file << r << "," << s << "," << t << "," << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
 
   // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
   double mu = 0;
@@ -556,7 +603,7 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   //////////////////////////////
   auto getM = [&] (double point) // for use in Dstar, DstarPrime
   {
-    return pow(1 - point, -1) * (objectiveMean - point * constraintMean);
+    return (objectiveMean - point * constraintMean) / (1 - point);
   };
 
   //////////////////////////////
@@ -593,7 +640,7 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   //////////////////////////////
   auto updateGrad = [&] ()
   {
-    grad = nonLinear - pow(1 - mu, -1) * meanGap * DstarPrime(m_value) + linearTerm;
+    grad = nonLinear - meanGap * DstarPrime(m_value) / (1 - mu) + linearTerm;
   };
 
   //////////////////////////////
@@ -612,22 +659,22 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   //////////////////////////////
   //////////////////////////////
   int i = 0;
-  Rcout << "start" << std::endl;
-  Rcout << mu_max << std::endl;
+  //Rcout << "start" << std::endl;
+  //Rcout << mu_max << std::endl;
   do
   {
-    Rcout << mu << std::endl;
+    //Rcout << mu << std::endl;
     updateDirection();
     updateTestValue();
     updateGrad();
     updateHessian();
     i++;
-  } while (i < 10);
+  } while (i < 100);
 
-  file << mu << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] <<"\n";  // Emmeline
+  file << mu << ","<<  mu_max << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] <<"\n";  // Emmeline
   file.close();  // Emmeline
 
-  Rcout << mu << std::endl;
+
   if(test_value > 0) {return true;} else {return false;}
 }
 
