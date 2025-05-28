@@ -46,11 +46,14 @@ double Bern_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 double Bern_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return (-std::numeric_limits<double>::infinity());
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,17 +69,27 @@ double Bern_1D::muMax(double a, double b) const
   return res;
 }
 
+bool Bern_1D::isBoundary(double a) const
+{
+  if(a == 0 || a == 1){return true;}
+  return false;
+}
+
+
 double Bern_1D::Dstar(double x) const
 {
   return x*std::log(x) + (1.0 - x)*std::log(1.0 - x);
 }
-
 
 double Bern_1D::DstarPrime(double x) const
 {
   return std::log(x) - std::log(1.0 - x);
 }
 
+double Bern_1D::DstarPrimeInv(double x) const
+{
+  return std::exp(x) / (1 + std::exp(x));
+}
 
 double Bern_1D::DstarSecond(double x) const
 {

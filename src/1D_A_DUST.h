@@ -54,9 +54,11 @@ protected:
   virtual double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const = 0;
 
   virtual double muMax(double a, double b) const = 0;
+  virtual bool isBoundary(double a) const = 0;
 
   virtual double Dstar(double x) const = 0;
   virtual double DstarPrime(double x) const = 0;
+  virtual double DstarPrimeInv(double x) const = 0;
   virtual double DstarSecond(double x) const = 0;
 
   virtual std::string get_model() const = 0;
@@ -74,10 +76,14 @@ private:
   // --- // Test and Indices init // --- //
   void pruning_method();
 
+  bool isSpecialCase(double objectiveMean, double constraintMean);
+  bool specialCasePruning(double objectiveMean, double constraintMean,
+                          double linearTerm, double constantTerm, double mu_max);
+
   // --- // MAX DUAL METHODS // --- //
   // --- //   // --- //   // --- //   // --- //
   // 0: random eval
-  // 1: exact eval (if possible, otherwise, -inf (OP))
+  // 1: exact eval
   // 2: golden-section search
   // 3: binary search. At each step, we evaluate the tangent line to the current point at its max to stop the search at early step (when possible)
   // 4: Quasi-Newton

@@ -64,20 +64,20 @@ void DUST_meanVar::init_method()
 
 bool DUST_meanVar::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(false);}
-  //if(r + 1 == s){return(false);} // => Vb = 0
+  if(s + 1 == t){return false;}
+  //if(r + 1 == s){return false;} // => Vb = 0
   return (dualEval(dist(engine), minCost, t, s, r) > 0);
 }
 
 bool DUST_meanVar::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(false);}
- // if(r + 1 == s){return(false);} // => Vb = 0
+  if(s + 1 == t){return false;}
+ // if(r + 1 == s){return false;} // => Vb = 0
   double Mt = (cumsum[t] - cumsum[s]) / (t - s);
   double Mt2 = (cumsum2[t] - cumsum2[s]) / (t - s);
   double Ms = (cumsum[s] - cumsum[r]) / (s - r);
@@ -98,7 +98,7 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
   A = (Mt2 - d * Ms2)/(1 - d);
   B = (Mt - d * Ms)/(1 - d);
   double fd = 0.5 * (1 - d) * (1 + std::log(A - B*B)) + d * linear + cst;
-  if(fc > 0 || fd > 0){return(true);}
+  if(fc > 0 || fd > 0){return true;}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -124,24 +124,24 @@ bool DUST_meanVar::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, 
       fd = 0.5 * (1 - d) * (1 + std::log(A - B*B)) + d * linear + cst;
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){return(true);}
+    if(max_val > 0){return true;}
   }
-  return (false);
+  return false;
 }
 
 
 
 bool DUST_meanVar::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 
 
 bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(false);}
-  //if(r + 1 == s){return(false);} // => Vb = 0
+  if(s + 1 == t){return false;}
+  //if(r + 1 == s){return false;} // => Vb = 0
 
   double a = (cumsum[t] - cumsum[s]) / (t - s);
   double a2 = (cumsum2[t] - cumsum2[s]) / (t - s);
@@ -247,8 +247,8 @@ bool DUST_meanVar::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, 
 
 bool DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(false);}
-  //if(r + 1 == s){return(false);} // => Vb = 0
+  if(s + 1 == t){return false;}
+  //if(r + 1 == s){return false;} // => Vb = 0
 
   double a = (cumsum[t] - cumsum[s]) / (t - s);
   double a2 = (cumsum2[t] - cumsum2[s]) / (t - s);
@@ -258,13 +258,13 @@ bool DUST_meanVar::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, 
   double test_value = nonLinear + constantTerm;  //dual in mu = 0
 
   if (test_value > 0) {return true;} // PELT test (eval dual in 0)
-  return(false);
+  return false;
 }
 
 
 bool DUST_meanVar::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return(false);
+  return false;
 }
 
 

@@ -63,7 +63,6 @@ void DUST_1D::pruning_method()
 }
 
 
-
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
 // --- // Fits the data, i. e. initializes all data-dependent vectors // --- //
@@ -244,7 +243,6 @@ List DUST_1D::get_info()
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,6 +251,69 @@ List DUST_1D::get_info()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// SPECIAL CASE BEFORE DUAL EVALUATION / OPTIMIZATION
+
+bool DUST_1D::isSpecialCase(double objectiveMean, double constraintMean)
+{
+  if(isBoundary(objectiveMean) == true){return true;}
+  if(objectiveMean == constraintMean){return true;}
+  return false;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/// if special_cases == true => return true;
+
+bool DUST_1D::specialCasePruning(double objectiveMean, double constraintMean,
+                                 double linearTerm, double constantTerm, double mu_max)
+{
+  ///
+  /// case "objectiveMean = 0"
+  ///
+  if(isBoundary(objectiveMean) == true)
+  {
+    if(isBoundary(constraintMean) == false) /// case mu_max = 0
+    {
+      if (constantTerm > 0) {return true;}
+      return false;
+    }
+    else /// case linear
+    {
+      if (constantTerm > 0){return true;} /// left bound
+      /// case bern / binom : mu_max != 1
+      if (mu_max * linearTerm + constantTerm > 0){return true;} /// right bound
+      return false;
+    }
+  }
+
+  ///
+  /// case isBoundary(objectiveMean) == false AND isBoundary(constraintMean) == true
+  ///  SEE MU_MAX function
+  ///
+
+  ///
+  /// case "objectiveMean = constraintMean", here not on the boundary
+  /// ALWAYS mu_max = 1
+  ///
+  if(objectiveMean == constraintMean)
+  {
+    if (- Dstar(objectiveMean) + constantTerm > 0){return true;} /// left bound
+    if (linearTerm + constantTerm > 0){return true;} /// right bound
+  }
+  return false;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// RANDOM EVAL
 
@@ -265,6 +326,16 @@ bool DUST_1D::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsig
 
 bool DUST_1D::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
+  double c = (costRecord[s] - costRecord[r]) / (s - r);
+  double d = (costRecord[s] - minCost) / (t - s);
+  double mu_max = muMax(a, b);
+
+  ///
+  /// case dual domain = one point OR dual = linear function
+  ///
+  if(isSpecialCase(a,b) == true){return specialCasePruning(a,b,c,d,mu_max);}
   return (dualMax(minCost, t, s, r) > 0);
 }
 
@@ -291,7 +362,7 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
 
   double fc = - (1.0 - c) * Dstar((a - c*b)/(1 - c)) + c * linear + cst;
   double fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
-  if(fc > 0 || fd > 0){return(true);}
+  if(fc > 0 || fd > 0){return true;}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -313,9 +384,9 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
       fd = - (1.0 - d) * Dstar((a - d*b)/(1 - d)) + d * linear + cst;
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){return(true);}
+    if(max_val > 0){return true;}
   }
-  return (false);
+  return false;
 }
 
 
@@ -330,18 +401,26 @@ bool DUST_1D::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsig
 bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
   double a = (cumsum[t] - cumsum[s]) / (t - s);
-  double cst = (costRecord[s] - minCost) / (t - s);
-  double nonLinear = Dstar(a);
-  double test_value = - nonLinear + cst; // dual value in 0
-
-  if (test_value > 0) {return true;} // PELT test
-
   double b = (cumsum[s] - cumsum[r]) / (s - r);
-  double linear = (costRecord[s] - costRecord[r]) / (s - r);
-  double meanGap = a - b;
-  double grad = nonLinear - meanGap * DstarPrime(a) + linear;
+  double c = (costRecord[s] - costRecord[r]) / (s - r);
+  double d = (costRecord[s] - minCost) / (t - s);
   double mu_max = muMax(a, b);
 
+  ///
+  /// case dual domain = one point OR dual = linear function
+  ///
+  if(isSpecialCase(a,b) == true){return specialCasePruning(a,b,c,d,mu_max);}
+
+  ///
+  /// PELT TEST
+  ///
+  double nonLinear = Dstar(a);
+  double test_value = - nonLinear + d; // dual value in 0
+  if (test_value > 0) {return true;} // PELT test
+
+
+  double meanGap = a - b;
+  double grad = nonLinear - meanGap * DstarPrime(a) + c;
   if (test_value + mu_max * grad <= 0) {return false;} //check value in mu = mu_max
 
   /// iterative algo
@@ -355,9 +434,9 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
   for (int i = 0; i < nb_Loops; ++i)
   {
     m = (a - mu * b) / (1 - mu);
-    test_value = - (1 - mu) * Dstar(m) + mu * linear + cst; // test value
+    test_value = - (1 - mu) * Dstar(m) + mu * c + d; // test value
     if (test_value > 0) {return true;} // pruning
-    grad = Dstar(m) - (a - b) / (1 - mu) *DstarPrime(m) + linear; // gradiant value
+    grad = Dstar(m) - (a - b) / (1 - mu) *DstarPrime(m) + c; // gradiant value
     if(grad > 0)
     {
       if (test_value + (rt - mu) * grad <= 0) {return false;} //check value in rt
@@ -371,7 +450,7 @@ bool DUST_1D::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsig
       mu = lt + 0.5 * (rt - lt); // center interval value
     }
   }
-  return (false);
+  return false;
 }
 
 
@@ -522,7 +601,7 @@ bool DUST_1D::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsig
   double test_value = - nonLinear + constantTerm;
 
   if (test_value > 0) {return true;} // PELT test
-  return (false);
+  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -543,35 +622,104 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
 
   if (file.tellp() == 0)
   {
-    file << "r,s,t,objectiveMean,constraintMean,linearTerm,constantTerm,mu,muMax,pruning,minCost,Qt\n"; // Replace with actual column names
+    file << "r,s,t,objectiveMean,constraintMean,linearTerm,constantTerm,mu,muMax,pruning,Qt,S1t,ab\n"; // Replace with actual column names
   }
 
   ///
-  /// TEST PELT in MU = 0
   ///
-  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
+  ///
   double constantTerm = (costRecord[s] - minCost) / (t - s);
-  double nonLinear = Dstar(objectiveMean);
-  double test_value = - nonLinear + constantTerm;
+  double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+  double nonLinear;
 
-  if (test_value > 0) {return true;} // PELT test
-
-  ///
-  /// mu_max (stop ALGO if mu_max == 0) !!!
-  ///
+  double objectiveMean = (cumsum[t] - cumsum[s]) / (t - s);
   double constraintMean = (cumsum[s] - cumsum[r]) / (s - r);
   double mu_max = muMax(objectiveMean, constraintMean);
-  if (mu_max == 0) {return false;}
 
-  ///
-  /// mu_max < 0. (m(mu) = constante) !!!
-  /// call the Dual(constante)
-  if (mu_max < 0) {;}
+  double test_value;
+  // Emmeline: ON AJOUTE
+  file << r << "," << s << "," << t << "," << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
+
+  //// SPECTIAL CASES
+  //// SPECTIAL CASES
+  //// SPECTIAL CASES
+  if(isBoundary(objectiveMean) == true)
+  {
+    if(isBoundary(constraintMean) == false) /// case mu_max = 0
+    {
+      /// PELT PELT PELT
+      /// PELT PELT PELT
+      /// PELT PELT PELT
+      file << 0 << ","<<  mu_max << "," << (constantTerm > 0) << "," << minCost <<  "," << cumsum[t] << "," << "f-nf" <<"\n";  // Emmeline
+      file.close();  // Emmeline
+      if (constantTerm > 0) {return true;}
+      return false;
+    }
+    else /// case linear
+    {
+      /// linear
+      /// linear
+      /// linear
+      linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+      if (constantTerm > 0)
+      {
+        file << 0 << ","<<  mu_max << "," << true << "," << minCost <<  "," << cumsum[t] << "," << "f-f" <<"\n";  // Emmeline
+        file.close();  // Emmeline
+        return true;
+      }
+      /// what is mu_max here ? verify
+      if (mu_max * linearTerm + constantTerm > 0)
+      {
+        file << mu_max << ","<<  mu_max << "," << true << "," << minCost <<  "," << cumsum[t] << "," << "f-f" <<"\n";  // Emmeline
+        file.close();  // Emmeline
+        return true;
+      }
+      file << -1 << ","<<  mu_max << "," << false << "," << minCost <<  "," << cumsum[t] << "," << "f-f" <<"\n";  // Emmeline
+      file.close();  // Emmeline
+      return false;
+    }
+  }
+  if(objectiveMean == constraintMean)
+  {
+    /// linear test with Dstar != 0
+    /// linear test with Dstar != 0
+    /// linear test with Dstar != 0
+    linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+    nonLinear = Dstar(objectiveMean);
+    if (- nonLinear + constantTerm > 0)
+    {
+      file << 0 << ","<<  mu_max << "," << true << "," << minCost <<  "," << cumsum[t] << "," << "a=b" <<"\n";  // Emmeline
+      file.close();  // Emmeline
+      return true;
+    }
+    if (-(1 - mu_max) * nonLinear + mu_max * linearTerm + constantTerm > 0)
+    {
+      file << mu_max << ","<<  mu_max << "," << true << "," << minCost <<  "," << cumsum[t] << "," << "a=b" <<"\n";  // Emmeline
+      file.close();  // Emmeline
+      return true;
+    }
+    file << -1 << ","<<  mu_max << "," << false << "," << minCost <<  "," << cumsum[t] << "," << "a=b" <<"\n";  // Emmeline
+    file.close();  // Emmeline
+    return false;
+  }
+
+  /// case objectiveMean != Boundary
+  /// PELT PELT PELT
+  /// PELT PELT PELT
+  /// PELT PELT PELT
+  nonLinear = Dstar(objectiveMean);
+  test_value = - nonLinear + constantTerm;
+  if (test_value > 0)
+  {
+    file << 0 << ","<<  mu_max << "," << true << "," << minCost <<  "," << cumsum[t] << "," << "a!=b" <<"\n";  // Emmeline
+    file.close();  // Emmeline
+    return true;
+  }
 
   ///
   /// INIT Quasi Newton algo in zero
   ///
-  double linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
+  linearTerm = (costRecord[s] - costRecord[r]) / (s - r);
   double meanGap = objectiveMean - constraintMean;
   double grad = nonLinear - meanGap * DstarPrime(objectiveMean) + linearTerm;
 
@@ -579,8 +727,6 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
   //Rcout << "constraintMean : " << constraintMean << std::endl;
   //Rcout << "mu_max : " << mu_max << std::endl;
 
-  // Emmeline: ON AJOUTE
-  file << r << "," << s << "," << t << "," << objectiveMean << "," << constraintMean << "," << linearTerm << "," << constantTerm << ",";  // Emmeline
 
   // the duality function is concave, meaning we can check if the tangent at mu ever reaches the desired value.
   double mu = 0;
@@ -673,13 +819,12 @@ bool DUST_1D::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsig
     i++;
   } while (i < 100);
 
-  file << mu << ","<<  mu_max << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] <<"\n";  // Emmeline
+  file << mu << ","<<  mu_max << "," << (test_value > 0) << "," << minCost <<  "," << cumsum[t] << "," << "a!=b" <<"\n";  // Emmeline
   file.close();  // Emmeline
 
 
   if(test_value > 0) {return true;} else {return false;}
 }
-
 
 
 

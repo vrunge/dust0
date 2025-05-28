@@ -62,13 +62,24 @@ double Gauss_1D::muMax(double a, double b) const
   return 1;
 }
 
+bool Gauss_1D::isBoundary(double a) const
+{
+  return false;
+}
+
+
+
 double Gauss_1D::Dstar(double x) const
 {
   return 0.5 * x * x;
 }
 
-
 double Gauss_1D::DstarPrime(double x) const
+{
+  return x;
+}
+
+double Gauss_1D::DstarPrimeInv(double x) const
 {
   return x;
 }

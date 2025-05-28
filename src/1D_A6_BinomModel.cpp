@@ -46,6 +46,10 @@ double Binom_1D::dualEval(double point, double minCost, unsigned int t, unsigned
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 double Binom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return (-std::numeric_limits<double>::infinity());
@@ -67,6 +71,13 @@ double Binom_1D::muMax(double a, double b) const
   return res;
 }
 
+bool Binom_1D::isBoundary(double a) const
+{
+  if(a == 0 || a == 1){return true;}
+  return false;
+}
+
+
 double Binom_1D::Dstar(double x) const
 {
   return x*std::log(x) + (1.0 - x)*std::log(1.0 - x);
@@ -76,6 +87,11 @@ double Binom_1D::Dstar(double x) const
 double Binom_1D::DstarPrime(double x) const
 {
   return std::log(x) - std::log(1.0 - x);
+}
+
+double Binom_1D::DstarPrimeInv(double x) const
+{
+  return std::exp(x) / (1 + std::exp(x));
 }
 
 

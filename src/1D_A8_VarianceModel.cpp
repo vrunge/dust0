@@ -39,6 +39,9 @@ double Variance_1D::dualEval(double point, double minCost, unsigned int t, unsig
   + (1 - point) * 0.5 * (std::log((objectiveMean - point * constraintMean) / (1 - point)) + 1);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 double Variance_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
@@ -56,6 +59,12 @@ double Variance_1D::muMax(double a, double b) const
   return res;
 }
 
+
+bool Variance_1D::isBoundary(double a) const
+{
+  return false;
+}
+
 double Variance_1D::Dstar(double x) const
 {
   return -0.5 * (std::log(x) + 1.0);
@@ -63,6 +72,11 @@ double Variance_1D::Dstar(double x) const
 
 
 double Variance_1D::DstarPrime(double x) const
+{
+  return -0.5 /x;
+}
+
+double Variance_1D::DstarPrimeInv(double x) const
 {
   return -0.5 /x;
 }

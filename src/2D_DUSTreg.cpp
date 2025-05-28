@@ -70,13 +70,13 @@ bool DUST_reg::dualMaxAlgo0(double minCost, unsigned int t, unsigned int s, unsi
 
 bool DUST_reg::dualMaxAlgo1(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 bool DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  if(s + 1 == t){return(false);}
-  if(r + 1 == s){return(false);}
+  if(s + 1 == t){return false;}
+  if(r + 1 == s){return false;}
 
   double a = 0.0;
   double b = 1.0;
@@ -85,7 +85,7 @@ bool DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsi
 
   double fc = dualEval(c, minCost, t, s, r);
   double fd = dualEval(d, minCost, t, s, r);
-  if(fc > 0 || fd > 0){return(true);}
+  if(fc > 0 || fd > 0){return true;}
   double max_val = std::max(fc, fd);
 
   for (int i = 0; i < nb_Loops; i++)
@@ -107,31 +107,31 @@ bool DUST_reg::dualMaxAlgo2(double minCost, unsigned int t, unsigned int s, unsi
       fd = dualEval(d, minCost, t, s, r);
     }
     max_val = std::max(max_val, std::max(fc, fd));
-    if(max_val > 0){return(true);}
+    if(max_val > 0){return true;}
   }
-  return (false);
+  return false;
 }
 
 
 
 bool DUST_reg::dualMaxAlgo3(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 bool DUST_reg::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 bool DUST_reg::dualMaxAlgo5(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 bool DUST_reg::dualMaxAlgo6(double minCost, unsigned int t, unsigned int s, unsigned int r)
 {
-  return (false);
+  return false;
 }
 
 

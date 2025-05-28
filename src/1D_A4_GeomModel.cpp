@@ -43,6 +43,10 @@ double Geom_1D::dualEval(double point, double minCost, unsigned int t, unsigned 
   + (1 - point) * (R * std::log(R) - (R - 1) * std::log(R - 1));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 double Geom_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return (-std::numeric_limits<double>::infinity());
@@ -59,6 +63,13 @@ double Geom_1D::muMax(double a, double b) const
   return res;
 }
 
+bool Geom_1D::isBoundary(double a) const
+{
+  if(a == 1){return true;}
+  return false;
+}
+
+
 double Geom_1D::Dstar(double x) const
 {
   return (x - 1.0)*std::log(x - 1.0) - x*std::log(x);
@@ -68,6 +79,11 @@ double Geom_1D::Dstar(double x) const
 double Geom_1D::DstarPrime(double x) const
 {
   return std::log(x - 1.0) - std::log(x);
+}
+
+double Geom_1D::DstarPrimeInv(double x) const
+{
+  return 1/(1 - std::exp(x));
 }
 
 double Geom_1D::DstarSecond(double x) const

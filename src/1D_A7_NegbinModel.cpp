@@ -43,6 +43,10 @@ double Negbin_1D::dualEval(double point, double minCost, unsigned int t, unsigne
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 double Negbin_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
   return (-std::numeric_limits<double>::infinity());
@@ -59,6 +63,12 @@ double Negbin_1D::muMax(double a, double b) const
   return res;
 }
 
+bool Negbin_1D::isBoundary(double a) const
+{
+  if(a == 0){return true;}
+  return false;
+}
+
 double Negbin_1D::Dstar(double x) const
 {
   return x*std::log(x) - (1.0 + x)*std::log(1.0 + x);
@@ -68,6 +78,11 @@ double Negbin_1D::Dstar(double x) const
 double Negbin_1D::DstarPrime(double x) const
 {
   return std::log(x) - std::log(1.0 + x);
+}
+
+double Negbin_1D::DstarPrimeInv(double x) const
+{
+  return std::exp(x) / (1 - std::exp(x));
 }
 
 

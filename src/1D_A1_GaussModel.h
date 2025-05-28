@@ -18,9 +18,11 @@ protected:
   double dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const override;
 
   double muMax(double a, double b) const override;
+  bool isBoundary(double a) const override;
 
   double Dstar(double x) const override;
   double DstarPrime(double x) const override;
+  double DstarPrimeInv(double x) const override;
   double DstarSecond(double x) const override;
 
   std::string get_model() const override;

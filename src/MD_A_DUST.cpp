@@ -697,7 +697,7 @@ bool DUST_MD::dualMaxAlgo3(const double& minCost,
     if(Max > 0){return true;}  /// early return and/or update mu
     mu(k_dual) = argmax;          //// UPDATE MU
   }
-  return(false);
+  return false;
 }
 
 
@@ -988,6 +988,12 @@ bool DUST_MD::dualMaxAlgo4(const double &minCost, const unsigned int &t,
   // return false;
   return optim(std::vector<unsigned int>());
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
                            const unsigned int& s,
@@ -1338,12 +1344,130 @@ bool DUST_MD::dualMaxAlgo5(const double& minCost, const unsigned int& t,
 
 
 bool DUST_MD::dualMaxAlgo6(const double& minCost, const unsigned int& t,
-                           const unsigned int& s,
-                           std::vector<unsigned int> l,
-                           std::vector<unsigned int> r)
+                            const unsigned int& s,
+                            std::vector<unsigned int> l,
+                            std::vector<unsigned int> r)
 {
-  return(false);
+  //Rcout << "DUST_MD DUST_MD DUST_MD DUST_MD DUST_MD " << std::endl;
+
+  update_dual_parameters_l_r(minCost, t, s, l, r);
+  unsigned int nb_l_r = l.size() + r.size();
+
+  std::vector<int> sign;
+  sign.reserve(nb_l_r); //// number of constraints
+  for (unsigned int i = 0; i < nb_l_r; i++)
+    sign.push_back(i < l.size() ? -1 : 1);
+
+
+  ///////
+  /////// 1D dual parameters
+  ///////
+  arma::colvec a = arma::colvec(dim, arma::fill::zeros);
+  arma::colvec b = arma::colvec(dim, arma::fill::zeros);
+  double c = 1;
+  double D;
+  double e;
+  double f = constantTerm;
+
+
+  ///////
+  /////// mu INITIAL = 0
+  ///////
+  for (unsigned int i = 0; i < nb_l_r; i++){mu(i) = 0;}
+
+
+  ///////  ///////  ///////  ///////  ///////  ///////
+  /////// COORDINATE DESCENT MAIN LOOP
+  ///////  ///////  ///////  ///////  ///////  ///////
+  unsigned int k_dual;
+  double Max = -std::numeric_limits<double>::infinity();
+  double argmax = 0;
+
+  for (unsigned int k = 0; k < nb_Loops; k++)
+  {
+    for(unsigned int row = 0; row < dim; row++)
+    {
+      a(row) = objectiveMean(row);
+    }
+    c = 1;
+    f = constantTerm;
+
+
+    //// THE index for mu to optimize
+    k_dual  = k % nb_l_r;
+    //// UPDATE the coefficients a,b,c,d,e,f
+    /// a and b
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){for(unsigned int row = 0; row < dim; row++){a(row) = a(row) + sign[j]*mu(j)*constraintMean(row,j);}}
+    }
+    for(unsigned int row = 0; row < dim; row++){b(row) = sign[k_dual]*constraintMean(row,k_dual);}
+
+    /// c, d, e, f
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){c += sign[j]*mu(j);}
+    }
+    D = sign[k_dual];
+    e = sign[k_dual]*linearTerm[k_dual];
+    for(unsigned int j = 0; j < nb_l_r; j++)
+    {
+      if(j != k_dual){f += sign[j]*mu(j)*linearTerm[j];}
+    }
+
+    Max = dual1D_Max(argmax, a, b, c, D, e, f);  //// FIND ARGMAX AND MAX
+
+    mu(k_dual) = argmax;          //// UPDATE MU
+  }
+
+
+  // 1. Get model string from get_info()
+  Rcpp::List info = get_info();
+  std::string model = Rcpp::as<std::string>(info["model"]);
+  std::string filename = "dataset_MD_" + model + ".csv";
+  std::ofstream file(filename, std::ios::app);
+
+  if(nb_max == l.size() + r.size())
+  {
+  if (file.tellp() == 0)
+  {
+    Rcout << "l.size() = " << l.size() << "; r.size() = " << r.size() << "; linearTerm.size() = " << linearTerm.size() << std::endl;
+
+    for (size_t i = 0; i < l.size(); ++i) {file << "l" << i + 1 << ",";}
+    for (size_t i = 0; i < r.size(); ++i) {file << "r" << i + 1 << ",";}
+    file << "s," << "t,";
+    for (size_t i = 0; i < objectiveMean.size(); ++i) {file << "objectiveMean" << i + 1 << ",";}
+    for (size_t i = 0; i < constraintMean.size(); ++i) {file << "constraintMean" << i + 1 << ",";}
+    for (size_t i = 0; i < nb_l_r; ++i) {file << "linearTerm" << i + 1 << ",";}
+    file << "constantTerm,";
+    for (size_t i = 0; i < nb_l_r; ++i) {file << "mu" << i + 1 << ",";}
+    for (size_t i = 0; i < nb_l_r; ++i) {file << "muMax" << i + 1 << ",";}
+    file << "pruning\n";
+  }
+
+
+  for (size_t i = 0; i < l.size(); ++i){file << l[i] << ",";}
+  for (size_t i = 0; i < r.size(); ++i){file << r[i] << ",";}
+  file << s << "," << t << ",";
+
+  for (size_t i = 0; i < objectiveMean.size(); ++i){file << objectiveMean[i] << ",";}
+  for (size_t i = 0; i < constraintMean.size(); ++i){file << constraintMean[i] << ",";}
+
+  for (size_t i = 0; i < nb_l_r; ++i){file << linearTerm[i] << ",";}
+  file << constantTerm << ",";  // Emmeline
+  for (size_t i = 0; i < nb_l_r; ++i){file << mu[i] << ",";}
+  for (size_t i = 0; i < nb_l_r; ++i){file << mu_max[i] << ",";}
+  file << (Max > 0) <<"\n";  // Emmeline
+
+  file.close();  // Emmeline
+  }
+
+  if(Max > 0){return true;}  /// early return and/or update mu        //// UPDATE MU
+  return false;
 }
+
+
+
 
 bool DUST_MD::dualMaxAlgo7(const double& minCost, const unsigned int& t,
                            const unsigned int& s,
@@ -1352,6 +1476,8 @@ bool DUST_MD::dualMaxAlgo7(const double& minCost, const unsigned int& t,
 {
   return false;
 }
+
+
 
 
 

@@ -46,9 +46,35 @@ double Poisson_1D::dualEval(double point, double minCost, unsigned int t, unsign
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 double Poisson_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return (-std::numeric_limits<double>::infinity());
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
+  double c = (costRecord[s] - costRecord[r]) / (s - r);
+  double d = (costRecord[s] - minCost) / (t - s);
+  double mu_max = muMax(a, b);
+
+  double ratio = (c + d)/(a - b);
+  double val = DstarPrimeInv(ratio);
+
+  double x = 1.0/(a - b) * (val - a);
+  double x_max = mu_max/(1 - mu_max);
+  if(x < 0){x = 0;}
+  if(x > x_max){x = x_max;}
+
+  Rcout << -Dstar(a + (a-b)*x) + d + (c + d)*x;
+  Rcout <<  " /a-b/ " << a - b;
+  Rcout << " /EVAL/ " << a + (a-b)*x;
+  Rcout << " /firstX/ " << 1.0/(a - b) * (val - a);
+  Rcout << " /VAL/ " << val;
+  Rcout << " /RATIO/ " << ratio;
+  Rcout << " //a: " << a << " b: " << b << " x: " << x << " mu_max: "<< mu_max << " mu_max: "<< mu_max << std::endl;
+
+  return -Dstar(a + (a-b)*x) + d + (c + d)*x;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +87,13 @@ double Poisson_1D::muMax(double a, double b) const
   return 1.;
 }
 
+bool Poisson_1D::isBoundary(double a) const
+{
+  if(a == 0){return true;}
+  return false;
+}
+
+
 double Poisson_1D::Dstar(double x) const
 {
   return (x * (std::log(x) - 1.0));
@@ -70,6 +103,11 @@ double Poisson_1D::Dstar(double x) const
 double Poisson_1D::DstarPrime(double x) const
 {
   return std::log(x);
+}
+
+double Poisson_1D::DstarPrimeInv(double x) const
+{
+  return std::exp(x);
 }
 
 double Poisson_1D::DstarSecond(double x) const

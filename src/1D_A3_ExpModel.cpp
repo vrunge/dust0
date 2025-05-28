@@ -40,6 +40,10 @@ double Exp_1D::dualEval(double point, double minCost, unsigned int t, unsigned i
   + (1 - point) * (std::log((objectiveMean - point * constraintMean) / (1 - point)) + 1);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 double Exp_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
@@ -57,6 +61,11 @@ double Exp_1D::muMax(double a, double b) const
   return res;
 }
 
+bool Exp_1D::isBoundary(double a) const
+{
+  return false;
+}
+
 double Exp_1D::Dstar(double x) const
 {
   return (-std::log(x) - 1.0);
@@ -64,6 +73,11 @@ double Exp_1D::Dstar(double x) const
 
 
 double Exp_1D::DstarPrime(double x) const
+{
+  return -1.0/x;
+}
+
+double Exp_1D::DstarPrimeInv(double x) const
 {
   return -1.0/x;
 }
