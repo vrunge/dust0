@@ -313,6 +313,49 @@ evalDual_meanVar2 <- function(x, S, S2, r, s, t, Qr, Qs, Qt)
 }
 
 
+dualVALUE_meanVar2D <- function(S, S2,
+                                r1, r2, s, t,
+                                Qr1, Qr2, Qs, Qt)
+{
+  # Segment lengths
+  len_st <- t - s
+  len_r1s <- s - r1
+  len_r2s <- s - r2
+
+  # Mean of squared values
+  A <- (S2[t] - S2[s]) / len_st
+  D <- A - ((S2[s] - S2[r1]) / len_r1s)
+  Dbar <- A - ((S2[s] - S2[r2]) / len_r2s)
+
+  # Mean values
+  a <- (S[t] - S[s]) / len_st
+  d <-  a - ((S[s] - S[r1]) / len_r1s)
+  dbar <-  a - ((S[s] - S[r2]) / len_r2s)
+
+  delta  <- (Qt - Qs) / len_st
+  DELTA  <- delta - ((Qs - Qr1) / len_r1s)
+  DELTAbar  <- delta - ((Qs - Qr2) / len_r2s)
+
+  #y = alpha + x beta
+  ratio <- (Dbar*DELTA - D*DELTAbar)/(2*dbar*DELTA-2*d*DELTAbar)
+
+  alpha <- A  - ratio^2 +  (Dbar/dbar) * (ratio - a)
+  beta <- D - Dbar*d/dbar
+  gamma0 <- delta  + (DELTAbar/dbar) * (ratio - a)
+  gamma1 <- DELTA  - DELTAbar*d/dbar
+  #print("res")
+  #print(c(alpha, beta, gamma0, gamma1))
+  #print(beta/(2*gamma1))
+  if(Qr1 == Inf){gamma0 <- NA}
+  if(Qr2 == Inf){gamma0 <- NA}
+  if(Qs == Inf){gamma0 <- NA}
+  u <- -d/dbar
+  v <- (1/dbar)*(ratio - a)
+  return(c(alpha, beta, gamma0, gamma1, u, v)) # y = ux * v
+}
+
+
+
 #' compute_xstar
 #'
 #' @description Computes the critical point \eqn{x^\star}
