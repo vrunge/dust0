@@ -49,7 +49,24 @@ double Negbin_1D::dualEval(double point, double minCost, unsigned int t, unsigne
 
 double Negbin_1D::dualMax(double minCost, unsigned int t, unsigned int s, unsigned int r) const
 {
-  return (-std::numeric_limits<double>::infinity());
+  /// -Dstar(a - (b-a)*x) - (c - (d-c)*x)
+  double a = (cumsum[t] - cumsum[s]) / (t - s);
+  double b = (cumsum[s] - cumsum[r]) / (s - r);
+  double c = (minCost - costRecord[s]) / (t - s);
+  double d = (costRecord[s] - costRecord[r]) / (s - r);
+  double mu_max = muMax(a, b);
+
+  double ratio = -(d - c)/(b - a);
+  double val = DstarPrimeInv(ratio);
+
+  double x = 1.0/(b - a) * (a - val);
+  double x_max = mu_max/(1 - mu_max);
+  if(x < 0){x = 0;}
+  if(x > x_max)
+  {
+    x = 0;
+  }
+  return -Dstar(a - (b-a)*x) - (c - (d-c)*x);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -265,6 +265,107 @@ evalDual_meanVar <- function(mu, S, S2, s1, s2, t, const1, const2)
 }
 
 
+##################################################
+#############  evalDual_meanVar2 ################
+##################################################
+
+#' evalDual_meanVar2
+#'
+#' @description Evaluate the D(x) function as defined.
+#' @param x The evaluation point
+#' @param S Cumulative sum vector of data
+#' @param S2 Cumulative sum vector of squared data
+#' @param r First index
+#' @param s Second index
+#' @param t Final index
+#' @param Qr The value of the global cost at r
+#' @param Qs The value of the global cost at s
+#' @param Qt The value of the global cost at t
+evalDual_meanVar2 <- function(x, S, S2, r, s, t, Qr, Qs, Qt)
+{
+  # Segment lengths
+  len_st <- t - s
+  len_rs <- s - r
+
+  # Mean of squared values
+  mean_S2_st <- (S2[t] - S2[s]) / len_st
+  delta_mean_S2_rst <- mean_S2_st - ((S2[s] - S2[r]) / len_rs)
+
+  # Mean values
+  mean_S_st <- (S[t] - S[s]) / len_st
+  delta_mean_S_rst <-  mean_S_st - ((S[s] - S[r]) / len_rs)
+
+  # Composite terms
+  m2 <- mean_S2_st + x * delta_mean_S2_rst
+  m1 <- mean_S_st + x * delta_mean_S_rst
+
+  variance_term <- m2 - m1^2
+
+  if (variance_term <= 0) {return(-Inf)}
+  if (Qr == Inf) {return(-Inf)}
+  mean_Q_st  <- (Qt - Qs) / len_st
+  mean_Q_rst  <- mean_Q_st - ((Qs - Qr) / len_rs)
+
+  res1 <- 0.5 * (1 + log(variance_term))
+  res2 <- mean_Q_st + x * mean_Q_rst
+
+  return(res1 - res2)
+}
+
+
+#' compute_xstar
+#'
+#' @description Computes the critical point \eqn{x^\star}
+#' This function uses empirical variances and mean differences between segments \eqn{[r,s]} and \eqn{[s,t]}
+#'
+#' @param S Numeric vector. Cumulative sum of data (e.g., \code{cumsum(y)} with a prepended 0).
+#' @param S2 Numeric vector. Cumulative sum of squares (e.g., \code{cumsum(y^2)} with a prepended 0).
+#' @param r First index
+#' @param s Second index
+#' @param t Final index
+#' @param Qr The value of the global cost at r
+#' @param Qs The value of the global cost at s
+#' @param Qt The value of the global cost at t
+#'
+#' @return The optimal value \eqn{x^\star} as a numeric scalar. Returns 0 if \code{Qr == Inf}.
+#' @export
+compute_xstar <- function(S, S2, r, s, t, Qr, Qs, Qt)
+{
+  if(Qr == Inf){return(0)}
+  len_st <- t - s
+  len_sr <- s - r
+
+  # Empirical variances
+  mean_st <- (S[t] - S[s]) / len_st
+  var_st <- (S2[t] - S2[s]) / len_st - mean_st^2
+
+  mean_sr <- (S[s] - S[r]) / len_sr
+  var_sr <- (S2[s] - S2[r]) / len_sr - mean_sr^2
+
+  # Delta mean slope
+  delta_mean <- mean_sr - mean_st
+  delta_mean_sq <- delta_mean^2
+
+  # x0 and x1
+  x0 <- 0.5 * ((var_st - var_sr) / delta_mean_sq - 1)
+  x1 <- x0^2 + var_st / delta_mean_sq
+
+  # x2 (delta Q)
+
+    q_st <- (Qt - Qs) / len_st
+    q_sr <- (Qs - Qr) / len_sr
+    x2 <- q_st - q_sr
+
+  # Compute x_star
+  inv_2x2 <- 1 / (2 * x2)
+  root_term <- sqrt(x1 + inv_2x2^2)
+  x_star <- max(0, x0 + inv_2x2 - sign(x2) * root_term)
+  return(x_star)
+}
+
+
+
+
 #####################################################
 #############  min_cost_regression   ################
 #####################################################

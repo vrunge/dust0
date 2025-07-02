@@ -517,17 +517,11 @@ bool DUST_MD::dualMaxAlgo1(const double& minCost, const unsigned int& t,
   std::vector<double> u;
   u.reserve(l.size() + r.size());
 
-  Rcout << "ALL INDEX "<< std::endl;
-  for (unsigned int i = 0; i < l.size(); i++){Rcout << "l: " << l[i]<< std::endl;}
-  Rcout << "s: " << s << std::endl;
-  for (unsigned int i = 0; i < r.size(); i++){Rcout << "r: "  << r[i]<< std::endl;}
-  Rcout << t<< std::endl;
-
-  Rcout << "ALL INDEX "<< std::endl;
-  for (unsigned int i = 0; i < nb_l; i++){Rcout << "l: " << l[i]<< std::endl;}
-  Rcout << "s: " << s << std::endl;
-  for (unsigned int i = 0; i < nb_r; i++){Rcout << "r: "  << r[i]<< std::endl;}
-  Rcout << t<< std::endl;
+  //Rcout << "ALL INDEX "<< std::endl;
+  //for (unsigned int i = 0; i < l.size(); i++){Rcout << "l: " << l[i]<< std::endl;}
+  //Rcout << "s: " << s << std::endl;
+  //for (unsigned int i = 0; i < r.size(); i++){Rcout << "r: "  << r[i]<< std::endl;}
+  //Rcout << t<< std::endl;
 
 
   /// push_back => START by the end
@@ -1261,8 +1255,6 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
     direction = (-grad) * inverseHessian;
     direction_scale = 1.;
 
-    Rcout << "direction " << direction << std::endl;
-
     double direction_sum ;
     clip_stepsize_to_negative_element(mu, direction, direction_scale);
     clip_stepsize_to_negative_sum(sign, mu_sum, direction, direction_sum, direction_scale);
@@ -1272,26 +1264,18 @@ bool DUST_MD::dualMaxAlgo42(const double& minCost, const unsigned int& t,
       clipStepSizeModel(m_value(row), constraintMean.row(row), mu_sum, direction, direction_sum, direction_scale);
     }
 
-    Rcout << "direction scale " << direction_scale << std::endl;
-
     if (direction_scale <= 0) { return false; } // stops optimization if no movement is produced
 
     // update mu and D(mu) + check for shrink
     updateTestValue();
-
-    Rcout << "mu " << mu << std::endl;
 
     if(test_value > 0) { return true; } // success, index s is pruned
 
     // update grad and tangent max location
     updateGrad();
 
-    Rcout << "grad " << grad << std::endl;
-
     // Update inverse hessian estimation
     updateHessian(inverseHessian, mu_diff, grad_diff, I);
-
-    Rcout << "Inverse hessian " << inverseHessian << std::endl;
 
     grad_diff = -grad;
     iter++;

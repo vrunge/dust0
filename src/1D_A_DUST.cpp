@@ -582,7 +582,7 @@ bool DUST_1D::dualMaxAlgo4(double minCost, unsigned int t, unsigned int s, unsig
     else if (test_value - mu * grad <= 0) {return false;}
     updateHessian();
     i++;
-  } while (i < 100);
+  } while (i < nb_Loops);
   return false;
 }
 
