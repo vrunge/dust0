@@ -226,8 +226,7 @@ dust_R_2param_meanVarExact <- function(data, penalty)
         if(t - s > 1) # if one value in the segment, don't prune !!!!!
         {
           if(i == 2){r <- indexSet[1]}else{r <- sample(indexSet[1:(i-1)], 1)}
-
-          if(s - r > 1)
+          r <- indexSet[i-1]
           {
             mu <- compute_xstar(S, S2,
                                 shift(r), shift(s), shift(t),
