@@ -305,6 +305,8 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
   nb <- rep(0, n) # number of element to consider at each iteration
   costQ[1] <- -penalty
   indexSet <- 0
+
+  dualPruning <- c(0, 0, 0, 0) #0,r1,r2,r1+R2
   #########
   ###
   ### update rule Dynamic Programming
@@ -334,6 +336,7 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
       ###
       for(i in 3:length(indexSet))
       {
+        pruneToDo <- TRUE
         s <- indexSet[i]
         if(t - s > 2) # if one value in the segment, don't prune !!!!!
         {
@@ -347,7 +350,17 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
             val <- evalDual_meanVar2(mu, S, S2,
                                      shift(r1), shift(s), shift(t),
                                      costQ[shift(r1)], costQ[shift(s)], costQ[shift(t)])
-            if(val > 0){PrunedIndexSet <- c(PrunedIndexSet, s)}
+            if(val > 0)
+            {
+              if(pruneToDo == TRUE)
+              {
+                if(mu !=  0){dualPruning[2] <- dualPruning[2] + 1}
+                else{dualPruning[1] <- dualPruning[1] + 1}
+                pruneToDo <- FALSE
+              }
+
+              PrunedIndexSet <- c(PrunedIndexSet, s)
+            }
 
             ### with R2
             mu <- compute_xstar(S, S2,
@@ -356,7 +369,16 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
             val <- evalDual_meanVar2(mu, S, S2,
                                      shift(r2), shift(s), shift(t),
                                      costQ[shift(r2)], costQ[shift(s)], costQ[shift(t)])
-            if(val > 0){PrunedIndexSet <- c(PrunedIndexSet, s)}
+            if(val > 0)
+            {
+              if(pruneToDo == TRUE)
+              {
+                if(mu !=  0){dualPruning[3] <- dualPruning[3] + 1}
+                else{dualPruning[1] <- dualPruning[1] + 1}
+                pruneToDo <- FALSE
+              }
+              PrunedIndexSet <- c(PrunedIndexSet, s)
+            }
 
             ### with R1 and R2
             coeff <- dualVALUE_meanVar2D(S, S2,
@@ -372,7 +394,15 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
               if(x < 0){val <- - Inf}
               if(coeff[5]*x + coeff[6] < 0){val <- - Inf}
             }
-            if(val > 0){PrunedIndexSet <- c(PrunedIndexSet, s)}
+            if(val > 0)
+            {
+              if(pruneToDo == TRUE)
+              {
+                dualPruning[4] <- dualPruning[4] + 1
+                pruneToDo <- FALSE
+              }
+              PrunedIndexSet <- c(PrunedIndexSet, s)
+            }
           }
         }
       }
@@ -404,7 +434,11 @@ dust_R_2param_meanVarExact2 <- function(data, penalty)
   changepoints <- backtracking_changepoint(cp, n)
   ########## backtracking changepoint ##########
 
-  return(list(changepoints = changepoints, nb = nb, lastIndexSet = indexSet, costQ = costQ[-1]))
+  return(list(changepoints = changepoints,
+              nb = nb,
+              dualPruning = dualPruning,
+              lastIndexSet = indexSet,
+              costQ = costQ[-1]))
 }
 
 
