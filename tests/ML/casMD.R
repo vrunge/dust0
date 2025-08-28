@@ -6,7 +6,7 @@ getwd()
 
 
 
-library(dust)
+library(dust0)
 ###
 ### GAUSS 3D
 ###

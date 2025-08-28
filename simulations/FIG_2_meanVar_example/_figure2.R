@@ -1,5 +1,5 @@
 
-library(dust)
+library(dust0)
 
 n <- 10^2
 beta <- 2*log(n)

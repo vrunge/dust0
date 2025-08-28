@@ -21,7 +21,7 @@ rm(list = ls())
 ```
 
 ```{r, message=FALSE}
-library(dust) #our package
+library(dust0) #our package
 ```
 
 

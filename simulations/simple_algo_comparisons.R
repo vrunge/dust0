@@ -6,7 +6,7 @@
 #devtools::install_github("vrunge/dust")
 library(gfpop)
 library(fpopw)
-library(dust)
+library(dust0)
 
 ###############################
 ###############################

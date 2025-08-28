@@ -19,7 +19,7 @@ output:
 
 
 ```r
-library(dust) #our package
+library(dust0) #our package
 ```
 
 

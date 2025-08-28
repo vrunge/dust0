@@ -4,6 +4,6 @@
 ###
 ###
 
-library(dust)
+library(dust0)
 
 

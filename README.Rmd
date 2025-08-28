@@ -70,7 +70,7 @@ devtools::install_github("vrunge/dust")
 and imported with:
 
 ```{r, message=FALSE, eval = FALSE}
-library(dust)
+library(dust0)
 ```
 
 
@@ -79,7 +79,7 @@ library(dust)
 We generate some 1D time series of length `400` from the Gaussian model and one change in the middle of the sequence.
 
 ```{r, message=FALSE}
-library(dust)
+library(dust0)
 set.seed(2)
 data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")
 ```

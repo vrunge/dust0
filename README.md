@@ -77,14 +77,14 @@ following command:
 
 and imported with:
 
-    library(dust)
+    library(dust0)
 
 ### A simple example
 
 We generate some 1D time series of length `400` from the Gaussian model
 and one change in the middle of the sequence.
 
-    library(dust)
+    library(dust0)
     set.seed(2)
     data <- dataGenerator_1D(chpts = c(200,400), c(0,1), type = "gauss")
 

@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // flat_OP_1D
 List flat_OP_1D(const std::vector<double>& inData, Nullable<double> inPenalty);
-RcppExport SEXP _dust_flat_OP_1D(SEXP inDataSEXP, SEXP inPenaltySEXP) {
+RcppExport SEXP _dust0_flat_OP_1D(SEXP inDataSEXP, SEXP inPenaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,7 +25,7 @@ END_RCPP
 }
 // flat_OP_MD
 List flat_OP_MD(const arma::dmat& inData, Nullable<double> inPenalty);
-RcppExport SEXP _dust_flat_OP_MD(SEXP inDataSEXP, SEXP inPenaltySEXP) {
+RcppExport SEXP _dust0_flat_OP_MD(SEXP inDataSEXP, SEXP inPenaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,7 +37,7 @@ END_RCPP
 }
 // sdDiff
 double sdDiff(std::vector<double>& y, std::string method);
-RcppExport SEXP _dust_sdDiff(SEXP ySEXP, SEXP methodSEXP) {
+RcppExport SEXP _dust0_sdDiff(SEXP ySEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,7 +49,7 @@ END_RCPP
 }
 // data_normalization_1D
 std::vector<double> data_normalization_1D(std::vector<double>& y, std::string type);
-RcppExport SEXP _dust_data_normalization_1D(SEXP ySEXP, SEXP typeSEXP) {
+RcppExport SEXP _dust0_data_normalization_1D(SEXP ySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +61,7 @@ END_RCPP
 }
 // data_normalization_MD
 NumericMatrix data_normalization_MD(NumericMatrix& y, std::string type);
-RcppExport SEXP _dust_data_normalization_MD(SEXP ySEXP, SEXP typeSEXP) {
+RcppExport SEXP _dust0_data_normalization_MD(SEXP ySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -73,7 +73,7 @@ END_RCPP
 }
 // cs1
 double cs1(NumericVector& x);
-RcppExport SEXP _dust_cs1(SEXP xSEXP) {
+RcppExport SEXP _dust0_cs1(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -84,7 +84,7 @@ END_RCPP
 }
 // cs2
 double cs2(NumericVector& x);
-RcppExport SEXP _dust_cs2(SEXP xSEXP) {
+RcppExport SEXP _dust0_cs2(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,7 +95,7 @@ END_RCPP
 }
 // cs3
 double cs3(NumericVector& x);
-RcppExport SEXP _dust_cs3(SEXP xSEXP) {
+RcppExport SEXP _dust0_cs3(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,7 +106,7 @@ END_RCPP
 }
 // cs4
 double cs4(NumericVector& x);
-RcppExport SEXP _dust_cs4(SEXP xSEXP) {
+RcppExport SEXP _dust0_cs4(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -117,7 +117,7 @@ END_RCPP
 }
 // cs5
 double cs5(NumericVector& x);
-RcppExport SEXP _dust_cs5(SEXP xSEXP) {
+RcppExport SEXP _dust0_cs5(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -137,16 +137,16 @@ RcppExport SEXP _rcpp_module_boot_FLATDUST1D();
 RcppExport SEXP _rcpp_module_boot_FLAT2DUST1D();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dust_flat_OP_1D", (DL_FUNC) &_dust_flat_OP_1D, 2},
-    {"_dust_flat_OP_MD", (DL_FUNC) &_dust_flat_OP_MD, 2},
-    {"_dust_sdDiff", (DL_FUNC) &_dust_sdDiff, 2},
-    {"_dust_data_normalization_1D", (DL_FUNC) &_dust_data_normalization_1D, 2},
-    {"_dust_data_normalization_MD", (DL_FUNC) &_dust_data_normalization_MD, 2},
-    {"_dust_cs1", (DL_FUNC) &_dust_cs1, 1},
-    {"_dust_cs2", (DL_FUNC) &_dust_cs2, 1},
-    {"_dust_cs3", (DL_FUNC) &_dust_cs3, 1},
-    {"_dust_cs4", (DL_FUNC) &_dust_cs4, 1},
-    {"_dust_cs5", (DL_FUNC) &_dust_cs5, 1},
+    {"_dust0_flat_OP_1D", (DL_FUNC) &_dust0_flat_OP_1D, 2},
+    {"_dust0_flat_OP_MD", (DL_FUNC) &_dust0_flat_OP_MD, 2},
+    {"_dust0_sdDiff", (DL_FUNC) &_dust0_sdDiff, 2},
+    {"_dust0_data_normalization_1D", (DL_FUNC) &_dust0_data_normalization_1D, 2},
+    {"_dust0_data_normalization_MD", (DL_FUNC) &_dust0_data_normalization_MD, 2},
+    {"_dust0_cs1", (DL_FUNC) &_dust0_cs1, 1},
+    {"_dust0_cs2", (DL_FUNC) &_dust0_cs2, 1},
+    {"_dust0_cs3", (DL_FUNC) &_dust0_cs3, 1},
+    {"_dust0_cs4", (DL_FUNC) &_dust0_cs4, 1},
+    {"_dust0_cs5", (DL_FUNC) &_dust0_cs5, 1},
     {"_rcpp_module_boot_DUSTMODULE1D", (DL_FUNC) &_rcpp_module_boot_DUSTMODULE1D, 0},
     {"_rcpp_module_boot_DUSTMODULEMeanVar", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEMeanVar, 0},
     {"_rcpp_module_boot_DUSTMODULEreg", (DL_FUNC) &_rcpp_module_boot_DUSTMODULEreg, 0},
@@ -158,7 +158,7 @@ static const R_CallMethodDef CallEntries[] = {
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_dust(DllInfo *dll) {
+RcppExport void R_init_dust0(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

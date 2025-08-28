@@ -18,7 +18,7 @@ output:
 
 
 ```r
-library(dust) #our package
+library(dust0) #our package
 ```
 
 **We demonstrate using simulations that the number of non-pruned elements is of order `sqrt(n)` for `n` data points when using the dust method with uniform sampling.**

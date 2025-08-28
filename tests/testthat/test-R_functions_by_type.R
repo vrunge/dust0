@@ -1,5 +1,5 @@
 library(testthat)
-library(dust)
+library(dust0)
 
 
 test_that("Infinity A",

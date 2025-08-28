@@ -1,4 +1,4 @@
-Package: dust
+Package: dust0
 Type: Package
 Title: Multiple Change Point Detection in Multivariate Time Series
 Version: 0.3.1

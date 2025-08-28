@@ -5,7 +5,7 @@ importFrom(Rcpp, loadModule)
 
 importFrom(methods, new)
 
-useDynLib(dust, .registration = TRUE)
+useDynLib(dust0, .registration = TRUE)
 
 import("stats")
 importFrom("graphics", "abline", "barplot")

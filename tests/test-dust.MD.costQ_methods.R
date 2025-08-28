@@ -1,6 +1,6 @@
 
 library(testthat)
-library(dust)
+library(dust0)
 
 
 ##############################################################

@@ -1,4 +1,4 @@
-library(dust)
+library(dust0)
 
 n <- 4
 data <- dataGenerator_1D(n, parameters = 0, sdNoise = 1, type = "gauss")

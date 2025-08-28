@@ -34,7 +34,7 @@ for(i in seq(from = 3, to = 5, by = 0.1))
 
 ################################################################################
 
-library(dust)
+library(dust0)
 for(i in seq(from = 4, to = 5, by = 0.1))
 {
   print(i)
@@ -93,7 +93,7 @@ res1$changepoints == res2$changepoints
 
 
 ################################################################################
-library(dust)
+library(dust0)
 library(fpopw)
 
 n <- 4

@@ -2,7 +2,7 @@
 
 # devtools::install_github("vrunge/dust")
 
-library(dust)
+library(dust0)
 
 # Model names
 model.names = c("gauss", "poisson", "exp", "geom", "bern", "negbin", "variance")

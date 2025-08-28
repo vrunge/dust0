@@ -1,5 +1,5 @@
 library(testthat)
-library(dust)
+library(dust0)
 
 ############################################
 #### constant data = no change

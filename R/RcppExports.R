@@ -56,7 +56,7 @@ NULL
 #' data <- rnorm(100)
 #' result <- flat_OP_1D(data, inPenalty = 1.0)
 flat_OP_1D <- function(inData, inPenalty = NULL) {
-    .Call(`_dust_flat_OP_1D`, inData, inPenalty)
+    .Call(`_dust0_flat_OP_1D`, inData, inPenalty)
 }
 
 #' Optimal Partitioning in MD with Flat Model
@@ -67,7 +67,7 @@ flat_OP_1D <- function(inData, inPenalty = NULL) {
 #' @param inPenalty An optional numeric penalty parameter to control the number of partitions. Defaults to \code{NULL}, indicating a default penalty is used.
 #' @return A list containing the results of the optimal partitioning, including identified change points and other model details.
 flat_OP_MD <- function(inData, inPenalty = NULL) {
-    .Call(`_dust_flat_OP_MD`, inData, inPenalty)
+    .Call(`_dust0_flat_OP_MD`, inData, inPenalty)
 }
 
 #' Calculate Standard Deviation or MAD of Differences in a Numeric Vector
@@ -100,7 +100,7 @@ flat_OP_MD <- function(inData, inPenalty = NULL) {
 #'
 #' @export
 sdDiff <- function(y, method) {
-    .Call(`_dust_sdDiff`, y, method)
+    .Call(`_dust0_sdDiff`, y, method)
 }
 
 #' Data Normalization Function
@@ -132,7 +132,7 @@ sdDiff <- function(y, method) {
 #'
 #' @export
 data_normalization_1D <- function(y, type = "gauss") {
-    .Call(`_dust_data_normalization_1D`, y, type)
+    .Call(`_dust0_data_normalization_1D`, y, type)
 }
 
 #' Data Normalization Function
@@ -157,7 +157,7 @@ data_normalization_1D <- function(y, type = "gauss") {
 #' normalized_y <- data_normalization_MD(matrix(rnorm(100), nrow = 2), type = "gauss")
 #' @export
 data_normalization_MD <- function(y, type = "gauss") {
-    .Call(`_dust_data_normalization_MD`, y, type)
+    .Call(`_dust0_data_normalization_MD`, y, type)
 }
 
 #' Cumulative Sum (cs1): No Copy of Input Vector
@@ -173,7 +173,7 @@ data_normalization_MD <- function(y, type = "gauss") {
 #' }
 #' @export
 cs1 <- function(x) {
-    .Call(`_dust_cs1`, x)
+    .Call(`_dust0_cs1`, x)
 }
 
 #' Cumulative Sum (cs2): Copy Input Vector to std::vector
@@ -189,7 +189,7 @@ cs1 <- function(x) {
 #' }
 #' @export
 cs2 <- function(x) {
-    .Call(`_dust_cs2`, x)
+    .Call(`_dust0_cs2`, x)
 }
 
 #' Cumulative Sum (cs3): No Copy of Input Vector to NumericVector
@@ -205,7 +205,7 @@ cs2 <- function(x) {
 #' }
 #' @export
 cs3 <- function(x) {
-    .Call(`_dust_cs3`, x)
+    .Call(`_dust0_cs3`, x)
 }
 
 #' Cumulative Sum (cs4): Copy Input Vector to NumericVector
@@ -221,7 +221,7 @@ cs3 <- function(x) {
 #' }
 #' @export
 cs4 <- function(x) {
-    .Call(`_dust_cs4`, x)
+    .Call(`_dust0_cs4`, x)
 }
 
 #' Cumulative Sum (cs5): Move Input Vector to NumericVector
@@ -237,6 +237,6 @@ cs4 <- function(x) {
 #' }
 #' @export
 cs5 <- function(x) {
-    .Call(`_dust_cs5`, x)
+    .Call(`_dust0_cs5`, x)
 }
 

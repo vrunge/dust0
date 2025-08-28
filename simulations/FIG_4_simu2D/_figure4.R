@@ -4,7 +4,7 @@
 ###
 ###
 
-library(dust)
+library(dust0)
 
 #######################
 ### 1. Pruning capacity

@@ -1,6 +1,6 @@
 
 
-library(dust)
+library(dust0)
 
 n <- 10^3
 nb <- 10
