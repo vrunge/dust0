@@ -9,3 +9,4 @@ src/*.dll
 .Rproj.user
 output.log
 R/test_script.r
+.DS_Store
