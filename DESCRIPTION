@@ -19,5 +19,5 @@ Suggests:
     rmarkdown,
     ggplot2
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
